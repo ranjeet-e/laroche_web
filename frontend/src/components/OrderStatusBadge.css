@@ -1,0 +1,42 @@
+.order-status-badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.badge-placed {
+  background-color: var(--surface-tertiary);
+  color: var(--on-surface-tertiary);
+}
+
+.badge-paid {
+  background-color: var(--brand-tertiary);
+  color: var(--on-brand-tertiary);
+}
+
+.badge-preparing {
+  background-color: var(--warning);
+  color: var(--on-warning);
+}
+
+.badge-ready {
+  background-color: var(--success);
+  color: var(--on-success);
+}
+
+.badge-collected {
+  background-color: var(--border);
+  color: var(--on-surface-secondary);
+}
+
+.badge-cancelled {
+  background-color: var(--error);
+  color: var(--on-error);
+}
+
+.badge-default {
+  background-color: var(--surface-tertiary);
+  color: var(--on-surface-tertiary);
+}

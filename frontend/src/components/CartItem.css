@@ -1,0 +1,62 @@
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg);
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--divider);
+}
+
+.cart-item-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+  margin: 0 0 var(--space-xs) 0;
+  color: var(--on-surface);
+}
+
+.cart-item-price {
+  font-size: var(--text-sm);
+  color: var(--on-surface-tertiary);
+  margin: 0;
+}
+
+.cart-item-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.cart-item-controls .stepper {
+  display: flex;
+  align-items: center;
+  background-color: var(--brand-primary);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.cart-item-controls .stepper button {
+  background: none;
+  border: none;
+  color: var(--on-brand-primary);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.cart-item-controls .stepper span {
+  color: var(--on-brand-primary);
+  font-weight: 700;
+  min-width: 18px;
+  text-align: center;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: var(--error);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  text-decoration: underline;
+}

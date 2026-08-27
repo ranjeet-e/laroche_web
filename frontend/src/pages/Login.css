@@ -1,0 +1,119 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface);
+  padding: var(--space-xl);
+}
+
+.login-brand {
+  margin-bottom: var(--space-2xl);
+  text-align: center;
+}
+
+.login-brand h1 {
+  font-size: var(--text-2xl);
+  color: var(--brand);
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.login-brand span {
+  color: var(--brand-primary);
+  font-weight: 500;
+}
+
+.login-sheet {
+  width: 100%;
+  max-width: 400px;
+  background-color: var(--surface-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-1);
+}
+
+.login-sheet h2 {
+  font-size: var(--text-xl);
+  margin: 0 0 var(--space-xl) 0;
+  color: var(--on-surface);
+}
+
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--on-surface-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.form-group input {
+  width: 100%;
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  background-color: var(--surface);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+}
+
+.field-error {
+  color: var(--error);
+  font-size: var(--text-sm);
+  margin-top: var(--space-xs);
+  display: block;
+}
+
+.form-error {
+  background-color: var(--error);
+  color: var(--on-error);
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.login-btn {
+  width: 100%;
+  background-color: var(--brand-primary);
+  color: var(--on-brand-primary);
+  border: none;
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: var(--space-sm);
+}
+
+.login-btn:hover {
+  background-color: var(--on-brand-tertiary);
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.signup-link {
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--on-surface-tertiary);
+  margin-top: var(--space-lg);
+}
+
+.signup-link a {
+  color: var(--brand-primary);
+  font-weight: 600;
+  text-decoration: none;
+}

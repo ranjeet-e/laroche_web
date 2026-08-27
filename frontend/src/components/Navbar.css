@@ -1,0 +1,109 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.navbar-brand {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--brand);
+  text-decoration: none;
+}
+
+.navbar-brand span {
+  color: var(--brand-primary);
+  font-weight: 500;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.navbar-links a {
+  color: var(--on-surface-secondary);
+  text-decoration: none;
+  font-size: var(--text-base);
+  font-weight: 500;
+}
+
+.navbar-links a:hover {
+  color: var(--brand-primary);
+}
+
+.navbar-cart {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -14px;
+  background-color: var(--brand-primary);
+  color: var(--on-brand-primary);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
+}
+
+.navbar-logout {
+  background-color: var(--surface-tertiary);
+  color: var(--on-surface-tertiary);
+  border: none;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
+  cursor: pointer;
+}
+
+.navbar-logout:hover {
+  background-color: var(--border-strong);
+}
+.navbar-login {
+  background-color: var(--brand-primary);
+  color: var(--on-brand-primary);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-weight: 700;
+} 
+.navbar-search-wrap {
+  position: relative;
+  flex: 2;
+  max-width: 720px;
+  margin: 0 var(--space-xl);
+}
+
+.navbar-search-icon {
+  position: absolute;
+  left: var(--space-md);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--text-sm);
+  opacity: 0.5;
+}
+
+.navbar-search-input {
+  width: 100%;
+  padding: var(--space-md) var(--space-lg) var(--space-md) 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  background-color: var(--surface-secondary);
+}
+
+.navbar-search-input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  background-color: var(--surface);
+}

@@ -1,0 +1,211 @@
+larochecafe/
+
+├── frontend/                        # React frontend
+│   ├── public/
+│   │   └── index.html 
+│   ├── src/
+│   │   ├── assets/                  # logos, food images
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── FoodCard.jsx
+│   │   │   ├── CartItem.jsx
+│   │   │   ├── OrderStatusBadge.jsx
+│   │   │   └── ProtectedRoute.jsx   # role-based route guard (student/kitchen)
+│   │   ├── pages/
+│   │   │   ├── Login.jsx            # student email regex validated here
+│   │   │   ├── Signup.jsx
+│   │   │   ├── Menu.jsx             # browse + add to cart
+│   │   │   ├── Cart.jsx
+│   │   │   ├── Checkout.jsx         # razorpay checkout trigger
+│   │   │   ├── OrderHistory.jsx
+│   │   │   ├── OrderTracking.jsx    # live status: placed/preparing/ready
+│   │   │   └── kitchen/
+│   │   │       ├── KitchenLogin.jsx
+│   │   │       ├── KitchenDashboard.jsx   # incoming orders queue
+│   │   │       └── OrderDetail.jsx
+│   │   ├── context/
+│   │   │   ├── AuthContext.jsx
+│   │   │   └── CartContext.jsx
+│   │   ├── hooks/
+│   │   │   └── useSocket.js         # for real-time notification updates
+│   │   ├── services/
+│   │   │   ├── api.js               # axios instance
+│   │   │   ├── authService.js
+│   │   │   ├── orderService.js
+│   │   │   └── paymentService.js
+│   │   ├── utils/
+│   │   │   └── validators.js        # email regex lives here
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   └── package.json
+│
+├── backend/                         # Node/Express backend
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── db.js                # mongodb connection
+│   │   │   └── razorpay.js          # razorpay instance init (test keys)
+│   │   ├── models/
+│   │   │   ├── User.js              # role: student/kitchen, email regex validation
+│   │   │   ├── MenuItem.js
+│   │   │   ├── Order.js             # status: placed/paid/preparing/ready/collected
+│   │   │   └── Payment.js
+│   │   ├── controllers/
+│   │   │   ├── authController.js
+│   │   │   ├── menuController.js
+│   │   │   ├── orderController.js
+│   │   │   ├── paymentController.js # create order, verify signature, webhook
+│   │   │   └── kitchenController.js
+│   │   ├── routes/
+│   │   │   ├── authRoutes.js
+│   │   │   ├── menuRoutes.js
+│   │   │   ├── orderRoutes.js
+│   │   │   ├── paymentRoutes.js
+│   │   │   └── kitchenRoutes.js
+│   │   ├── middleware/
+│   │   │   ├── authMiddleware.js    # JWT verify
+│   │   │   ├── roleMiddleware.js    # student vs kitchen access
+│   │   │   └── errorHandler.js
+│   │   ├── sockets/
+│   │   │   └── notificationSocket.js # socket.io for order-ready pings
+│   │   ├── utils/
+│   │   │   ├── emailValidator.js    # regex you gave, server-side reuse
+│   │   │   └── sendNotification.js  # push/email/sms wrapper
+│   │   └── app.js
+│   ├── server.js                    # entry point
+│   └── package.json
+││
+
+│
+└── docs/
+    ├── architecture.md              # diagram + flow notes
+    └── api-endpoints.md             # route reference
+├── README.md
+├── .gitignore
+├── .env.example
+
+frontend
+public/index.html — the single HTML shell React mounts into
+src/assets/ — logos, food images, static media
+components/Navbar.jsx — top nav bar (links, cart icon, logout)
+components/FoodCard.jsx — displays one menu item with add-to-cart button
+components/CartItem.jsx — displays one item inside the cart with qty controls
+components/OrderStatusBadge.jsx — small colored badge showing order status (placed/preparing/ready)
+components/ProtectedRoute.jsx — blocks a route unless logged in with the right role
+pages/Login.jsx — student login form, validates college email regex
+pages/Signup.jsx — student registration form
+pages/Menu.jsx — browse food items, add to cart
+pages/Cart.jsx — review cart before checkout
+pages/Checkout.jsx — triggers Razorpay payment popup
+pages/OrderHistory.jsx — student's past orders list
+pages/OrderTracking.jsx — live status of current order (via socket)
+pages/kitchen/KitchenLogin.jsx — kitchen staff login form
+pages/kitchen/KitchenDashboard.jsx — live queue of incoming/paid orders for staff
+pages/kitchen/OrderDetail.jsx — single order's full details + status update buttons
+context/AuthContext.jsx — holds logged-in user + role across the app
+context/CartContext.jsx — holds cart items across the app
+hooks/useSocket.js — connects to Socket.IO and listens for real-time updates
+services/api.js — configured Axios instance (base URL, headers)
+services/authService.js — API calls for login/signup
+services/orderService.js — API calls for placing/fetching orders
+services/paymentService.js — API calls for Razorpay order creation/verification
+utils/validators.js — the email regex + form validation helpers
+App.jsx — sets up all routes/pages
+main.jsx — React entry point, renders App.jsx into HTML
+package.json — frontend dependencies + scripts
+
+Backend
+
+config/db.js — connects to MongoDB
+config/razorpay.js — initializes Razorpay SDK with test keys
+models/User.js — DB schema for users (student/kitchen, email, password, role)
+models/MenuItem.js — DB schema for menu items (name, price, availability)
+models/Order.js — DB schema for orders (items, student, status, total)
+models/Payment.js — DB schema for payment records (Razorpay IDs, status)
+controllers/authController.js — logic for login/signup/JWT issuing
+controllers/menuController.js — logic for fetching/adding menu items
+controllers/orderController.js — logic for placing orders, updating status
+controllers/paymentController.js — creates Razorpay order, verifies payment signature
+controllers/kitchenController.js — logic for kitchen dashboard (view/update orders)
+routes/authRoutes.js — URL endpoints for login/signup
+routes/menuRoutes.js — URL endpoints for menu CRUD
+routes/orderRoutes.js — URL endpoints for placing/viewing orders
+routes/paymentRoutes.js — URL endpoints for payment creation/verification
+routes/kitchenRoutes.js — URL endpoints for kitchen-only actions
+middleware/authMiddleware.js — verifies JWT on incoming requests
+middleware/roleMiddleware.js — checks if user's role (student/kitchen) can access a route
+middleware/errorHandler.js — catches and formats errors consistently
+sockets/notificationSocket.js — Socket.IO setup, emits order-ready events
+utils/emailValidator.js — server-side email regex check (source of truth)
+utils/sendNotification.js — sends push/email/SMS notification
+app.js — sets up Express app, middleware, routes
+server.js — starts the server, connects DB + sockets
+package.json — backend dependencies + scripts
+
+Docs & root
+
+docs/architecture.md — overall system design and data flow
+docs/api-endpoints.md — list of all API routes and what they do
+README.md — project overview, setup instructions
+.gitignore — files/folders Git should ignore (node_modules, .env)
+.env.example — template showing which environment variables are needed
+
+sequence
+
+backend:-
+backend/package.json
+backend/src/config/db.js
+backend/src/config/razorpay.js
+backend/src/models/User.js
+backend/src/models/MenuItem.js
+backend/src/models/Order.js
+backend/src/models/Payment.js
+backend/src/utils/emailValidator.js
+backend/src/utils/sendNotification.js
+backend/src/middleware/authMiddleware.js
+backend/src/middleware/roleMiddleware.js
+backend/src/middleware/errorHandler.js
+backend/src/controllers/authController.js
+backend/src/controllers/menuController.js
+backend/src/controllers/orderController.js
+backend/src/controllers/paymentController.js
+backend/src/controllers/kitchenController.js
+backend/src/routes/authRoutes.js
+backend/src/routes/menuRoutes.js
+backend/src/routes/orderRoutes.js
+backend/src/routes/paymentRoutes.js
+backend/src/routes/kitchenRoutes.js
+backend/src/sockets/notificationSocket.js
+backend/src/app.js
+backend/server.js
+frontend/package.json
+frontend/src/utils/validators.js
+frontend/src/services/api.js
+frontend/src/services/authService.js
+frontend/src/services/orderService.js
+frontend/src/services/paymentService.js
+frontend/src/context/AuthContext.jsx
+frontend/src/context/CartContext.jsx
+frontend/src/hooks/useSocket.js
+frontend/src/components/Navbar.jsx
+frontend/src/components/FoodCard.jsx
+frontend/src/components/CartItem.jsx
+frontend/src/components/OrderStatusBadge.jsx
+frontend/src/components/ProtectedRoute.jsx
+frontend/src/pages/Login.jsx
+frontend/src/pages/Signup.jsx
+frontend/src/pages/Menu.jsx
+frontend/src/pages/Cart.jsx
+frontend/src/pages/Checkout.jsx
+frontend/src/pages/OrderHistory.jsx
+frontend/src/pages/OrderTracking.jsx
+frontend/src/pages/kitchen/KitchenLogin.jsx
+frontend/src/pages/kitchen/KitchenDashboard.jsx
+frontend/src/pages/kitchen/OrderDetail.jsx
+frontend/src/App.jsx
+frontend/src/main.jsx
+frontend/public/index.html
+docs/architecture.md
+docs/api-endpoints.md
+.env.example
+.gitignore
+README.md

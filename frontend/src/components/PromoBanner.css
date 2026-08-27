@@ -1,0 +1,38 @@
+.promo-banner {
+  margin: 0 var(--space-xl) var(--space-lg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  color: var(--on-brand-primary);
+  transition: background-color 0.5s ease;
+  position: relative;
+}
+
+.promo-banner h3 {
+  margin: 0 0 var(--space-xs) 0;
+  font-size: var(--text-xl);
+}
+
+.promo-banner p {
+  margin: 0 0 var(--space-md) 0;
+  opacity: 0.9;
+  font-size: var(--text-sm);
+}
+
+.promo-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.4);
+}
+
+.dot-active {
+  background-color: white;
+  width: 18px;
+  border-radius: var(--radius-pill);
+  transition: width 0.3s ease;
+}

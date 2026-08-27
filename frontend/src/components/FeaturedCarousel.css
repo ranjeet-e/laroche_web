@@ -1,0 +1,64 @@
+.carousel-section {
+  padding: var(--space-lg) 0;
+}
+
+.carousel-heading {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  margin: 0 var(--space-xl) var(--space-md);
+  color: var(--on-surface);
+}
+
+.carousel-track {
+  display: flex;
+  gap: var(--space-md);
+  overflow-x: auto;
+  padding: 0 var(--space-xl) var(--space-sm);
+  scroll-snap-type: x mandatory;
+}
+
+.carousel-card {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-color: var(--surface);
+  box-shadow: var(--shadow-1);
+}
+
+.carousel-card img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+}
+
+.carousel-card-info {
+  padding: var(--space-md);
+}
+
+.carousel-card-info h4 {
+  margin: 0 0 var(--space-xs) 0;
+  font-size: var(--text-base);
+  color: var(--on-surface);
+}
+
+.carousel-card-info p {
+  margin: 0;
+  font-weight: 700;
+  color: var(--brand-primary);
+}
+.carousel-card-image-wrap {
+  position: relative;
+}
+
+.bestseller-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: var(--surface);
+  color: var(--brand-primary);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+}

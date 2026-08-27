@@ -1,0 +1,141 @@
+.kitchen-dashboard {
+  padding: var(--space-xl);
+}
+
+.dashboard-tabs {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.tab {
+  padding: var(--space-sm) var(--space-xl);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--on-surface-secondary);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab-active {
+  background-color: var(--brand);
+  color: var(--on-surface-inverse);
+  border-color: var(--brand);
+}
+
+.kanban-board {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.kanban-column {
+  flex: 1;
+  background-color: var(--surface-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  min-height: 60vh;
+}
+
+.kanban-column h3 {
+  margin: 0 0 var(--space-md) 0;
+  font-size: var(--text-base);
+  color: var(--on-surface-secondary);
+}
+
+.kanban-empty {
+  color: var(--on-surface-tertiary);
+  font-size: var(--text-sm);
+  text-align: center;
+  margin-top: var(--space-xl);
+}
+
+.order-card-kanban {
+  background-color: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-1);
+}
+
+.order-card-kanban-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+}
+
+.order-time {
+  color: var(--on-surface-tertiary);
+  font-weight: 500;
+}
+
+.order-card-kanban-student {
+  font-size: var(--text-sm);
+  color: var(--on-surface-secondary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.order-card-kanban-items {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-md) 0;
+  font-size: var(--text-sm);
+  color: var(--on-surface-tertiary);
+}
+
+.kanban-action-btn {
+  width: 100%;
+  background-color: var(--brand-primary);
+  color: var(--on-brand-primary);
+  border: none;
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.stock-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.stock-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+}
+
+.stock-toggle {
+  border: none;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.stock-in {
+  background-color: var(--success);
+  color: var(--on-success);
+}
+
+.stock-out {
+  background-color: var(--error);
+  color: var(--on-error);
+}
+
+.dashboard-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: var(--on-surface-tertiary);
+}
