@@ -597,13 +597,9 @@ const Auth = ({ initialMode = 'login' }) => {
         <div className="auth-blade">
           <div className="auth-blade__inner">
             <img src="/logo.png" alt="La Roche Cafe" className="auth-blade__logo" onError={(e) => { e.target.onerror = null; e.target.src = '/logo2.png'; }} />
-            <span className="auth-blade__brand">LA ROCHE CAFE</span>
             <h3 className="auth-blade__title">
-              Skip the Queue, <br />
-              <em>Order Ahead.</em>
             </h3>
             <p className="auth-blade__text">
-              Freshly prepared artisanal snacks, pizzas, sandwiches and beverages ready for instant counter pickup.
             </p>
           </div>
         </div>
