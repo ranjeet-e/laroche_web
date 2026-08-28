@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
-import FoodCard from '../components/FoodCard.jsx';
+import FoodCard from '../components/FoodCard';
 import { useCart } from '../context/CartContext.jsx';
 import FeaturedCarousel from '../components/FeaturedCarousel';
 import PromoBanner from '../components/PromoBanner';
