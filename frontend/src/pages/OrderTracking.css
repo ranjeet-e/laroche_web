@@ -164,4 +164,46 @@
   min-height: 60vh;
   gap: var(--space-lg);
   color: var(--on-surface-tertiary);
-} 
+}
+
+@media (max-width: 600px) {
+  .tracking-page {
+    padding: 16px 14px 100px 14px;
+  }
+
+  .tracking-header {
+    margin-bottom: 24px;
+  }
+
+  .tracking-header .order-id {
+    font-size: 1rem;
+  }
+
+  .status-timeline {
+    margin-bottom: 28px;
+    padding: 0 4px;
+  }
+
+  .timeline-dot {
+    width: 16px;
+    height: 16px;
+  }
+
+  .timeline-label {
+    font-size: 0.675rem;
+  }
+
+  .qr-ticket {
+    padding: 20px 16px;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .qr-ticket h3 {
+    font-size: 1.1rem;
+  }
+
+  .order-items-summary {
+    padding: 16px;
+  }
+}

@@ -99,3 +99,37 @@
 .orders-empty button:hover {
   transform: translateY(-2px);
 }
+
+@media (max-width: 600px) {
+  .orders-page {
+    padding: 16px 14px 100px 14px;
+  }
+
+  .orders-page h1 {
+    font-size: 1.35rem;
+    margin-bottom: 18px;
+  }
+
+  .order-card {
+    padding: 16px 16px;
+    border-radius: var(--radius-md);
+  }
+
+  .order-id {
+    font-size: 0.875rem;
+  }
+
+  .order-items-preview {
+    font-size: 0.825rem;
+    margin-bottom: 12px;
+  }
+
+  .order-card-bottom {
+    font-size: 0.8rem;
+    padding-top: 10px;
+  }
+
+  .order-total {
+    font-size: 0.95rem;
+  }
+}

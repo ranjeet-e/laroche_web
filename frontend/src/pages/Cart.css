@@ -147,12 +147,26 @@
 }
 
 @media (max-width: 860px) {
+  .cart-page {
+    padding: 16px 14px 100px 14px;
+  }
+
+  .cart-header h1 {
+    font-size: 1.35rem;
+  }
+
   .cart-layout {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 16px;
   }
 
   .cart-summary-card {
     position: static;
+    padding: 18px;
+  }
+
+  .checkout-btn {
+    padding: 13px 18px;
+    font-size: 0.95rem;
   }
 }

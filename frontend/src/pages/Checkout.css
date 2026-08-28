@@ -119,4 +119,25 @@
 @keyframes popSuccess {
   0% { transform: scale(0.4); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
-} 
+}
+
+@media (max-width: 600px) {
+  .checkout-page {
+    padding: 16px 14px 100px 14px;
+  }
+
+  .checkout-page h1 {
+    font-size: 1.35rem;
+    margin-bottom: 16px;
+  }
+
+  .bill-summary {
+    padding: 18px 16px;
+    margin-bottom: 18px;
+  }
+
+  .pay-btn {
+    padding: 14px 20px;
+    font-size: 0.95rem;
+  }
+}

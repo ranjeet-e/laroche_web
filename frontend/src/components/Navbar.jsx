@@ -38,83 +38,151 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
-      <Link to="/" className="navbar-brand">
-        <img src="/logo2.png" alt="La Roche Cafe Logo" className="navbar-logo" />
-      </Link>
+    <>
+      {/* Top App Header */}
+      <nav className="navbar">
+        <Link to="/" className="navbar-brand">
+          <img src="/logo2.png" alt="La Roche Cafe Logo" className="navbar-logo" />
+        </Link>
 
+        {!isKitchen && (
+          <div className="navbar-search-wrap">
+            <span className="navbar-search-icon">🔍</span>
+            <input
+              type="text"
+              className="navbar-search-input"
+              placeholder="Search pizza, sandwich, coffee..."
+              value={searchValue}
+              onChange={handleSearchChange}
+            />
+            {searchValue && (
+              <button
+                type="button"
+                className="navbar-search-clear"
+                onClick={() => {
+                  setSearchValue('');
+                  navigate('/menu', { replace: true });
+                }}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Desktop Navigation Links */}
+        <div className="navbar-links desktop-nav">
+          {!isKitchen && (
+            <>
+              <Link to="/menu" className={`nav-link ${location.pathname === '/menu' ? 'active' : ''}`}>
+                Menu
+              </Link>
+              <Link to="/cart" className={`navbar-cart ${location.pathname === '/cart' ? 'active' : ''}`}>
+                <span>Cart</span>
+                {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
+              </Link>
+              {isStudent && (
+                <Link to="/orders" className={`nav-link ${location.pathname.startsWith('/orders') ? 'active' : ''}`}>
+                  My Orders
+                </Link>
+              )}
+            </>
+          )}
+
+          {isKitchen && (
+            <>
+              <Link to="/kitchen/dashboard" className="navbar-kitchen-active">
+                👨‍🍳 Dashboard
+              </Link>
+              <Link to="/menu" className="navbar-customer-link">
+                Customer Menu
+              </Link>
+            </>
+          )}
+
+          {user ? (
+            <div className="navbar-user-wrap">
+              <span className="navbar-user-pill" title={user.phone || user.email}>
+                <span className="user-avatar">{user.name ? user.name.charAt(0).toUpperCase() : '👤'}</span>
+                <span className="user-name">{user.name?.split(' ')[0] || user.phone?.slice(-4) || 'User'}</span>
+              </span>
+              <button className="navbar-logout" onClick={handleLogout} title="Sign Out">
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="navbar-login">
+              Sign In
+            </Link>
+          )}
+        </div>
+
+        {/* Mobile Header Right Profile / Cart Button */}
+        <div className="mobile-header-actions">
+          {user ? (
+            <button className="mobile-avatar-btn" onClick={handleLogout} title="Tap to Logout">
+              <span className="user-avatar">{user.name ? user.name.charAt(0).toUpperCase() : '👤'}</span>
+            </button>
+          ) : (
+            <Link to="/login" className="mobile-login-pill">
+              Sign In
+            </Link>
+          )}
+        </div>
+      </nav>
+
+      {/* Mobile App Bottom Navigation Bar */}
       {!isKitchen && (
-        <div className="navbar-search-wrap">
-          <span className="navbar-search-icon">🔍</span>
-          <input
-            type="text"
-            className="navbar-search-input"
-            placeholder="Search pizza, sandwich, maggi, coffee..."
-            value={searchValue}
-            onChange={handleSearchChange}
-          />
-          {searchValue && (
+        <div className="mobile-bottom-nav">
+          <Link
+            to="/menu"
+            className={`bottom-nav-item ${location.pathname === '/menu' ? 'active' : ''}`}
+          >
+            <span className="bottom-nav-icon">🍽️</span>
+            <span className="bottom-nav-label">Menu</span>
+          </Link>
+
+          <Link
+            to="/orders"
+            className={`bottom-nav-item ${location.pathname.startsWith('/orders') ? 'active' : ''}`}
+          >
+            <span className="bottom-nav-icon">📋</span>
+            <span className="bottom-nav-label">Orders</span>
+          </Link>
+
+          <Link
+            to="/cart"
+            className={`bottom-nav-item bottom-nav-cart ${location.pathname === '/cart' ? 'active' : ''}`}
+          >
+            <div className="bottom-cart-icon-wrap">
+              <span className="bottom-nav-icon">🛒</span>
+              {totalItems > 0 && <span className="bottom-cart-badge">{totalItems}</span>}
+            </div>
+            <span className="bottom-nav-label">Cart</span>
+          </Link>
+
+          {user ? (
             <button
               type="button"
-              className="navbar-search-clear"
-              onClick={() => {
-                setSearchValue('');
-                navigate('/menu', { replace: true });
-              }}
-              aria-label="Clear search"
+              className="bottom-nav-item"
+              onClick={handleLogout}
             >
-              ✕
+              <span className="bottom-nav-icon">🚪</span>
+              <span className="bottom-nav-label">Logout</span>
             </button>
+          ) : (
+            <Link
+              to="/login"
+              className={`bottom-nav-item ${location.pathname === '/login' ? 'active' : ''}`}
+            >
+              <span className="bottom-nav-icon">👤</span>
+              <span className="bottom-nav-label">Sign In</span>
+            </Link>
           )}
         </div>
       )}
-
-      <div className="navbar-links">
-        {!isKitchen && (
-          <>
-            <Link to="/menu" className={`nav-link ${location.pathname === '/menu' ? 'active' : ''}`}>
-              Menu
-            </Link>
-            <Link to="/cart" className={`navbar-cart ${location.pathname === '/cart' ? 'active' : ''}`}>
-              <span>Cart</span>
-              {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
-            </Link>
-            {isStudent && (
-              <Link to="/orders" className={`nav-link ${location.pathname.startsWith('/orders') ? 'active' : ''}`}>
-                My Orders
-              </Link>
-            )}
-          </>
-        )}
-
-        {isKitchen && (
-          <>
-            <Link to="/kitchen/dashboard" className="navbar-kitchen-active">
-              👨‍🍳 Dashboard
-            </Link>
-            <Link to="/menu" className="navbar-customer-link">
-              Customer Menu
-            </Link>
-          </>
-        )}
-
-        {user ? (
-          <div className="navbar-user-wrap">
-            <span className="navbar-user-pill" title={user.email}>
-              <span className="user-avatar">{user.name ? user.name.charAt(0).toUpperCase() : '👤'}</span>
-              <span className="user-name">{user.name?.split(' ')[0]}</span>
-            </span>
-            <button className="navbar-logout" onClick={handleLogout} title="Sign Out">
-              Logout
-            </button>
-          </div>
-        ) : (
-          <Link to="/login" className="navbar-login">
-            Sign In
-          </Link>
-        )}
-      </div>
-    </nav>
+    </>
   );
 };
 
