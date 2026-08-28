@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('./src/models/User');
 
-const KITCHEN_EMAIL = process.env.KITCHEN_EMAIL || 'kitchen@larochecafe.com';
+const KITCHEN_EMAIL = process.env.KITCHEN_EMAIL || 'laroche.cafe25@sakec.ac.in';
 const KITCHEN_PASSWORD = process.env.KITCHEN_PASSWORD || 'kitchen123';
 
 const createKitchenUser = async () => {

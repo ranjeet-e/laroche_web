@@ -6,6 +6,7 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true, // Listen on all local IP addresses (0.0.0.0)
+    allowedHosts: true, // Allow all tunnel hosts like .loca.lt, ngrok, etc.
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
