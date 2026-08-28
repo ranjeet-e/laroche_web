@@ -27,7 +27,6 @@ const IntroVideo = ({ onFinish }) => {
   onError={handleVideoError}
 />
       <div className="intro-video-content">
-        <img src="/logo.png" alt="La Roche Cafe Logo" className="intro-logo" />
         <button className="intro-skip-btn" onClick={handleFinish}>
           Skip →
         </button>
