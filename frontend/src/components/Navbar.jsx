@@ -40,7 +40,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-brand">
-        <img src="/logo.png" alt="La Roche Cafe Logo" className="navbar-logo" />
+        <img src="/logo2.png" alt="La Roche Cafe Logo" className="navbar-logo" />
       </Link>
 
       {!isKitchen && (
@@ -49,34 +49,68 @@ const Navbar = () => {
           <input
             type="text"
             className="navbar-search-input"
-            placeholder="Search for dishes..."
+            placeholder="Search pizza, sandwich, maggi, coffee..."
             value={searchValue}
             onChange={handleSearchChange}
           />
+          {searchValue && (
+            <button
+              type="button"
+              className="navbar-search-clear"
+              onClick={() => {
+                setSearchValue('');
+                navigate('/menu', { replace: true });
+              }}
+              aria-label="Clear search"
+            >
+              ✕
+            </button>
+          )}
         </div>
       )}
 
       <div className="navbar-links">
         {!isKitchen && (
           <>
-            <Link to="/menu">Menu</Link>
-            <Link to="/cart" className="navbar-cart">
-              Cart
+            <Link to="/menu" className={`nav-link ${location.pathname === '/menu' ? 'active' : ''}`}>
+              Menu
+            </Link>
+            <Link to="/cart" className={`navbar-cart ${location.pathname === '/cart' ? 'active' : ''}`}>
+              <span>Cart</span>
               {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
             </Link>
-            {isStudent && <Link to="/orders">My Orders</Link>}
+            {isStudent && (
+              <Link to="/orders" className={`nav-link ${location.pathname.startsWith('/orders') ? 'active' : ''}`}>
+                My Orders
+              </Link>
+            )}
           </>
         )}
 
-        {isKitchen && <Link to="/kitchen/dashboard">Dashboard</Link>}
+        {isKitchen && (
+          <>
+            <Link to="/kitchen/dashboard" className="navbar-kitchen-active">
+              👨‍🍳 Dashboard
+            </Link>
+            <Link to="/menu" className="navbar-customer-link">
+              Customer Menu
+            </Link>
+          </>
+        )}
 
         {user ? (
-          <button className="navbar-logout" onClick={handleLogout}>
-            Logout
-          </button>
+          <div className="navbar-user-wrap">
+            <span className="navbar-user-pill" title={user.email}>
+              <span className="user-avatar">{user.name ? user.name.charAt(0).toUpperCase() : '👤'}</span>
+              <span className="user-name">{user.name?.split(' ')[0]}</span>
+            </span>
+            <button className="navbar-logout" onClick={handleLogout} title="Sign Out">
+              Logout
+            </button>
+          </div>
         ) : (
           <Link to="/login" className="navbar-login">
-            Login / Signup
+            Sign In
           </Link>
         )}
       </div>

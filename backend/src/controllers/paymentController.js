@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const razorpayInstance = require('../config/razorpay');
 const Order = require('../models/Order');
 const Payment = require('../models/Payment');
+const { notifyKitchenNewOrder } = require('../sockets/notificationSocket');
 
 // @route POST /api/payment/create-order
 // Student-only — creates a Razorpay order for an existing (unpaid) order
@@ -82,7 +83,10 @@ const verifyPayment = async (req, res, next) => {
       orderId,
       { status: 'paid' },
       { new: true }
-    );
+    ).populate('student', 'name email');
+
+    // Instantly push order to kitchen dashboard in real-time
+    notifyKitchenNewOrder(order);
 
     res.status(200).json({ message: 'Payment verified successfully', order });
   } catch (error) {

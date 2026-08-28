@@ -1,63 +1,73 @@
 .orders-page {
-  padding: var(--space-xl);
+  padding: 32px 20px 100px 20px;
+  max-width: 760px;
+  margin: 0 auto;
 }
 
 .orders-page h1 {
-  font-size: var(--text-xl);
-  margin: 0 0 var(--space-lg) 0;
+  font-size: 1.65rem;
+  font-weight: 800;
+  margin: 0 0 24px 0;
+  color: var(--on-surface);
+  letter-spacing: -0.02em;
 }
 
 .orders-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: 16px;
 }
 
 .order-card {
   background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: var(--space-lg);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
   cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s var(--transition-bounce), box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .order-card:hover {
-  border-color: var(--brand-secondary);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(232, 93, 4, 0.2);
 }
 
 .order-card-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-sm);
+  margin-bottom: 12px;
 }
 
 .order-id {
-  font-weight: 700;
+  font-weight: 800;
   color: var(--on-surface);
-  font-size: var(--text-sm);
+  font-size: 0.95rem;
 }
 
 .order-items-preview {
-  color: var(--on-surface-tertiary);
-  font-size: var(--text-sm);
-  margin: 0 0 var(--space-md) 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--on-surface-secondary);
+  font-size: 0.9rem;
+  margin: 0 0 16px 0;
+  line-height: 1.4;
 }
 
 .order-card-bottom {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: var(--text-sm);
+  font-size: 0.85rem;
   color: var(--on-surface-tertiary);
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
 }
 
 .order-total {
-  font-weight: 700;
+  font-weight: 800;
   color: var(--brand-primary);
+  font-size: 1rem;
 }
 
 .orders-loading,
@@ -70,16 +80,22 @@
   min-height: 60vh;
   gap: var(--space-lg);
   text-align: center;
-  color: var(--on-surface-tertiary);
+  color: var(--on-surface-secondary);
 }
 
 .orders-empty button,
 .orders-error button {
-  background-color: var(--brand-primary);
-  color: var(--on-brand-primary);
+  background: var(--brand-gradient);
+  color: #ffffff;
   border: none;
-  padding: var(--space-md) var(--space-xl);
-  border-radius: var(--radius-sm);
+  padding: 12px 28px;
+  border-radius: var(--radius-pill);
   font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 4px 14px rgba(232, 93, 4, 0.3);
+  transition: all 0.2s ease;
+}
+
+.orders-empty button:hover {
+  transform: translateY(-2px);
 }

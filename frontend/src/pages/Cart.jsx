@@ -10,38 +10,56 @@ const Cart = () => {
   if (cartItems.length === 0) {
     return (
       <div className="cart-empty">
-        <p>Your cart is craving food 🍽️</p>
-        <button onClick={() => navigate('/menu')}>Browse Menu</button>
+        <div className="empty-cart-icon">🛒</div>
+        <h2>Your cart is empty</h2>
+        <p>Looks like you haven't added anything to your cart yet.</p>
+        <button onClick={() => navigate('/menu')}>Explore Menu</button>
       </div>
     );
   }
 
-  return (
-    <div className="cart-page">
-      <h1>Your Cart</h1>
-
-      <div className="cart-list">
-        {cartItems.map((item) => (
-          <CartItem key={`${item.menuItem}-${item.name}`} item={item} />
-        ))}
-      </div>
-
-      {(() => {
   const packagingCharge = 10;
   const gst = Math.round(totalAmount * 0.05); // 5% GST
   const grandTotal = totalAmount + packagingCharge + gst;
+
   return (
-    <div className="cart-summary">
-      <div className="cart-summary-row"><span>Subtotal</span><span>₹{totalAmount}</span></div>
-      <div className="cart-summary-row"><span>Packaging Charge</span><span>₹{packagingCharge}</span></div>
-      <div className="cart-summary-row"><span>GST (5%)</span><span>₹{gst}</span></div>
-      <div className="cart-summary-row cart-summary-grand"><span>Grand Total</span><span className="cart-total">₹{grandTotal}</span></div>
-      <button className="checkout-btn" onClick={() => navigate('/checkout')}>
-        Proceed to Checkout
-      </button>
-    </div>
-  );
-})()}
+    <div className="cart-page">
+      <div className="cart-header">
+        <h1>Your Order ({cartItems.reduce((s, i) => s + i.quantity, 0)} items)</h1>
+        <p>Review your selected dishes before checkout</p>
+      </div>
+
+      <div className="cart-layout">
+        <div className="cart-list">
+          {cartItems.map((item) => (
+            <CartItem key={`${item.menuItem}-${item.name}`} item={item} />
+          ))}
+        </div>
+
+        <div className="cart-summary-card">
+          <h3 className="summary-title">Bill Details</h3>
+          <div className="cart-summary-row">
+            <span>Item Total</span>
+            <span>₹{totalAmount}</span>
+          </div>
+          <div className="cart-summary-row">
+            <span>Packaging & Container</span>
+            <span>₹{packagingCharge}</span>
+          </div>
+          <div className="cart-summary-row">
+            <span>Govt Taxes (GST 5%)</span>
+            <span>₹{gst}</span>
+          </div>
+          <div className="cart-summary-row cart-summary-grand">
+            <span>To Pay</span>
+            <span className="cart-total">₹{grandTotal}</span>
+          </div>
+
+          <button className="checkout-btn" onClick={() => navigate('/checkout')}>
+            Proceed to Pay ₹{grandTotal} →
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

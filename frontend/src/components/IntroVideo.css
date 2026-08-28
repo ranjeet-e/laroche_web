@@ -28,6 +28,11 @@
   justify-content: flex-end;
   padding-bottom: var(--space-3xl);
   background: linear-gradient(to top, rgba(0,0,0,0.6), transparent 40%);
+  
+}
+.intro-logo {
+  width: 840px;
+  height: 400px;
 }
 
 .intro-video-content h1 {

@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import FoodCard from '../components/FoodCard.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import FeaturedCarousel from '../components/FeaturedCarousel';
 import PromoBanner from '../components/PromoBanner';
 import './Menu.css';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const categoryIcons = {
   'Sandwiches': '/category-icons/sandwich.jpg',
@@ -117,12 +117,34 @@ const Menu = () => {
 
   return (
     <div className="menu-page">
-      <div className="menu-header">
-        <h1>Hey there 👋</h1>
-        <p>What are you craving today?</p>
-      </div>
+      <div className="menu-hero-banner">
+        <div className="hero-badge-pill">
+          <span className="badge-sparkle">✨</span>
+          <span>Freshly Prepared • Skip The Canteen Queue</span>
+        </div>
+        <div className="hero-greeting-wrap">
+          <h1 className="hero-title">
+            Hey there, <span className="hero-gradient-text">what are you craving?</span> 👋
+          </h1>
+          <p className="hero-subtitle">
+            Order in advance, grab your meal hot & fresh at the counter.
+          </p>
+        </div>
 
-      
+        {/* Quick Filter Chips */}
+        <div className="quick-chips-row">
+          {['Sandwiches', 'Flatbread Pizza', 'Quick Bites & Café Snacks', 'Hot Beverages', 'Cold Beverages', 'Maggie'].map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              className={`quick-chip ${activeCategory === tag ? 'chip-active' : ''}`}
+              onClick={() => scrollToCategory(tag)}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {!searchQuery && <PromoBanner />}
       {!searchQuery && <FeaturedCarousel items={items} />}
@@ -133,7 +155,11 @@ const Menu = () => {
             {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for "{searchQuery}"
           </h2>
           {searchResults.length === 0 ? (
-            <p className="search-empty">No dishes match your search.</p>
+            <div className="search-empty-state">
+              <span className="empty-icon">🔍</span>
+              <h3>No dishes match "{searchQuery}"</h3>
+              <p>Try searching for sandwich, coffee, pizza or maggie!</p>
+            </div>
           ) : (
             <div className="food-grid">
               {searchResults.map((item) => (
@@ -145,7 +171,14 @@ const Menu = () => {
       ) : (
         <>
           <div className="category-scroll-wrap">
-            <button className="scroll-arrow scroll-arrow-left" onClick={() => scrollCategories(-1)}>‹</button>
+            <button 
+              type="button" 
+              className="scroll-arrow scroll-arrow-left" 
+              onClick={() => scrollCategories(-1)}
+              aria-label="Scroll left"
+            >
+              ‹
+            </button>
             <div className="category-circle-row" ref={categoryScrollRef}>
               {categories.map((cat) => (
                 <div
@@ -153,12 +186,26 @@ const Menu = () => {
                   className={`category-circle-item ${activeCategory === cat ? 'circle-active' : ''}`}
                   onClick={() => scrollToCategory(cat)}
                 >
-                  <img src={categoryIcons[cat] || '/placeholder-food.png'} alt={cat} />
+                  <img 
+                    src={categoryIcons[cat] || '/placeholder-food.png'} 
+                    alt={cat} 
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = '/placeholder-food.png';
+                    }}
+                  />
                   <span>{cat}</span>
                 </div>
               ))}
             </div>
-            <button className="scroll-arrow scroll-arrow-right" onClick={() => scrollCategories(1)}>›</button>
+            <button 
+              type="button" 
+              className="scroll-arrow scroll-arrow-right" 
+              onClick={() => scrollCategories(1)}
+              aria-label="Scroll right"
+            >
+              ›
+            </button>
           </div>
 
           {categories.map((cat) => (

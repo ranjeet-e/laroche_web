@@ -1,9 +1,22 @@
-// Same regex as backend's emailValidator.js — used here for instant frontend feedback
+// Accepts standard email addresses including student/college formats
 export const studentEmailRegex =
-  /^([a-zA-Z]+)\.([a-zA-Z]+)(\d+)@([a-zA-Z0-9]+)\.([a-zA-Z]{2,})\.([a-zA-Z]{2,})$/;
+  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const isValidStudentEmail = (email) => {
-  return studentEmailRegex.test(email);
+  if (!email || typeof email !== 'string') return false;
+  return studentEmailRegex.test(email.trim());
+};
+
+export const isValidPhoneNumber = (phone) => {
+  if (!phone) return false;
+  const digits = phone.toString().replace(/\D/g, '');
+  return digits.length === 10;
+};
+
+export const isValidOtp = (otp) => {
+  if (!otp) return false;
+  const digits = otp.toString().trim();
+  return /^\d{6}$/.test(digits);
 };
 
 export const isValidPassword = (password) => {
@@ -17,11 +30,15 @@ export const validateSignupForm = ({ name, email, password }) => {
     errors.name = 'Please enter your full name';
   }
 
-  if (!isValidStudentEmail(email)) {
-    errors.email = 'Please use a valid college email (e.g. john.doe23@college.edu.in)';
+  if (!email || !email.trim()) {
+    errors.email = 'Email is required';
+  } else if (!isValidStudentEmail(email)) {
+    errors.email = 'Please enter a valid email address';
   }
 
-  if (!isValidPassword(password)) {
+  if (!password) {
+    errors.password = 'Password is required';
+  } else if (!isValidPassword(password)) {
     errors.password = 'Password must be at least 6 characters';
   }
 
@@ -31,8 +48,10 @@ export const validateSignupForm = ({ name, email, password }) => {
 export const validateLoginForm = ({ email, password }) => {
   const errors = {};
 
-  if (!email) {
+  if (!email || !email.trim()) {
     errors.email = 'Email is required';
+  } else if (!isValidStudentEmail(email)) {
+    errors.email = 'Please enter a valid email address';
   }
 
   if (!password) {

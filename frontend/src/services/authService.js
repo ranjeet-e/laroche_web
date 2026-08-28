@@ -1,8 +1,18 @@
 
 import api from './api';
 
-export const signup = async ({ name, email, password }) => {
-  const response = await api.post('/auth/signup', { name, email, password });
+export const sendOtp = async ({ phone }) => {
+  const response = await api.post('/auth/send-otp', { phone });
+  return response.data;
+};
+
+export const verifyOtp = async ({ phone, otp, name }) => {
+  const response = await api.post('/auth/verify-otp', { phone, otp, name });
+  return response.data;
+};
+
+export const signup = async ({ name, email, password, role }) => {
+  const response = await api.post('/auth/signup', { name, email, password, role });
   return response.data;
 };
 

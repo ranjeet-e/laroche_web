@@ -1,4 +1,5 @@
 const Order = require('../models/Order');
+const { notifyOrderStatusUpdated } = require('../sockets/notificationSocket');
 
 // @route GET /api/kitchen/orders
 // Kitchen-only — get all active orders (paid, preparing, ready) for the dashboard
@@ -28,7 +29,7 @@ const updateOrderStatus = async (req, res, next) => {
       return res.status(400).json({ message: 'Invalid status update' });
     }
 
-    const order = await Order.findById(id);
+    const order = await Order.findById(id).populate('student', 'name email');
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
@@ -44,6 +45,9 @@ const updateOrderStatus = async (req, res, next) => {
 
     order.status = status;
     await order.save();
+
+    // Broadcast status change across all clients (student order tracking + other kitchen tabs)
+    notifyOrderStatusUpdated(order);
 
     res.status(200).json(order);
   } catch (error) {

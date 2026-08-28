@@ -1,146 +1,341 @@
 .auth-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 80px);
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--surface);
-  padding: var(--space-xl);
+  padding: 32px 16px;
+  background: var(--surface-secondary);
 }
 
-.auth-card {
-  position: relative;
+.auth-card-single {
   width: 100%;
-  max-width: 760px;
-  min-height: 480px;
-  background-color: var(--surface-secondary);
+  max-width: 440px;
+  background-color: #ffffff;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-1);
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  padding: 36px 32px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  animation: heroEntrance 0.5s var(--transition-smooth) both;
 }
 
-/* Both forms sit side by side; blade decides what's visible */
-.auth-panel {
-  padding: var(--space-2xl);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.auth-panel h2 {
-  font-size: var(--text-xl);
-  margin: 0 0 var(--space-xl) 0;
-  color: var(--on-surface);
-}
-
-.auth-panel .form-group {
-  margin-bottom: var(--space-lg);
-}
-
-.auth-panel label {
-  display: block;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--on-surface-secondary);
-  margin-bottom: var(--space-xs);
-}
-
-.auth-panel input {
-  width: 100%;
-  padding: var(--space-md);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-base);
-  font-family: var(--font-family);
-  background-color: var(--surface);
-}
-
-.auth-btn {
-  width: 100%;
-  background-color: var(--brand-primary);
-  color: var(--on-brand-primary);
-  border: none;
-  padding: var(--space-md);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-lg);
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: var(--space-sm);
-}
-
-.auth-switch {
+/* Brand Header */
+.auth-brand-header {
   text-align: center;
-  font-size: var(--text-sm);
-  color: var(--on-surface-tertiary);
-  margin-top: var(--space-lg);
+  margin-bottom: 24px;
 }
 
-.auth-switch button {
+.auth-header-logo {
+  height: 48px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.auth-brand-header h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  color: var(--on-surface);
+  letter-spacing: -0.01em;
+}
+
+.auth-brand-header p {
+  font-size: 0.875rem;
+  color: var(--on-surface-secondary);
+  margin: 0;
+}
+
+/* Mode Pill Switcher */
+.auth-mode-pill-toggle {
+  display: flex;
+  background-color: var(--surface-secondary);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+
+.mode-pill {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--on-surface-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.mode-pill-active {
+  background-color: #ffffff;
+  color: var(--brand-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin-bottom: 6px;
+}
+
+/* Phone Input */
+.phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: #ffffff;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.phone-input-wrapper:focus-within {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 4px rgba(232, 93, 4, 0.12);
+}
+
+.phone-prefix {
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  background-color: var(--surface-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.phone-input {
+  flex: 1;
+  border: none;
+  padding: 12px 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--on-surface);
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+}
+
+/* Standard Inputs */
+.standard-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.925rem;
+  color: var(--on-surface);
+  background-color: #ffffff;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.standard-input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 4px rgba(232, 93, 4, 0.12);
+}
+
+/* OTP 6-Digit Field */
+.otp-input-field {
+  width: 100%;
+  padding: 14px;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 10px;
+  border: 2px solid var(--brand-primary);
+  border-radius: var(--radius-md);
+  color: var(--brand-primary);
+  background-color: var(--brand-warm-gradient);
+  box-sizing: border-box;
+  font-family: monospace;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(232, 93, 4, 0.12);
+}
+
+.otp-phone-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--on-surface-secondary);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.edit-phone-btn {
   background: none;
   border: none;
   color: var(--brand-primary);
+  font-size: 0.825rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Quick Fill Banner */
+.demo-otp-banner {
+  background: #fef3c7;
+  border: 1px dashed #f59e0b;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  color: #92400e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.demo-otp-banner:hover {
+  background: #fde68a;
+}
+
+.demo-otp-banner code {
+  font-weight: 800;
+  color: #b45309;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.fill-btn {
+  background-color: #f59e0b;
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+/* Buttons */
+.auth-btn-primary {
+  width: 100%;
+  background: var(--brand-gradient);
+  color: #ffffff;
+  border: none;
+  padding: 14px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(232, 93, 4, 0.3);
+  transition: all 0.2s ease;
+  margin-top: 6px;
+}
+
+.auth-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(232, 93, 4, 0.4);
+}
+
+.auth-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Resend Row */
+.otp-resend-row {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.85rem;
+}
+
+.resend-countdown {
+  color: var(--on-surface-tertiary);
   font-weight: 600;
+}
+
+.resend-btn {
+  background: none;
+  border: none;
+  color: var(--on-surface-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.resend-btn strong {
+  color: var(--brand-primary);
+}
+
+.resend-btn:hover strong {
+  text-decoration: underline;
+}
+
+/* Alerts & Errors */
+.auth-alert {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.auth-alert-error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.auth-alert-success {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.field-error {
+  color: var(--error);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 4px;
+  display: block;
+}
+
+.auth-subswitch {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--on-surface-tertiary);
+  margin-top: 20px;
+}
+
+.auth-subswitch button {
+  background: none;
+  border: none;
+  color: var(--brand-primary);
+  font-weight: 700;
   cursor: pointer;
   padding: 0;
 }
 
-/* --- The sliding blade --- */
-.auth-blade {
-  position: absolute;
-  inset: 0;
-  width: 50%;
-  left: 50%;
-  background-color: var(--brand);
-  transform: skewX(-8deg) translateX(0%);
-  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
-  z-index: 2;
-  overflow: hidden;
+.auth-subswitch button:hover {
+  text-decoration: underline;
 }
 
-.auth-card.is-signup .auth-blade {
-  transform: skewX(-8deg) translateX(-100%);
-}
-
-.auth-blade__inner {
-  position: absolute;
-  inset: 0;
-  transform: skewX(8deg); /* un-skew the content inside */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: var(--space-2xl);
-  color: var(--on-brand);
-}
-
-.auth-blade__brand {
-  font-size: var(--text-sm);
-  letter-spacing: 1px;
-  font-weight: 700;
-  opacity: 0.8;
-  margin-bottom: var(--space-lg);
-}
-
-.auth-blade__title {
-  font-size: var(--text-2xl);
-  margin: 0 0 var(--space-md) 0;
-}
-
-.auth-blade__title em {
-  font-style: italic;
-  color: var(--brand-secondary);
-}
-
-.auth-blade__text {
-  font-size: var(--text-sm);
-  opacity: 0.85;
-}
-
-@media (max-width: 640px) {
-  .auth-card { grid-template-columns: 1fr; }
-  .auth-blade { display: none; } /* skip the blade on mobile, just show active panel */
-  .auth-panel--login,
-  .auth-panel--signup { display: none; }
-  .auth-card:not(.is-signup) .auth-panel--login { display: flex; }
-  .auth-card.is-signup .auth-panel--signup { display: flex; }
+@media (max-width: 480px) {
+  .auth-card-single {
+    padding: 28px 20px;
+    border-radius: var(--radius-md);
+  }
 }

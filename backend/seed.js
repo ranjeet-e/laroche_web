@@ -2,18 +2,13 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const MenuItem = require('./src/models/MenuItem');
 
-// Fallback images for categories/items not individually covered
-const categoryFallback = {
-  'Add-ons': 'https://images.unsplash.com/photo-1631206753348-db44968fd440?w=400&q=80',
-};
-
 const menuItems = [
   // ---------- SANDWICHES ----------
   {
     name: 'Bun Maska',
     category: 'Sandwiches',
     price: 25,
-    imageUrl: 'https://images.unsplash.com/photo-1584776296944-ab6fb57b0bdd?w=400&q=80',
+    imageUrl: '/menu-items/1_1_bun_maska_plain.png',
     variants: [
       { label: 'Plain', price: 25 },
       { label: 'Toast', price: 30 },
@@ -24,7 +19,7 @@ const menuItems = [
     name: 'Bread Butter',
     category: 'Sandwiches',
     price: 25,
-    imageUrl: 'https://images.unsplash.com/photo-1584776296944-ab6fb57b0bdd?w=400&q=80',
+    imageUrl: '/menu-items/1_4_bread_butter_plain.png',
     variants: [
       { label: 'Plain', price: 25 },
       { label: 'Toast', price: 30 },
@@ -35,7 +30,7 @@ const menuItems = [
     name: 'Vegetable Sandwich',
     category: 'Sandwiches',
     price: 50,
-    imageUrl: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&q=80',
+    imageUrl: '/menu-items/2_2_veg_sandwich_plain.png',
     variants: [
       { label: 'Plain', price: 50 },
       { label: 'Grill', price: 60 },
@@ -45,7 +40,7 @@ const menuItems = [
     name: 'Vegetable Cheese Sandwich',
     category: 'Sandwiches',
     price: 80,
-    imageUrl: 'https://images.unsplash.com/photo-1539252554453-80ab65ce3586?w=400&q=80',
+    imageUrl: '/menu-items/2_4_veg_cheese_sandwich_plain.png',
     variants: [
       { label: 'Plain', price: 80 },
       { label: 'Toast', price: 90 },
@@ -55,7 +50,7 @@ const menuItems = [
     name: 'Vegetable Sandwich (Jain)',
     category: 'Sandwiches',
     price: 55,
-    imageUrl: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?w=400&q=80',
+    imageUrl: '/menu-items/3_1_jain_veg_sandwich_plain.png',
     variants: [
       { label: 'Plain', price: 55 },
       { label: 'Grill', price: 65 },
@@ -65,65 +60,65 @@ const menuItems = [
     name: 'Vegetable Cheese Sandwich (Jain)',
     category: 'Sandwiches',
     price: 90,
-    imageUrl: 'https://images.unsplash.com/photo-1528736235302-52922df5c122?w=400&q=80',
+    imageUrl: '/menu-items/3_3_jain_veg_cheese_sandwich_plain.png',
     variants: [
       { label: 'Plain', price: 90 },
       { label: 'Toast', price: 100 },
     ],
   },
-  { name: 'Bombay Toasty', category: 'Sandwiches', price: 70, imageUrl: 'https://images.unsplash.com/photo-1603046891726-36bfd957e0bf?w=400&q=80' },
-  { name: 'Paneer Tikka Toast', category: 'Sandwiches', price: 99, imageUrl: 'https://images.unsplash.com/photo-1567234669003-dce7a7a88821?w=400&q=80' },
-  { name: 'Chocolate Hazelnut', category: 'Sandwiches', price: 60, imageUrl: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&q=80' },
+  { name: 'Bombay Toasty', category: 'Sandwiches', price: 70, imageUrl: '/menu-items/4_1_bombay_toasty.png' },
+  { name: 'Paneer Tikka Toast', category: 'Sandwiches', price: 99, imageUrl: '/menu-items/4_2_paneer_tikka_toast.png' },
+  { name: 'Chocolate Hazelnut', category: 'Sandwiches', price: 60, imageUrl: '/menu-items/4_3_chocolate_hazelnut.png' },
 
   // ---------- FLATBREAD PIZZA 8 INCH ----------
-  { name: 'Plain Margherita', category: 'Flatbread Pizza', price: 99, imageUrl: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&q=80' },
-  { name: 'Corn & Capsicum', category: 'Flatbread Pizza', price: 120, imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&q=80' },
-  { name: 'Fiama', category: 'Flatbread Pizza', price: 110, imageUrl: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&q=80' },
-  { name: 'Tandoori Paneer', category: 'Flatbread Pizza', price: 130, imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80' },
+  { name: 'Plain Margherita', category: 'Flatbread Pizza', price: 99, imageUrl: '/menu-items/1_plain_margherita.png' },
+  { name: 'Corn & Capsicum', category: 'Flatbread Pizza', price: 120, imageUrl: '/menu-items/2_corn_and_capsicum.png' },
+  { name: 'Fiama', category: 'Flatbread Pizza', price: 110, imageUrl: '/menu-items/3_fiama.png' },
+  { name: 'Tandoori Paneer', category: 'Flatbread Pizza', price: 130, imageUrl: '/menu-items/4_tandoori_paneer.png' },
 
   // ---------- QUICK BITES & CAFÉ SNACKS ----------
-  { name: 'Loaded Nachos', category: 'Quick Bites & Café Snacks', price: 99, imageUrl: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=400&q=80' },
-  { name: 'French Fries', category: 'Quick Bites & Café Snacks', price: 60, imageUrl: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?w=400&q=80' },
-  { name: 'Peri Peri Fries', category: 'Quick Bites & Café Snacks', price: 75, imageUrl: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?w=400&q=80' },
+  { name: 'Loaded Nachos', category: 'Quick Bites & Café Snacks', price: 99, imageUrl: '/menu-items/1_loaded_nachos.png' },
+  { name: 'French Fries', category: 'Quick Bites & Café Snacks', price: 60, imageUrl: '/menu-items/2_french_fries.png' },
+  { name: 'Peri Peri Fries', category: 'Quick Bites & Café Snacks', price: 75, imageUrl: '/menu-items/3_peri_peri_fries.png' },
   {
     name: 'Plain Garlic Bread/Cheese',
     category: 'Quick Bites & Café Snacks',
     price: 50,
-    imageUrl: 'https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=400&q=80',
+    imageUrl: '/menu-items/4_garlic_bread.png',
     variants: [
       { label: 'Plain', price: 50 },
       { label: 'Cheese', price: 80 },
     ],
   },
-  { name: 'Chilli Cheese Toast', category: 'Quick Bites & Café Snacks', price: 80, imageUrl: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400&q=80' },
-  { name: 'Mexican Loaded Fries', category: 'Quick Bites & Café Snacks', price: 99, imageUrl: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?w=400&q=80' },
+  { name: 'Chilli Cheese Toast', category: 'Quick Bites & Café Snacks', price: 80, imageUrl: '/menu-items/5_chilli_cheese_toast.png' },
+  { name: 'Mexican Loaded Fries', category: 'Quick Bites & Café Snacks', price: 99, imageUrl: '/menu-items/7_mexican_loaded_fries.png' },
 
   // ---------- CHAT COUNTER ----------
   { name: 'Sev Puri', category: 'Chat Counter', price: 50, imageUrl: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80' },
   { name: 'Dahi Puri', category: 'Chat Counter', price: 60, imageUrl: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=400&q=80' },
 
   // ---------- ADD ONS ----------
-  { name: 'Cheese', category: 'Add-ons', price: 20, imageUrl: categoryFallback['Add-ons'] },
-  { name: 'Mayonnaise', category: 'Add-ons', price: 20, imageUrl: categoryFallback['Add-ons'] },
-  { name: 'Paneer', category: 'Add-ons', price: 30, imageUrl: categoryFallback['Add-ons'] },
-  { name: 'Brown Bread', category: 'Add-ons', price: 10, imageUrl: categoryFallback['Add-ons'] },
-  { name: 'Schewan Sauce', category: 'Add-ons', price: 20, imageUrl: categoryFallback['Add-ons'] },
+  { name: 'Cheese', category: 'Add-ons', price: 20, imageUrl: '/menu-items/1_cheese.png' },
+  { name: 'Mayonnaise', category: 'Add-ons', price: 20, imageUrl: '/menu-items/2_mayonnaise.png' },
+  { name: 'Paneer', category: 'Add-ons', price: 30, imageUrl: '/menu-items/3_paneer.png' },
+  { name: 'Brown Bread', category: 'Add-ons', price: 10, imageUrl: '/menu-items/4_brown_bread.png' },
+  { name: 'Schewan Sauce', category: 'Add-ons', price: 20, imageUrl: '/menu-items/5_schezwan_sauce.png' },
 
   // ---------- MAGGIE ----------
-  { name: 'Plain Maggie', category: 'Maggie', price: 50, imageUrl: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=400&q=80' },
-  { name: 'Masala Maggie', category: 'Maggie', price: 70, imageUrl: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&q=80' },
-  { name: 'Chilli Garlic Maggie', category: 'Maggie', price: 80, imageUrl: 'https://images.unsplash.com/photo-1552611052-33e04de081de?w=400&q=80' },
-  { name: 'Cheese Chilli Maggie', category: 'Maggie', price: 80, imageUrl: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=400&q=80' },
+  { name: 'Plain Maggie', category: 'Maggie', price: 50, imageUrl: '/menu-items/8_plain_maggi.png' },
+  { name: 'Masala Maggie', category: 'Maggie', price: 70, imageUrl: '/menu-items/9_masala_maggi.png' },
+  { name: 'Chilli Garlic Maggie', category: 'Maggie', price: 80, imageUrl: '/menu-items/10_chilli_garlic_maggi.png' },
+  { name: 'Cheese Chilli Maggie', category: 'Maggie', price: 80, imageUrl: '/menu-items/11_cheese_chilli_maggi.png' },
 
   // ---------- PASTA ----------
-  { name: 'Creamy Alfredo Pasta', category: 'Pasta', price: 130, imageUrl: 'https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=400&q=80' },
-  { name: 'Pasta Arrabiata', category: 'Pasta', price: 110, imageUrl: 'https://images.unsplash.com/photo-1621996346565-e3d5d6281286?w=400&q=80' },
-  { name: 'Pink Sauce Pasta', category: 'Pasta', price: 130, imageUrl: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&q=80' },
+  { name: 'Creamy Alfredo Pasta', category: 'Pasta', price: 130, imageUrl: '/menu-items/12_creamy_alfredo_pasta.png' },
+  { name: 'Pasta Arrabiata', category: 'Pasta', price: 110, imageUrl: '/menu-items/13_pasta_arrabiata.png' },
+  { name: 'Pink Sauce Pasta', category: 'Pasta', price: 130, imageUrl: '/menu-items/14_pink_sauce_pasta.png' },
   {
     name: 'Jain Pasta',
     category: 'Pasta',
     price: 150,
-    imageUrl: 'https://images.unsplash.com/photo-1555949258-eb67b280806d?w=400&q=80',
+    imageUrl: '/menu-items/16_jain_pasta_red.png',
     variants: [
       { label: 'Red', price: 150 },
       { label: 'White', price: 150 },
@@ -132,34 +127,34 @@ const menuItems = [
   },
 
   // ---------- MOCKTAILS & COOLERS ----------
-  { name: 'Watermelon Juice', category: 'Mocktails & Coolers', price: 60, imageUrl: 'https://images.unsplash.com/photo-1589733955941-5eeaf752f6dd?w=400&q=80' },
-  { name: 'Kokam Sarbat', category: 'Mocktails & Coolers', price: 30, imageUrl: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400&q=80' },
-  { name: 'Mosambi Juice', category: 'Mocktails & Coolers', price: 80, imageUrl: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=400&q=80' },
-  { name: 'Pineapple Juice', category: 'Mocktails & Coolers', price: 80, imageUrl: 'https://images.unsplash.com/photo-1525385133512-2f3bdd039054?w=400&q=80' },
-  { name: 'Virgin Mojito', category: 'Mocktails & Coolers', price: 50, imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=400&q=80' },
-  { name: 'Banana Shake', category: 'Mocktails & Coolers', price: 80, imageUrl: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&q=80' },
+  { name: 'Watermelon Juice', category: 'Mocktails & Coolers', price: 60, imageUrl: '/menu-items/1_watermelon_juice.png' },
+  { name: 'Kokam Sarbat', category: 'Mocktails & Coolers', price: 30, imageUrl: '/menu-items/2_kokam_sarbat.png' },
+  { name: 'Mosambi Juice', category: 'Mocktails & Coolers', price: 80, imageUrl: '/menu-items/3_mosambi_juice.png' },
+  { name: 'Pineapple Juice', category: 'Mocktails & Coolers', price: 80, imageUrl: '/menu-items/4_pineapple_juice.png' },
+  { name: 'Virgin Mojito', category: 'Mocktails & Coolers', price: 50, imageUrl: '/menu-items/5_virgin_mojito.png' },
+  { name: 'Banana Shake', category: 'Mocktails & Coolers', price: 80, imageUrl: '/menu-items/6_banana_shake.png' },
 
   // ---------- COLD BEVERAGES ----------
   {
     name: 'Flavoured Cold Coffee',
     category: 'Cold Beverages',
     price: 80,
-    imageUrl: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=400&q=80',
+    imageUrl: '/menu-items/8_flavoured_cold_coffee.png',
     variants: [
       { label: 'Hazelnut', price: 80 },
       { label: 'Caramel', price: 80 },
       { label: 'Chocolate Cookie', price: 80 },
     ],
   },
-  { name: 'Cold Chocolate', category: 'Cold Beverages', price: 70, imageUrl: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&q=80' },
-  { name: 'Lassi', category: 'Cold Beverages', price: 40, imageUrl: 'https://images.unsplash.com/photo-1528733918455-5a59687cedf0?w=400&q=80' },
-  { name: 'Chass', category: 'Cold Beverages', price: 30, imageUrl: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=400&q=80' },
-  { name: 'Oreo Shake', category: 'Cold Beverages', price: 99, imageUrl: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&q=80' },
-  { name: 'Belgian Chocolate Shake', category: 'Cold Beverages', price: 99, imageUrl: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&q=80' },
-  { name: 'Cold Coffee Frappe', category: 'Cold Beverages', price: 80, imageUrl: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&q=80' },
-  { name: 'KitKat Shake', category: 'Cold Beverages', price: 99, imageUrl: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&q=80' },
-  { name: 'Caramel Frappe', category: 'Cold Beverages', price: 99, imageUrl: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=400&q=80' },
-  { name: 'Nutella Hazelnut Shake', category: 'Cold Beverages', price: 99, imageUrl: 'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=400&q=80' },
+  { name: 'Cold Chocolate', category: 'Cold Beverages', price: 70, imageUrl: '/menu-items/9_cold_chocolate.png' },
+  { name: 'Lassi', category: 'Cold Beverages', price: 40, imageUrl: '/menu-items/10_lassi.png' },
+  { name: 'Chass', category: 'Cold Beverages', price: 30, imageUrl: '/menu-items/11_chaas.png' },
+  { name: 'Oreo Shake', category: 'Cold Beverages', price: 99, imageUrl: '/menu-items/12_oreo_shake.png' },
+  { name: 'Belgian Chocolate Shake', category: 'Cold Beverages', price: 99, imageUrl: '/menu-items/13_belgian_chocolate_shake.png' },
+  { name: 'Cold Coffee Frappe', category: 'Cold Beverages', price: 80, imageUrl: '/menu-items/7_cold_coffee_frappe.png' },
+  { name: 'KitKat Shake', category: 'Cold Beverages', price: 99, imageUrl: '/menu-items/14_kitkat_shake.png' },
+  { name: 'Caramel Frappe', category: 'Cold Beverages', price: 99, imageUrl: '/menu-items/15_caramel_frappe.png' },
+  { name: 'Nutella Hazelnut Shake', category: 'Cold Beverages', price: 99, imageUrl: '/menu-items/16_nutella_hazelnut_shake.png' },
   {
     name: 'Ice Tea',
     category: 'Cold Beverages',
@@ -190,13 +185,13 @@ const menuItems = [
       { label: 'Green', price: 20 },
     ],
   },
-  { name: 'Cappuccino - 120ml', category: 'Hot Beverages', price: 35, imageUrl: 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=400&q=80' },
-  { name: 'Cafelatte - 120ml', category: 'Hot Beverages', price: 30, imageUrl: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=400&q=80' },
-  { name: 'Espresso/Black Coffee - 120ml', category: 'Hot Beverages', price: 25, imageUrl: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=400&q=80' },
-  { name: 'Americano', category: 'Hot Beverages', price: 25, imageUrl: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=400&q=80' },
-  { name: 'Hot Chocolate - 150ml', category: 'Hot Beverages', price: 50, imageUrl: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?w=400&q=80' },
-  { name: 'Café Mocha - 150ml', category: 'Hot Beverages', price: 60, imageUrl: 'https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=400&q=80' },
-  { name: 'Hot Soups', category: 'Hot Beverages', price: 40, imageUrl: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=400&q=80' },
+  { name: 'Cappuccino - 120ml', category: 'Hot Beverages', price: 35, imageUrl: '/menu-items/1_cappuccino_120ml.png' },
+  { name: 'Cafelatte - 120ml', category: 'Hot Beverages', price: 30, imageUrl: '/menu-items/2_cafelatte_120ml.png' },
+  { name: 'Espresso/Black Coffee - 120ml', category: 'Hot Beverages', price: 25, imageUrl: '/menu-items/3_espresso_black_coffee_120ml.png' },
+  { name: 'Americano', category: 'Hot Beverages', price: 25, imageUrl: '/menu-items/4_americano.png' },
+  { name: 'Hot Chocolate - 150ml', category: 'Hot Beverages', price: 50, imageUrl: '/menu-items/5_hot_chocolate_150ml.png' },
+  { name: 'Café Mocha - 150ml', category: 'Hot Beverages', price: 60, imageUrl: '/menu-items/6_cafe_mocha_150ml.png' },
+  { name: 'Hot Soups', category: 'Hot Beverages', price: 40, imageUrl: '/menu-items/7_hot_soup_tomato.png' },
 ];
 
 const seedDatabase = async () => {

@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+const getApiBaseUrl = () => {
+  return import.meta.env.VITE_API_BASE_URL || '/api';
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -16,14 +20,21 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Auto-logout if token is invalid/expired (backend returns 401)
+// Auto-logout if token is invalid/expired on authenticated routes (backend returns 401)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    const isAuthRoute =
+      error.config?.url?.includes('/auth/login') ||
+      error.config?.url?.includes('/auth/signup');
+
+    if (error.response && error.response.status === 401 && !isAuthRoute) {
+      const hadToken = !!localStorage.getItem('token');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      if (hadToken && window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

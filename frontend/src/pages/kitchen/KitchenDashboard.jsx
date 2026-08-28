@@ -39,12 +39,34 @@ const KitchenDashboard = () => {
   useEffect(() => {
     fetchOrders();
     fetchMenuItems();
+
+    // Automatic background refresh every 4 seconds as a fallback
+    const interval = setInterval(() => {
+      fetchOrders();
+    }, 4000);
+
+    return () => clearInterval(interval);
   }, []);
 
-  // Real-time: new paid orders drop into the "New" column instantly
+  // Real-time WebSocket: new orders and status updates reflect instantly without reload
   useSocket({
     onNewOrder: (newOrder) => {
-      setOrders((prev) => [...prev, newOrder]);
+      setOrders((prev) => {
+        const exists = prev.some((o) => o._id === newOrder._id);
+        if (exists) {
+          return prev.map((o) => (o._id === newOrder._id ? newOrder : o));
+        }
+        return [newOrder, ...prev];
+      });
+    },
+    onOrderStatusUpdated: (updatedOrder) => {
+      if (updatedOrder.status === 'collected') {
+        setOrders((prev) => prev.filter((o) => o._id !== updatedOrder._id));
+      } else {
+        setOrders((prev) =>
+          prev.map((o) => (o._id === updatedOrder._id ? updatedOrder : o))
+        );
+      }
     },
   });
 
