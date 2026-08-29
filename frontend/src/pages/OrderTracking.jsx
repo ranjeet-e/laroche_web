@@ -1,14 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Bell, BellRing, CheckCircle2, ChefHat, Clock, Sparkles, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { getOrderById } from '../services/orderService';
 import { useSocket } from '../hooks/useSocket';
+import {
+  isNotificationSupported,
+  getNotificationPermission,
+  requestNotificationPermission,
+  notifyOrderPreparing,
+  notifyOrderReady,
+} from '../utils/notifications';
 import './OrderHistory.css';
 
 const STATUS_STEPS = [
-  { key: 'paid', label: 'Order Received', desc: 'Sent to the kitchen' },
-  { key: 'preparing', label: 'Preparing', desc: 'Chefs are making your meal' },
+  { key: 'placed', label: 'Order Placed', desc: 'Order received by the cafe' },
+  { key: 'paid', label: 'Payment Confirmed', desc: 'Sent to the kitchen queue' },
+  { key: 'preparing', label: 'Being Prepared', desc: 'Chefs are crafting your meal hot & fresh' },
   { key: 'ready', label: 'Ready for Pickup', desc: 'Collect at the canteen counter' },
-  { key: 'collected', label: 'Completed', desc: 'Order collected' },
+  { key: 'collected', label: 'Completed', desc: 'Order collected. Enjoy your meal!' },
 ];
 
 const OrderTracking = () => {
@@ -17,6 +26,9 @@ const OrderTracking = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [notificationPermission, setNotificationPermission] = useState(getNotificationPermission());
+
+  const previousStatusRef = useRef(null);
 
   const fetchOrder = async () => {
     try {
@@ -29,13 +41,41 @@ const OrderTracking = () => {
     }
   };
 
+  // Initial order fetch & polling
   useEffect(() => {
     fetchOrder();
-    const interval = setInterval(fetchOrder, 4000);
+    const interval = setInterval(fetchOrder, 3500);
     return () => clearInterval(interval);
   }, [id]);
 
-  // Real-time live status updates
+  // Request browser notification permission automatically when customer arrives
+  useEffect(() => {
+    if (isNotificationSupported() && getNotificationPermission() === 'default') {
+      requestNotificationPermission().then(() => {
+        setNotificationPermission(getNotificationPermission());
+      });
+    }
+  }, []);
+
+  // Monitor order status transitions and fire browser notifications
+  useEffect(() => {
+    if (!order) return;
+
+    const currentStatus = order.status;
+    const prevStatus = previousStatusRef.current;
+
+    if (prevStatus && prevStatus !== currentStatus) {
+      if (currentStatus === 'preparing') {
+        notifyOrderPreparing(order);
+      } else if (currentStatus === 'ready') {
+        notifyOrderReady(order);
+      }
+    }
+
+    previousStatusRef.current = currentStatus;
+  }, [order]);
+
+  // Real-time live status updates via WebSockets
   useSocket({
     orderId: id,
     onOrderStatusUpdated: (updatedOrder) => {
@@ -50,15 +90,35 @@ const OrderTracking = () => {
     },
   });
 
+  const handleEnableNotifications = async () => {
+    const granted = await requestNotificationPermission();
+    setNotificationPermission(granted ? 'granted' : 'denied');
+  };
+
   if (loading) {
-    return <div className="orders-loading">Loading order details...</div>;
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-oat px-4">
+        <div className="w-12 h-12 rounded-full border-3 border-terracotta/20 border-t-terracotta animate-spin mb-4" />
+        <p className="text-sm font-bold text-taupe tracking-wide">Tracking order live...</p>
+      </div>
+    );
   }
 
   if (error || !order) {
     return (
-      <div className="orders-error">
-        <p>{error || 'Order not found'}</p>
-        <button onClick={() => navigate('/orders')}>Back to My Orders</button>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-oat px-6 text-center">
+        <div className="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-4 text-2xl font-bold">
+          ⚠️
+        </div>
+        <h3 className="text-xl font-bold text-espresso mb-2">Order Not Found</h3>
+        <p className="text-sm text-taupe max-w-sm mb-6">{error || 'Unable to locate order details.'}</p>
+        <button
+          type="button"
+          onClick={() => navigate('/orders')}
+          className="px-6 py-2.5 rounded-full bg-espresso text-white font-bold text-sm shadow-warm-md hover:bg-espresso-light transition-all"
+        >
+          Back to Orders
+        </button>
       </div>
     );
   }
@@ -66,98 +126,145 @@ const OrderTracking = () => {
   const currentStepIndex = STATUS_STEPS.findIndex((s) => s.key === order.status);
 
   return (
-    <div className="orders-page" style={{ maxWidth: '600px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '20px' }}>
-        <Link to="/orders" style={{ color: 'var(--brand-primary)', textDecoration: 'none', fontWeight: 600 }}>
-          ← Back to Orders
-        </Link>
-      </div>
-
-      <div className="order-card" style={{ cursor: 'default', padding: '24px' }}>
-        <div className="order-card-top" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
-          <div>
-            <span className="order-id" style={{ fontSize: '1.25rem' }}>
-              Order #{order._id.slice(-6).toUpperCase()}
-            </span>
-            <div style={{ color: 'var(--on-surface-tertiary)', fontSize: '0.85rem', marginTop: '4px' }}>
-              Placed on {new Date(order.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-            </div>
-          </div>
-          <span className="order-status" style={{ textTransform: 'capitalize', fontWeight: 700 }}>
-            {order.status}
-          </span>
-        </div>
-
-        {/* Live Progress Tracker */}
-        <div style={{ margin: '24px 0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {STATUS_STEPS.map((step, idx) => {
-            const isCompleted = currentStepIndex >= idx;
-            const isCurrent = currentStepIndex === idx;
-
-            return (
-              <div key={step.key} style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: 700,
-                    fontSize: '0.85rem',
-                    backgroundColor: isCompleted ? 'var(--brand-primary)' : 'var(--border)',
-                    color: isCompleted ? '#ffffff' : 'var(--on-surface-tertiary)',
-                    transition: 'all 0.3s ease',
-                  }}
-                >
-                  {isCompleted ? '✓' : idx + 1}
-                </div>
-                <div>
-                  <div
-                    style={{
-                      fontWeight: isCurrent ? 700 : 500,
-                      color: isCompleted ? 'var(--on-surface)' : 'var(--on-surface-tertiary)',
-                    }}
-                  >
-                    {step.label}
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--on-surface-tertiary)' }}>
-                    {step.desc}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Items list */}
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '16px' }}>
-          <h4 style={{ margin: '0 0 12px 0' }}>Ordered Items</h4>
-          {order.items.map((item, idx) => (
-            <div
-              key={idx}
-              style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}
-            >
-              <span>{item.name} × {item.quantity}</span>
-              <span>₹{item.price * item.quantity}</span>
-            </div>
-          ))}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              fontWeight: 700,
-              fontSize: '1.1rem',
-              marginTop: '12px',
-              borderTop: '1px solid var(--border)',
-              paddingTop: '12px',
-            }}
+    <div className="min-h-screen bg-oat py-8 px-4 sm:px-6 pb-28">
+      <div className="max-w-2xl mx-auto">
+        
+        {/* Navigation Link */}
+        <div className="mb-4">
+          <Link
+            to="/orders"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-taupe hover:text-espresso transition-colors"
           >
-            <span>Total Paid</span>
-            <span style={{ color: 'var(--brand-primary)' }}>₹{order.totalAmount}</span>
-          </div>
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to All Orders</span>
+          </Link>
         </div>
+
+        {/* Browser Notification Permission Banner */}
+        {isNotificationSupported() && notificationPermission !== 'granted' && (
+          <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-amber-50 border border-amber-200/80 shadow-warm-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-full bg-terracotta text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                <BellRing className="w-5 h-5 animate-bounce" />
+              </div>
+              <div>
+                <h4 className="font-bold text-espresso text-sm">Allow Order Alerts</h4>
+                <p className="text-xs text-taupe-muted mt-0.5">
+                  Get instant Chrome notifications the moment your order is preparing and ready!
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleEnableNotifications}
+              className="px-5 py-2 rounded-full bg-espresso hover:bg-espresso-light text-white font-bold text-xs shadow-sm transition-all flex-shrink-0 whitespace-nowrap self-start sm:self-auto"
+            >
+              Allow Notifications
+            </button>
+          </div>
+        )}
+
+        {/* Main Tracking Card */}
+        <div className="bg-white rounded-3xl border border-stone-200/80 shadow-warm-xl p-6 sm:p-8">
+          
+          {/* Card Header */}
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-stone-100">
+            <div>
+              <span className="text-xs font-bold text-taupe uppercase tracking-wider block">
+                Live Status Tracker
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-espresso mt-0.5">
+                Order #{order._id.slice(-6).toUpperCase()}
+              </h2>
+              <span className="text-xs text-taupe-light mt-1 inline-flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5" />
+                Placed at {new Date(order.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            </div>
+
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-terracotta/10 text-terracotta border border-terracotta/20 text-xs font-black uppercase tracking-wider shadow-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-terracotta opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-terracotta"></span>
+              </span>
+              <span>{order.status}</span>
+            </div>
+          </div>
+
+          {/* Stepper Progress */}
+          <div className="my-8 space-y-6">
+            {STATUS_STEPS.map((step, idx) => {
+              const isCompleted = currentStepIndex >= idx;
+              const isCurrent = currentStepIndex === idx;
+
+              return (
+                <div key={step.key} className="flex items-start gap-4 relative">
+                  {/* Connecting Line */}
+                  {idx < STATUS_STEPS.length - 1 && (
+                    <div
+                      className={`absolute left-4 top-8 bottom-0 w-0.5 -mb-6 transition-colors duration-500 ${
+                        currentStepIndex > idx ? 'bg-terracotta' : 'bg-stone-200'
+                      }`}
+                    />
+                  )}
+
+                  {/* Icon / Number Indicator */}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 z-10 transition-all duration-300 ${
+                      isCompleted
+                        ? 'bg-terracotta text-white shadow-glow-terracotta'
+                        : isCurrent
+                        ? 'bg-espresso text-white ring-4 ring-terracotta/20'
+                        : 'bg-stone-100 text-stone-400 border border-stone-200'
+                    }`}
+                  >
+                    {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
+                  </div>
+
+                  {/* Step Description */}
+                  <div className="flex-1 pt-0.5">
+                    <div
+                      className={`text-sm font-bold transition-colors ${
+                        isCurrent
+                          ? 'text-terracotta text-base'
+                          : isCompleted
+                          ? 'text-espresso'
+                          : 'text-stone-400'
+                      }`}
+                    >
+                      {step.label}
+                    </div>
+                    <div className="text-xs text-taupe mt-0.5">
+                      {step.desc}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Ordered Items Summary */}
+          <div className="pt-6 border-t border-stone-100">
+            <h4 className="font-serif font-bold text-espresso text-base mb-4">
+              Your Items
+            </h4>
+            <div className="space-y-2.5">
+              {order.items.map((item, idx) => (
+                <div key={idx} className="flex justify-between text-xs sm:text-sm text-taupe">
+                  <span>{item.name} × <strong className="text-espresso">{item.quantity}</strong></span>
+                  <span className="font-semibold text-espresso">₹{item.price * item.quantity}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-stone-100 flex justify-between items-center text-base sm:text-lg font-extrabold text-espresso">
+              <span>Total Amount</span>
+              <span className="text-terracotta">₹{order.totalAmount}</span>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
   );

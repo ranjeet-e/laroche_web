@@ -67,9 +67,14 @@ const Checkout = () => {
             clearCart();
             setStatus('success');
 
+            // Request browser notification permission so Chrome alerts the customer
+            if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+              Notification.requestPermission().catch(() => {});
+            }
+
             setTimeout(() => {
               navigate(`/orders/${order._id}`);
-            }, 1500);
+            }, 1200);
           } catch (err) {
             setErrorMsg('Payment verification failed. Contact support if amount was deducted.');
             setStatus('failed');
