@@ -420,26 +420,6 @@ const Auth = ({ initialMode = 'login' }) => {
             )
           ) : (
             <form onSubmit={handleLoginSubmit} className="space-y-4">
-              {/* Quick Staff Auto-Fill Chip */}
-              <div
-                onClick={() => {
-                  setLoginData({
-                    email: 'kitchen@larochecafe.com',
-                    password: 'kitchen123',
-                  });
-                  setErrors({});
-                }}
-                className="p-2.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-800 text-xs flex items-center justify-between cursor-pointer hover:bg-amber-100 transition-colors shadow-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <ChefHat className="w-4 h-4 text-amber-700" />
-                  <span>Staff: <strong>kitchen@larochecafe.com</strong></span>
-                </div>
-                <span className="text-[11px] font-bold text-amber-900 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">
-                  Auto-Fill
-                </span>
-              </div>
-
               <div>
                 <label className="block text-xs font-bold text-taupe mb-1.5">Email Address</label>
                 <div className="relative flex items-center">
@@ -636,17 +616,6 @@ const Auth = ({ initialMode = 'login' }) => {
             </form>
           )
         )}
-
-        {/* Footer Link */}
-        <div className="text-center pt-6 mt-6 border-t border-stone-100">
-          <Link
-            to="/kitchen/login"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-taupe hover:text-terracotta transition-colors"
-          >
-            <ChefHat className="w-3.5 h-3.5" />
-            <span>Kitchen Staff Portal →</span>
-          </Link>
-        </div>
 
       </div>
     </div>
