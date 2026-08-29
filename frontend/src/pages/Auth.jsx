@@ -177,7 +177,13 @@ const Auth = ({ initialMode = 'login' }) => {
       const data = await loginService(submissionData);
       handlePostAuthRedirect(data);
     } catch (err) {
-      setServerError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      if (!err.response && (err.message === 'Network Error' || !err.status)) {
+        setServerError('Cannot connect to backend server. Please verify VITE_API_BASE_URL points to your live backend API.');
+      } else if (typeof err.response?.data === 'string' && err.response.data.includes('<!DOCTYPE')) {
+        setServerError('API endpoint not found. Ensure VITE_API_BASE_URL is set in your Vercel project settings.');
+      } else {
+        setServerError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }
@@ -353,6 +359,20 @@ const Auth = ({ initialMode = 'login' }) => {
             )
           ) : (
             <form onSubmit={handleLoginSubmit}>
+              <div
+                className="dev-otp-chip"
+                onClick={() => {
+                  setLoginData({
+                    email: 'kitchen@larochecafe.com',
+                    password: 'kitchen123',
+                  });
+                  setErrors({});
+                }}
+                title="Click to auto-fill kitchen credentials"
+              >
+                <span>👨‍🍳 Staff Demo: <strong>kitchen@larochecafe.com</strong> (Click to fill)</span>
+              </div>
+
               <div className="form-group">
                 <label>Email</label>
                 <input

@@ -3,8 +3,12 @@ import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 
 const getSocketUrl = () => {
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL.replace('/api', '');
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (import.meta.env.PROD && (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1'))) {
+    return window.location.origin;
+  }
+  if (envUrl) {
+    return envUrl.replace('/api', '');
   }
   return undefined; // automatically connects to window.location.origin
 };

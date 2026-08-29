@@ -10,7 +10,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const loginTarget = location.pathname.startsWith('/kitchen') ? '/kitchen/login' : '/login';
+    return <Navigate to={loginTarget} state={{ from: location }} replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {

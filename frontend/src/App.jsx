@@ -12,6 +12,7 @@ import Checkout from './pages/Checkout';
 import OrderHistory from './pages/OrderHistory';
 import OrderTracking from './pages/OrderTracking';
 import KitchenDashboard from './pages/kitchen/KitchenDashboard';
+import KitchenLogin from './pages/kitchen/KitchenLogin';
 
 import { theme } from './theme.ts';
 
@@ -35,6 +36,7 @@ const AppRoutes = () => {
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Auth initialMode="login" />} />
         <Route path="/signup" element={<Auth initialMode="signup" />} />
+        <Route path="/kitchen/login" element={<KitchenLogin />} />
 
         {/* Student-only routes */}
         <Route path="/menu" element={<Menu />} />

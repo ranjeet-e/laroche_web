@@ -1,7 +1,11 @@
 import axios from 'axios';
 
 const getApiBaseUrl = () => {
-  return import.meta.env.VITE_API_BASE_URL || '/api';
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (import.meta.env.PROD && (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1'))) {
+    return '/api';
+  }
+  return envUrl || '/api';
 };
 
 const api = axios.create({

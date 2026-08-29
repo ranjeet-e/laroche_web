@@ -4,10 +4,12 @@ const User = require('../models/User');
 const Otp = require('../models/Otp');
 const { isValidStudentEmail } = require('../utils/emailValidator');
 
+const JWT_SECRET = process.env.JWT_SECRET || '8f3a1c9e2b7d4f6a0e5c8b2d9f1a3e7c4b6d8f0a2c5e9b1d3f7a0c4e8b2d6f9a';
+
 const generateToken = (user) => {
   return jwt.sign(
     { id: user._id, role: user.role },
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     { expiresIn: '7d' }
   );
 };
