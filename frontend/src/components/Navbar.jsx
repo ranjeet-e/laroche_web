@@ -62,7 +62,6 @@ const Navbar = () => {
                 }}
               />
               <span className="hidden sm:inline-block font-serif font-black text-xl tracking-tight text-espresso">
-                LA ROCHE <span className="font-sans font-medium text-xs tracking-widest text-terracotta uppercase ml-0.5">CAFE</span>
               </span>
             </Link>
 
