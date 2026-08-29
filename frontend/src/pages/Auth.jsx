@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { Smartphone, Mail, Lock, User, Sparkles, ArrowRight, ShieldCheck, ChefHat } from 'lucide-react';
 import {
   sendOtp as sendOtpService,
   verifyOtp as verifyOtpService,
@@ -44,7 +45,6 @@ const Auth = ({ initialMode = 'login' }) => {
   const from = location.state?.from?.pathname;
   const otpInputRef = useRef(null);
 
-  // Sync mode with route if initialMode or pathname changes
   useEffect(() => {
     setMode(initialMode);
     setErrors({});
@@ -52,7 +52,7 @@ const Auth = ({ initialMode = 'login' }) => {
     setSuccessMessage('');
   }, [initialMode, location.pathname]);
 
-  // Countdown timer for OTP resend
+  // Countdown timer for OTP
   useEffect(() => {
     let timer;
     if (countdown > 0) {
@@ -61,7 +61,6 @@ const Auth = ({ initialMode = 'login' }) => {
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  // Auto-focus OTP input on step change
   useEffect(() => {
     if (phoneStep === 'enter_otp' && otpInputRef.current) {
       otpInputRef.current.focus();
@@ -89,7 +88,6 @@ const Auth = ({ initialMode = 'login' }) => {
     }
   };
 
-  // --- Phone OTP Handlers ---
   const handleSendOtp = async (e) => {
     if (e) e.preventDefault();
     setServerError('');
@@ -111,7 +109,7 @@ const Auth = ({ initialMode = 'login' }) => {
       if (res.otp) {
         setReceivedOtp(res.otp);
       }
-      setSuccessMessage(`Code sent to +91 ${cleanPhone}`);
+      setSuccessMessage(`Verification code sent to +91 ${cleanPhone}`);
     } catch (err) {
       setServerError(err.response?.data?.message || 'Failed to send OTP. Please try again.');
     } finally {
@@ -146,15 +144,6 @@ const Auth = ({ initialMode = 'login' }) => {
     }
   };
 
-  // --- Email Handlers ---
-  const handleLoginChange = (e) => {
-    setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  };
-
-  const handleSignupChange = (e) => {
-    setSignupData({ ...signupData, [e.target.name]: e.target.value });
-  };
-
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setServerError('');
@@ -178,9 +167,9 @@ const Auth = ({ initialMode = 'login' }) => {
       handlePostAuthRedirect(data);
     } catch (err) {
       if (!err.response && (err.message === 'Network Error' || !err.status)) {
-        setServerError('Cannot connect to backend server. Please verify VITE_API_BASE_URL points to your live backend API.');
+        setServerError('Cannot connect to backend server. Please verify network connection.');
       } else if (typeof err.response?.data === 'string' && err.response.data.includes('<!DOCTYPE')) {
-        setServerError('API endpoint not found. Ensure VITE_API_BASE_URL is set in your Vercel project settings.');
+        setServerError('API endpoint not found. Ensure backend is running.');
       } else {
         setServerError(err.response?.data?.message || 'Login failed. Please check your credentials.');
       }
@@ -220,52 +209,123 @@ const Auth = ({ initialMode = 'login' }) => {
   };
 
   return (
-    <div className="auth-page">
-      <div className={`auth-card ${mode === 'signup' ? 'is-signup' : ''}`}>
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-oat">
+      <div className="w-full max-w-md bg-white rounded-3xl border border-stone-200/80 shadow-warm-xl p-6 sm:p-8 relative overflow-hidden">
         
-        {/* ----------------- LOGIN PANEL (LEFT) ----------------- */}
-        <div className="auth-panel auth-panel--login">
-          <h2>Sign in</h2>
-          
-          {/* Method Selector: Phone OTP vs Email */}
-          <div className="auth-toggle-bar">
-            <button
-              type="button"
-              className={`toggle-opt ${loginMethod === 'phone' ? 'active' : ''}`}
-              onClick={() => {
-                setLoginMethod('phone');
-                setServerError('');
-                setErrors({});
+        {/* Subtle Brand Header */}
+        <div className="text-center mb-6">
+          <Link to="/" className="inline-block mb-3">
+            <img
+              src="/logo2.png"
+              alt="La Roche Cafe"
+              className="h-12 w-auto mx-auto object-contain"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = '/logo.png';
               }}
-            >
-              📱 Mobile OTP
-            </button>
-            <button
-              type="button"
-              className={`toggle-opt ${loginMethod === 'email' ? 'active' : ''}`}
-              onClick={() => {
-                setLoginMethod('email');
-                setServerError('');
-                setErrors({});
-              }}
-            >
-              ✉️ Email
-            </button>
+            />
+          </Link>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-espresso tracking-tight">
+            {mode === 'signup' ? 'Create Account' : 'Welcome Back'}
+          </h2>
+          <p className="text-xs sm:text-sm text-taupe mt-1">
+            {mode === 'signup'
+              ? 'Join La Roche to preorder meals & skip the queue'
+              : 'Sign in to track orders and preorder your favorite dishes'}
+          </p>
+        </div>
+
+        {/* Mode Toggle (Sign In vs Sign Up) */}
+        <div className="flex bg-stone-100 p-1 rounded-full mb-6 border border-stone-200/60">
+          <button
+            type="button"
+            onClick={() => switchTo('login')}
+            className={`flex-1 py-2 rounded-full text-xs font-bold transition-all ${
+              mode === 'login'
+                ? 'bg-white text-espresso shadow-warm-sm'
+                : 'text-taupe hover:text-espresso'
+            }`}
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            onClick={() => switchTo('signup')}
+            className={`flex-1 py-2 rounded-full text-xs font-bold transition-all ${
+              mode === 'signup'
+                ? 'bg-white text-espresso shadow-warm-sm'
+                : 'text-taupe hover:text-espresso'
+            }`}
+          >
+            Register
+          </button>
+        </div>
+
+        {/* Method Sub-Toggle: Mobile OTP vs Email */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <button
+            type="button"
+            onClick={() => {
+              if (mode === 'login') setLoginMethod('phone');
+              else setSignupMethod('phone');
+              setServerError('');
+              setErrors({});
+            }}
+            className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${
+              (mode === 'login' ? loginMethod === 'phone' : signupMethod === 'phone')
+                ? 'bg-espresso text-white border-espresso shadow-sm'
+                : 'bg-white text-taupe border-stone-200 hover:border-stone-300'
+            }`}
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>Mobile OTP</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (mode === 'login') setLoginMethod('email');
+              else setSignupMethod('email');
+              setServerError('');
+              setErrors({});
+            }}
+            className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${
+              (mode === 'login' ? loginMethod === 'email' : signupMethod === 'email')
+                ? 'bg-espresso text-white border-espresso shadow-sm'
+                : 'bg-white text-taupe border-stone-200 hover:border-stone-300'
+            }`}
+          >
+            <Mail className="w-3.5 h-3.5" />
+            <span>Email Password</span>
+          </button>
+        </div>
+
+        {/* Server Feedback Alerts */}
+        {serverError && (
+          <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium mb-5">
+            {serverError}
           </div>
+        )}
+        {successMessage && (
+          <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium mb-5">
+            {successMessage}
+          </div>
+        )}
 
-          {serverError && mode === 'login' && <p className="form-error">{serverError}</p>}
-          {successMessage && mode === 'login' && <p className="form-success">{successMessage}</p>}
-
-          {loginMethod === 'phone' ? (
+        {/* ---------------- LOGIN FORM ---------------- */}
+        {mode === 'login' && (
+          loginMethod === 'phone' ? (
             phoneStep === 'enter_phone' ? (
-              <form onSubmit={handleSendOtp}>
-                <div className="form-group">
-                  <label>Mobile Number</label>
-                  <div className="phone-input-wrap">
-                    <span className="phone-prefix">🇮🇳 +91</span>
+              <form onSubmit={handleSendOtp} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-taupe mb-1.5">Mobile Number</label>
+                  <div className="flex items-center rounded-2xl border border-stone-200 bg-stone-50/50 overflow-hidden focus-within:border-terracotta focus-within:bg-white focus-within:ring-2 focus-within:ring-terracotta/10 transition-all">
+                    <span className="px-3.5 py-3 bg-stone-100 text-espresso text-xs font-bold border-r border-stone-200">
+                      🇮🇳 +91
+                    </span>
                     <input
                       type="tel"
-                      className="auth-input phone-field"
+                      className="w-full px-3.5 py-3 bg-transparent text-espresso placeholder:text-stone-400 text-sm font-semibold focus:outline-none"
                       placeholder="10-digit number"
                       value={phone}
                       maxLength={10}
@@ -275,28 +335,29 @@ const Auth = ({ initialMode = 'login' }) => {
                       }}
                     />
                   </div>
-                  {errors.phone && <span className="field-error">{errors.phone}</span>}
+                  {errors.phone && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.phone}</p>}
                 </div>
 
                 <button
                   type="submit"
-                  className="auth-btn"
                   disabled={loading || phone.length !== 10}
+                  className="w-full py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
                 >
-                  {loading ? 'Sending code...' : 'Get OTP →'}
+                  <span>{loading ? 'Sending code...' : 'Get OTP Code'}</span>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
             ) : (
-              <form onSubmit={handleVerifyOtp}>
-                <div className="otp-target-info">
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                <div className="flex items-center justify-between text-xs text-taupe mb-1">
                   <span>Sent to <strong>+91 {phone}</strong></span>
                   <button
                     type="button"
-                    className="link-btn"
                     onClick={() => {
                       setPhoneStep('enter_phone');
                       setOtp('');
                     }}
+                    className="text-terracotta font-bold hover:underline"
                   >
                     Change
                   </button>
@@ -304,25 +365,25 @@ const Auth = ({ initialMode = 'login' }) => {
 
                 {receivedOtp && (
                   <div
-                    className="dev-otp-chip"
                     onClick={() => {
                       setOtp(receivedOtp);
                       if (errors.otp) setErrors({});
                     }}
-                    title="Click to auto-fill"
+                    className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium cursor-pointer hover:bg-amber-100 transition-colors flex items-center justify-between"
                   >
-                    <span>💡 OTP: <strong>{receivedOtp}</strong> (Click to fill)</span>
+                    <span>💡 OTP: <strong>{receivedOtp}</strong></span>
+                    <span className="font-bold underline text-[11px]">Click to fill</span>
                   </div>
                 )}
 
-                <div className="form-group">
-                  <label>Verification Code</label>
+                <div>
+                  <label className="block text-xs font-bold text-taupe mb-1.5">Verification Code</label>
                   <input
                     ref={otpInputRef}
                     type="text"
                     inputMode="numeric"
-                    className="auth-input otp-field"
-                    placeholder="Enter 6-digit OTP"
+                    className="w-full px-4 py-3 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    placeholder="••••••"
                     value={otp}
                     maxLength={6}
                     onChange={(e) => {
@@ -330,37 +391,37 @@ const Auth = ({ initialMode = 'login' }) => {
                       if (errors.otp) setErrors({});
                     }}
                   />
-                  {errors.otp && <span className="field-error">{errors.otp}</span>}
+                  {errors.otp && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.otp}</p>}
                 </div>
 
                 <button
                   type="submit"
-                  className="auth-btn"
                   disabled={loading || otp.length !== 6}
+                  className="w-full py-3.5 rounded-full bg-espresso hover:bg-espresso-light text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Verifying...' : 'Verify & Sign in'}
+                  {loading ? 'Verifying...' : 'Verify & Sign In'}
                 </button>
 
-                <div className="resend-container">
+                <div className="text-center pt-2">
                   {countdown > 0 ? (
-                    <span className="countdown-txt">Resend in {countdown}s</span>
+                    <span className="text-xs text-taupe">Resend code in {countdown}s</span>
                   ) : (
                     <button
                       type="button"
-                      className="resend-link"
                       onClick={handleSendOtp}
                       disabled={loading}
+                      className="text-xs font-bold text-terracotta hover:underline"
                     >
-                      Resend code
+                      Resend OTP Code
                     </button>
                   )}
                 </div>
               </form>
             )
           ) : (
-            <form onSubmit={handleLoginSubmit}>
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              {/* Quick Staff Auto-Fill Chip */}
               <div
-                className="dev-otp-chip"
                 onClick={() => {
                   setLoginData({
                     email: 'kitchen@larochecafe.com',
@@ -368,105 +429,88 @@ const Auth = ({ initialMode = 'login' }) => {
                   });
                   setErrors({});
                 }}
-                title="Click to auto-fill kitchen credentials"
+                className="p-2.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-800 text-xs flex items-center justify-between cursor-pointer hover:bg-amber-100 transition-colors shadow-sm"
               >
-                <span>👨‍🍳 Staff Demo: <strong>kitchen@larochecafe.com</strong> (Click to fill)</span>
+                <div className="flex items-center gap-2">
+                  <ChefHat className="w-4 h-4 text-amber-700" />
+                  <span>Staff: <strong>kitchen@larochecafe.com</strong></span>
+                </div>
+                <span className="text-[11px] font-bold text-amber-900 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">
+                  Auto-Fill
+                </span>
               </div>
 
-              <div className="form-group">
-                <label>Email</label>
-                <input
-                  type="text"
-                  name="email"
-                  className="auth-input"
-                  value={loginData.email}
-                  onChange={handleLoginChange}
-                  placeholder="your.name@example.com"
-                  autoComplete="email"
-                />
-                {errors.email && <span className="field-error">{errors.email}</span>}
-              </div>
-              <div className="form-group">
-                <label>Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  className="auth-input"
-                  value={loginData.password}
-                  onChange={handleLoginChange}
-                  placeholder="Enter password"
-                  autoComplete="current-password"
-                />
-                {errors.password && <span className="field-error">{errors.password}</span>}
-              </div>
-              <button type="submit" className="auth-btn" disabled={loading}>
-                {loading ? 'Signing in...' : 'Sign in'}
-              </button>
-            </form>
-          )}
-
-          <p className="auth-switch">
-            New to La Roche?{' '}
-            <button type="button" onClick={() => switchTo('signup')}>
-              Create an account
-            </button>
-          </p>
-        </div>
-
-        {/* ----------------- SIGNUP PANEL (RIGHT) ----------------- */}
-        <div className="auth-panel auth-panel--signup">
-          <h2>Create account</h2>
-
-          {/* Method Selector: Phone OTP vs Email */}
-          <div className="auth-toggle-bar">
-            <button
-              type="button"
-              className={`toggle-opt ${signupMethod === 'phone' ? 'active' : ''}`}
-              onClick={() => {
-                setSignupMethod('phone');
-                setServerError('');
-                setErrors({});
-              }}
-            >
-              📱 Mobile OTP
-            </button>
-            <button
-              type="button"
-              className={`toggle-opt ${signupMethod === 'email' ? 'active' : ''}`}
-              onClick={() => {
-                setSignupMethod('email');
-                setServerError('');
-                setErrors({});
-              }}
-            >
-              ✉️ Email
-            </button>
-          </div>
-
-          {serverError && mode === 'signup' && <p className="form-error">{serverError}</p>}
-          {successMessage && mode === 'signup' && <p className="form-success">{successMessage}</p>}
-
-          {signupMethod === 'phone' ? (
-            phoneStep === 'enter_phone' ? (
-              <form onSubmit={handleSendOtp}>
-                <div className="form-group">
-                  <label>Full Name</label>
+              <div>
+                <label className="block text-xs font-bold text-taupe mb-1.5">Email Address</label>
+                <div className="relative flex items-center">
+                  <Mail className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
                   <input
-                    type="text"
-                    className="auth-input"
-                    placeholder="Your name"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
+                    type="email"
+                    name="email"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    value={loginData.email}
+                    onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                    placeholder="your.name@example.com"
                   />
                 </div>
+                {errors.email && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.email}</p>}
+              </div>
 
-                <div className="form-group">
-                  <label>Mobile Number</label>
-                  <div className="phone-input-wrap">
-                    <span className="phone-prefix">🇮🇳 +91</span>
+              <div>
+                <label className="block text-xs font-bold text-taupe mb-1.5">Password</label>
+                <div className="relative flex items-center">
+                  <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                  <input
+                    type="password"
+                    name="password"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    value={loginData.password}
+                    onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                    placeholder="Enter password"
+                  />
+                </div>
+                {errors.password && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.password}</p>}
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-full bg-espresso hover:bg-espresso-light text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50"
+              >
+                {loading ? 'Signing in...' : 'Sign In'}
+              </button>
+            </form>
+          )
+        )}
+
+        {/* ---------------- REGISTER FORM ---------------- */}
+        {mode === 'signup' && (
+          signupMethod === 'phone' ? (
+            phoneStep === 'enter_phone' ? (
+              <form onSubmit={handleSendOtp} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-taupe mb-1.5">Full Name</label>
+                  <div className="relative flex items-center">
+                    <User className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                    <input
+                      type="text"
+                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                      placeholder="Your full name"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-taupe mb-1.5">Mobile Number</label>
+                  <div className="flex items-center rounded-2xl border border-stone-200 bg-stone-50/50 overflow-hidden focus-within:border-terracotta focus-within:bg-white focus-within:ring-2 focus-within:ring-terracotta/10 transition-all">
+                    <span className="px-3.5 py-3 bg-stone-100 text-espresso text-xs font-bold border-r border-stone-200">
+                      🇮🇳 +91
+                    </span>
                     <input
                       type="tel"
-                      className="auth-input phone-field"
+                      className="w-full px-3.5 py-3 bg-transparent text-espresso placeholder:text-stone-400 text-sm font-semibold focus:outline-none"
                       placeholder="10-digit number"
                       value={phone}
                       maxLength={10}
@@ -476,28 +520,29 @@ const Auth = ({ initialMode = 'login' }) => {
                       }}
                     />
                   </div>
-                  {errors.phone && <span className="field-error">{errors.phone}</span>}
+                  {errors.phone && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.phone}</p>}
                 </div>
 
                 <button
                   type="submit"
-                  className="auth-btn"
                   disabled={loading || phone.length !== 10}
+                  className="w-full py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
                 >
-                  {loading ? 'Sending code...' : 'Register with OTP →'}
+                  <span>{loading ? 'Sending code...' : 'Register with OTP'}</span>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
             ) : (
-              <form onSubmit={handleVerifyOtp}>
-                <div className="otp-target-info">
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                <div className="flex items-center justify-between text-xs text-taupe mb-1">
                   <span>Sent to <strong>+91 {phone}</strong></span>
                   <button
                     type="button"
-                    className="link-btn"
                     onClick={() => {
                       setPhoneStep('enter_phone');
                       setOtp('');
                     }}
+                    className="text-terracotta font-bold hover:underline"
                   >
                     Change
                   </button>
@@ -505,25 +550,25 @@ const Auth = ({ initialMode = 'login' }) => {
 
                 {receivedOtp && (
                   <div
-                    className="dev-otp-chip"
                     onClick={() => {
                       setOtp(receivedOtp);
                       if (errors.otp) setErrors({});
                     }}
-                    title="Click to auto-fill"
+                    className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium cursor-pointer hover:bg-amber-100 transition-colors flex items-center justify-between"
                   >
-                    <span>💡 OTP: <strong>{receivedOtp}</strong> (Click to fill)</span>
+                    <span>💡 OTP: <strong>{receivedOtp}</strong></span>
+                    <span className="font-bold underline text-[11px]">Click to fill</span>
                   </div>
                 )}
 
-                <div className="form-group">
-                  <label>Enter 6-Digit OTP</label>
+                <div>
+                  <label className="block text-xs font-bold text-taupe mb-1.5">Verification Code</label>
                   <input
                     ref={otpInputRef}
                     type="text"
                     inputMode="numeric"
-                    className="auth-input otp-field"
-                    placeholder="Enter 6-digit OTP"
+                    className="w-full px-4 py-3 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    placeholder="••••••"
                     value={otp}
                     maxLength={6}
                     onChange={(e) => {
@@ -531,97 +576,76 @@ const Auth = ({ initialMode = 'login' }) => {
                       if (errors.otp) setErrors({});
                     }}
                   />
-                  {errors.otp && <span className="field-error">{errors.otp}</span>}
+                  {errors.otp && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.otp}</p>}
                 </div>
 
                 <button
                   type="submit"
-                  className="auth-btn"
                   disabled={loading || otp.length !== 6}
+                  className="w-full py-3.5 rounded-full bg-espresso hover:bg-espresso-light text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50"
                 >
-                  {loading ? 'Creating account...' : 'Verify & Complete'}
+                  {loading ? 'Creating account...' : 'Verify & Register'}
                 </button>
-
-                <div className="resend-container">
-                  {countdown > 0 ? (
-                    <span className="countdown-txt">Resend in {countdown}s</span>
-                  ) : (
-                    <button
-                      type="button"
-                      className="resend-link"
-                      onClick={handleSendOtp}
-                      disabled={loading}
-                    >
-                      Resend code
-                    </button>
-                  )}
-                </div>
               </form>
             )
           ) : (
-            <form onSubmit={handleSignupSubmit}>
-              <div className="form-group">
-                <label>Name</label>
+            <form onSubmit={handleSignupSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-taupe mb-1.5">Full Name</label>
                 <input
                   type="text"
-                  name="name"
-                  className="auth-input"
+                  className="w-full h-11 px-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
                   value={signupData.name}
-                  onChange={handleSignupChange}
+                  onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
                   placeholder="Your full name"
-                  autoComplete="name"
                 />
-                {errors.name && <span className="field-error">{errors.name}</span>}
+                {errors.name && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.name}</p>}
               </div>
-              <div className="form-group">
-                <label>Email</label>
+
+              <div>
+                <label className="block text-xs font-bold text-taupe mb-1.5">Email Address</label>
                 <input
-                  type="text"
-                  name="email"
-                  className="auth-input"
+                  type="email"
+                  className="w-full h-11 px-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
                   value={signupData.email}
-                  onChange={handleSignupChange}
+                  onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
                   placeholder="your.name@example.com"
-                  autoComplete="email"
                 />
-                {errors.email && <span className="field-error">{errors.email}</span>}
+                {errors.email && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.email}</p>}
               </div>
-              <div className="form-group">
-                <label>Password</label>
+
+              <div>
+                <label className="block text-xs font-bold text-taupe mb-1.5">Create Password</label>
                 <input
                   type="password"
-                  name="password"
-                  className="auth-input"
+                  className="w-full h-11 px-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
                   value={signupData.password}
-                  onChange={handleSignupChange}
-                  placeholder="Create a password (min 6 chars)"
-                  autoComplete="new-password"
+                  onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                  placeholder="Min 6 characters"
                 />
-                {errors.password && <span className="field-error">{errors.password}</span>}
+                {errors.password && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.password}</p>}
               </div>
-              <button type="submit" className="auth-btn" disabled={loading}>
-                {loading ? 'Creating account...' : 'Create account'}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50"
+              >
+                {loading ? 'Creating account...' : 'Create Account'}
               </button>
             </form>
-          )}
+          )
+        )}
 
-          <p className="auth-switch">
-            Already have an account?{' '}
-            <button type="button" onClick={() => switchTo('login')}>
-              Sign in
-            </button>
-          </p>
-        </div>
-
-        {/* ----------------- THE SLIDING BLADE ----------------- */}
-        <div className="auth-blade">
-          <div className="auth-blade__inner">
-            <img src="/logo.png" alt="La Roche Cafe" className="auth-blade__logo" onError={(e) => { e.target.onerror = null; e.target.src = '/logo2.png'; }} />
-            <h3 className="auth-blade__title">
-            </h3>
-            <p className="auth-blade__text">
-            </p>
-          </div>
+        {/* Footer Link */}
+        <div className="text-center pt-6 mt-6 border-t border-stone-100">
+          <Link
+            to="/kitchen/login"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-taupe hover:text-terracotta transition-colors"
+          >
+            <ChefHat className="w-3.5 h-3.5" />
+            <span>Kitchen Staff Portal →</span>
+          </Link>
         </div>
 
       </div>

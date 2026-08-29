@@ -94,8 +94,8 @@ const menuItems = [
   { name: 'Mexican Loaded Fries', category: 'Quick Bites & Café Snacks', price: 99, imageUrl: '/menu-items/7_mexican_loaded_fries.png' },
 
   // ---------- CHAT COUNTER ----------
-  { name: 'Sev Puri', category: 'Chat Counter', price: 50, imageUrl: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80' },
-  { name: 'Dahi Puri', category: 'Chat Counter', price: 60, imageUrl: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=400&q=80' },
+  { name: 'Sev Puri', category: 'Chat Counter', price: 50, imageUrl: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=600&auto=format&fit=crop&q=80' },
+  { name: 'Dahi Puri', category: 'Chat Counter', price: 60, imageUrl: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&auto=format&fit=crop&q=80' },
 
   // ---------- ADD ONS ----------
   { name: 'Cheese', category: 'Add-ons', price: 20, imageUrl: '/menu-items/1_cheese.png' },
@@ -167,9 +167,9 @@ const menuItems = [
   },
 
   // ---------- WAFFLES ----------
-  { name: 'Plain Waffle', category: 'Waffles', price: 79, imageUrl: 'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=400&q=80' },
-  { name: 'Chocolate Waffle', category: 'Waffles', price: 99, imageUrl: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=400&q=80' },
-  { name: 'Nutella Waffle', category: 'Waffles', price: 120, imageUrl: 'https://images.unsplash.com/photo-1598214886806-c87b84b7078b?w=400&q=80' },
+  { name: 'Plain Waffle', category: 'Waffles', price: 79, imageUrl: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=600&auto=format&fit=crop&q=80' },
+  { name: 'Chocolate Waffle', category: 'Waffles', price: 99, imageUrl: 'https://images.unsplash.com/photo-1598214886806-c87b84b7078b?w=600&auto=format&fit=crop&q=80' },
+  { name: 'Nutella Waffle', category: 'Waffles', price: 120, imageUrl: 'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=600&auto=format&fit=crop&q=80' },
 
   // ---------- HOT BEVERAGES ----------
   {

@@ -1,37 +1,24 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import { Search, Sparkles } from 'lucide-react';
 import api from '../services/api';
 import FoodCard from '../components/FoodCard';
-import { useCart } from '../context/CartContext.jsx';
+import HeroSection from '../components/HeroSection';
+import CategoryRail from '../components/CategoryRail';
 import FeaturedCarousel from '../components/FeaturedCarousel';
 import PromoBanner from '../components/PromoBanner';
+import FloatingOrderBar from '../components/FloatingOrderBar';
 import './Menu.css';
-
-const categoryIcons = {
-  'Sandwiches': '/category-icons/sandwich.jpg',
-  'Flatbread Pizza': '/category-icons/pizza.png',
-  'Quick Bites & Café Snacks': '/category-icons/fries.png',
-  'Chat Counter': '/category-icons/chat_corner.png',
-  'Maggie': '/category-icons/maggi.png',
-  'Pasta': '/category-icons/pasta.png',
-  'Mocktails & Coolers': '/category-icons/mocktails.png',
-  'Cold Beverages': '/category-icons/cold_beverages.webp',
-  'Waffles': '/category-icons/waffles.jpg',
-  'Hot Beverages': '/category-icons/hot_breverages.png',
-};
 
 const Menu = () => {
   const [items, setItems] = useState([]);
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('q') || '';
-  const [activeCategory, setActiveCategory] = useState('');
+  const [activeCategory, setActiveCategory] = useState('popular');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const { totalItems, totalAmount } = useCart();
-  const navigate = useNavigate();
   const sectionRefs = useRef({});
-  const categoryScrollRef = useRef(null);
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -39,7 +26,7 @@ const Menu = () => {
         const response = await api.get('/menu');
         setItems(response.data);
       } catch (err) {
-        setError('Could not load the menu. Please try again.');
+        setError('Could not load the menu. Please check connection and retry.');
       } finally {
         setLoading(false);
       }
@@ -62,11 +49,16 @@ const Menu = () => {
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return null;
     const q = searchQuery.toLowerCase();
-    return items.filter((item) => item.name.toLowerCase().includes(q));
+    return items.filter(
+      (item) =>
+        item.name.toLowerCase().includes(q) ||
+        (item.category && item.category.toLowerCase().includes(q))
+    );
   }, [items, searchQuery]);
 
+  // Track category scrolling with IntersectionObserver
   useEffect(() => {
-    if (categories.length === 0) return;
+    if (categories.length === 0 || searchQuery) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -76,7 +68,7 @@ const Menu = () => {
           }
         });
       },
-      { rootMargin: '-120px 0px -70% 0px' }
+      { rootMargin: '-100px 0px -65% 0px' }
     );
 
     Object.values(sectionRefs.current).forEach((el) => {
@@ -84,154 +76,149 @@ const Menu = () => {
     });
 
     return () => observer.disconnect();
-  }, [categories]);
+  }, [categories, searchQuery]);
 
-  const scrollToCategory = (cat) => {
-    sectionRefs.current[cat]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  const scrollCategories = (direction) => {
-    if (categoryScrollRef.current) {
-      categoryScrollRef.current.scrollBy({ left: direction * 300, behavior: 'smooth' });
+  const handleSelectCategory = (catKey) => {
+    setActiveCategory(catKey);
+    if (catKey === 'popular') {
+      const el = document.getElementById('section-popular') || document.getElementById('category-rail-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (sectionRefs.current[catKey]) {
+      sectionRefs.current[catKey].scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
-  if (loading) return <div className="menu-loading">Loading menu...</div>;
+  const handleExploreClick = () => {
+    const target = document.getElementById('category-rail-section');
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
-  if (error) {
+  if (loading) {
     return (
-      <div className="menu-error">
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-oat px-4">
+        <div className="w-12 h-12 rounded-full border-3 border-terracotta/20 border-t-terracotta animate-spin mb-4" />
+        <p className="text-sm font-bold text-taupe tracking-wide animate-pulse">
+          Crafting fresh menu...
+        </p>
       </div>
     );
   }
 
-  if (items.length === 0) {
+  if (error) {
     return (
-      <div className="menu-empty">
-        <p>Menu is currently being updated. Check back soon!</p>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-oat px-6 text-center">
+        <div className="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-4 text-2xl font-bold">
+          ⚠️
+        </div>
+        <h3 className="text-xl font-bold text-espresso mb-2">Unable to Load Menu</h3>
+        <p className="text-sm text-taupe max-w-sm mb-6">{error}</p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="px-6 py-2.5 rounded-full bg-espresso text-white font-bold text-sm shadow-warm-md hover:bg-espresso-light transition-all"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="menu-page">
-      <div className="menu-hero-banner">
-        <div className="hero-badge-pill">
-          <span className="badge-sparkle">✨</span>
-          <span>Freshly Prepared • Skip The Canteen Queue</span>
-        </div>
-        <div className="hero-greeting-wrap">
-          <h1 className="hero-title">
-            Hey there, <span className="hero-gradient-text">what are you craving?</span> 👋
-          </h1>
-          <p className="hero-subtitle">
-            Order in advance, grab your meal hot & fresh at the counter.
-          </p>
-        </div>
+    <div className="min-h-screen bg-oat pb-24">
+      {/* 1. Full-Bleed Cinematic Hero Section (hidden when user is searching) */}
+      {!searchQuery && <HeroSection onExploreClick={handleExploreClick} />}
 
-        {/* Quick Filter Chips */}
-        <div className="quick-chips-row">
-          {['Sandwiches', 'Flatbread Pizza', 'Quick Bites & Café Snacks', 'Hot Beverages', 'Cold Beverages', 'Maggie'].map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              className={`quick-chip ${activeCategory === tag ? 'chip-active' : ''}`}
-              onClick={() => scrollToCategory(tag)}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* 2. Unified Sticky Category Rail */}
+      {!searchQuery && (
+        <CategoryRail
+          categories={categories}
+          activeCategory={activeCategory}
+          onSelectCategory={handleSelectCategory}
+        />
+      )}
 
+      {/* 3. Promotional Highlight Banner */}
       {!searchQuery && <PromoBanner />}
-      {!searchQuery && <FeaturedCarousel items={items} />}
 
-      {searchQuery ? (
-        <div className="search-results">
-          <h2 className="section-title">
-            {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for "{searchQuery}"
-          </h2>
-          {searchResults.length === 0 ? (
-            <div className="search-empty-state">
-              <span className="empty-icon">🔍</span>
-              <h3>No dishes match "{searchQuery}"</h3>
-              <p>Try searching for sandwich, coffee, pizza or maggie!</p>
-            </div>
-          ) : (
-            <div className="food-grid">
-              {searchResults.map((item) => (
-                <FoodCard key={item._id} item={item} allItems={items} />
-              ))}
-            </div>
-          )}
-        </div>
-      ) : (
-        <>
-          <div className="category-scroll-wrap">
-            <button 
-              type="button" 
-              className="scroll-arrow scroll-arrow-left" 
-              onClick={() => scrollCategories(-1)}
-              aria-label="Scroll left"
-            >
-              ‹
-            </button>
-            <div className="category-circle-row" ref={categoryScrollRef}>
-              {categories.map((cat) => (
-                <div
-                  key={cat}
-                  className={`category-circle-item ${activeCategory === cat ? 'circle-active' : ''}`}
-                  onClick={() => scrollToCategory(cat)}
-                >
-                  <img 
-                    src={categoryIcons[cat] || '/placeholder-food.png'} 
-                    alt={cat} 
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = '/placeholder-food.png';
-                    }}
-                  />
-                  <span>{cat}</span>
-                </div>
-              ))}
-            </div>
-            <button 
-              type="button" 
-              className="scroll-arrow scroll-arrow-right" 
-              onClick={() => scrollCategories(1)}
-              aria-label="Scroll right"
-            >
-              ›
-            </button>
-          </div>
+      {/* 4. Dynamic "Popular Right Now" Curated Spotlight Carousel */}
+      {!searchQuery && <FeaturedCarousel allItems={items} />}
 
-          {categories.map((cat) => (
-            <div
-              key={cat}
-              className="menu-section"
-              data-category={cat}
-              ref={(el) => (sectionRefs.current[cat] = el)}
-            >
-              <h2 className="section-title">{cat}</h2>
-              <div className="food-grid">
-                {groupedItems[cat].map((item) => (
+      {/* 5. Main Menu Content */}
+      <main id="menu-content" className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        {searchQuery ? (
+          /* Search Results View */
+          <div className="pt-4">
+            <div className="flex items-center gap-2 mb-6">
+              <Search className="w-5 h-5 text-terracotta" />
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-espresso">
+                {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for "{searchQuery}"
+              </h2>
+            </div>
+
+            {searchResults.length === 0 ? (
+              <div className="py-20 text-center bg-white rounded-3xl border border-stone-200/80 shadow-warm-sm p-8 max-w-lg mx-auto">
+                <span className="text-4xl mb-3 block">🔍</span>
+                <h3 className="text-lg font-bold text-espresso mb-1">No dishes found</h3>
+                <p className="text-xs sm:text-sm text-taupe mb-6">
+                  We couldn't find anything matching "{searchQuery}". Try searching for pizza, sandwich, coffee, or pasta.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+                {searchResults.map((item) => (
                   <FoodCard key={item._id} item={item} allItems={items} />
                 ))}
               </div>
-            </div>
-          ))}
-        </>
-      )}
+            )}
+          </div>
+        ) : (
+          /* Categorized Food Grids */
+          <div className="space-y-12 sm:space-y-16 mt-6">
+            {categories.map((cat) => {
+              const catItems = groupedItems[cat] || [];
+              if (catItems.length === 0) return null;
 
-      {totalItems > 0 && (
-        <div className="floating-cart-bar" onClick={() => navigate('/cart')}>
-          <span>{totalItems} item{totalItems > 1 ? 's' : ''} | ₹{totalAmount}</span>
-          <span className="cart-cta">Proceed to Pay →</span>
-        </div>
-      )}
+              return (
+                <section
+                  key={cat}
+                  data-category={cat}
+                  ref={(el) => (sectionRefs.current[cat] = el)}
+                  className="scroll-mt-36"
+                >
+                  {/* Category Header */}
+                  <div className="flex items-end justify-between pb-3 mb-6 border-b border-stone-200/70">
+                    <div>
+                      <h2 className="text-2xl sm:text-3xl font-serif font-bold text-espresso tracking-tight">
+                        {cat}
+                      </h2>
+                      <span className="text-xs font-semibold text-taupe">
+                        {catItems.length} freshly crafted item{catItems.length > 1 ? 's' : ''}
+                      </span>
+                    </div>
+
+                    <div className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-terracotta">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Artisanal Kitchen</span>
+                    </div>
+                  </div>
+
+                  {/* Food Cards Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+                    {catItems.map((item) => (
+                      <FoodCard key={item._id} item={item} allItems={items} />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        )}
+      </main>
+
+      {/* 6. Persistent Floating Order Bar (when items > 0) */}
+      <FloatingOrderBar />
     </div>
   );
 };
