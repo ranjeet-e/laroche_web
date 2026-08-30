@@ -13,6 +13,7 @@ const Navbar = () => {
   const [searchParams] = useSearchParams();
 
   const [searchValue, setSearchValue] = useState('');
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // Keep search in sync with query parameter
   useEffect(() => {
@@ -25,7 +26,12 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
+    setShowLogoutModal(false);
     navigate('/menu');
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutModal(true);
   };
 
   const handleSearchChange = (e) => {
@@ -55,7 +61,7 @@ const Navbar = () => {
               <img
                 src="/logo2.png"
                 alt="La Roche Cafe"
-                className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                className="h-11 w-auto object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = '/logo.png';
@@ -168,19 +174,20 @@ const Navbar = () => {
             {/* Profile / Auth Button */}
             {user ? (
               <div className="flex items-center gap-2 pl-2 border-l border-stone-200">
-                <div
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-stone-200/80 shadow-warm-sm text-xs font-bold text-espresso"
-                  title={user.email || user.phone}
+                <Link
+                  to={isKitchen ? '/kitchen/dashboard' : '/orders'}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-stone-200/80 shadow-warm-sm text-xs font-bold text-espresso hover:border-terracotta transition-colors"
+                  title={user.email || user.phone || 'My Account'}
                 >
                   <div className="w-6 h-6 rounded-full bg-terracotta/10 text-terracotta flex items-center justify-center font-extrabold">
                     {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
                   </div>
                   <span>{user.name?.split(' ')[0] || user.phone?.slice(-4) || 'User'}</span>
-                </div>
+                </Link>
                 <button
                   type="button"
-                  onClick={handleLogout}
-                  className="p-2 rounded-full text-taupe hover:text-espresso hover:bg-white transition-colors"
+                  onClick={confirmLogout}
+                  className="p-2 rounded-full text-taupe hover:text-red-600 hover:bg-red-50 transition-colors"
                   title="Sign out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -215,14 +222,13 @@ const Navbar = () => {
             )}
 
             {user ? (
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="w-8 h-8 rounded-full bg-terracotta/10 text-terracotta flex items-center justify-center font-bold text-xs border border-terracotta/20"
-                title="Tap to logout"
+              <Link
+                to={isKitchen ? '/kitchen/dashboard' : '/orders'}
+                className="w-8 h-8 rounded-full bg-terracotta/10 text-terracotta flex items-center justify-center font-bold text-xs border border-terracotta/20 shadow-warm-sm active:scale-95 transition-transform"
+                title="My Account"
               >
                 {user.name ? user.name.charAt(0).toUpperCase() : '👤'}
-              </button>
+              </Link>
             ) : (
               <Link
                 to="/login"
@@ -279,8 +285,8 @@ const Navbar = () => {
           {user ? (
             <button
               type="button"
-              onClick={handleLogout}
-              className="flex flex-col items-center gap-0.5 text-[11px] font-bold text-taupe"
+              onClick={confirmLogout}
+              className="flex flex-col items-center gap-0.5 text-[11px] font-bold text-taupe hover:text-red-600 transition-colors"
             >
               <LogOut className="w-5 h-5" />
               <span>Logout</span>
@@ -296,6 +302,45 @@ const Navbar = () => {
               <span>Sign In</span>
             </Link>
           )}
+        </div>
+      )}
+
+      {/* Logout Confirmation Modal Popup */}
+      {showLogoutModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all"
+          onClick={() => setShowLogoutModal(false)}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-warm-xl border border-stone-200/80 transform transition-all animate-scaleUp"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-amber-50 text-terracotta flex items-center justify-center border border-amber-200/60 shadow-warm-sm">
+              <LogOut className="w-7 h-7 stroke-[2.2]" />
+            </div>
+            <h3 className="text-xl font-serif font-bold text-espresso mb-2">
+              Log Out?
+            </h3>
+            <p className="text-xs sm:text-sm text-taupe mb-6 leading-relaxed">
+              Are you sure you want to log out from <strong>La Roche Cafe</strong>? You will need to verify your number or email when signing back in.
+            </p>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 py-3 rounded-full border border-stone-200 text-espresso font-bold text-xs sm:text-sm hover:bg-stone-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex-1 py-3 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-xs sm:text-sm shadow-glow-terracotta transition-all"
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>

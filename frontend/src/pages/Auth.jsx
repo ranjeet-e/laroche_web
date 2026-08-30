@@ -218,7 +218,7 @@ const Auth = ({ initialMode = 'login' }) => {
             <img
               src="/logo2.png"
               alt="La Roche Cafe"
-              className="h-12 w-auto mx-auto object-contain"
+              className="h-12 w-auto mx-auto object-contain mix-blend-multiply"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = '/logo.png';

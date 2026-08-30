@@ -26,7 +26,11 @@ const HeroSection = ({ onExploreClick }) => {
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-60 hero-video-mask scale-105"
+        webkit-playsinline="true"
+        x5-playsinline="true"
+        disablePictureInPicture
+        controlsList="nodownload nofullscreen noremoteplayback"
+        className="absolute inset-0 w-full h-full object-cover opacity-60 hero-video-mask scale-105 pointer-events-none"
       />
 
       {/* Dark Ambient & Warm Vignette Overlay */}

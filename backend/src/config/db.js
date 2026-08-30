@@ -44,6 +44,16 @@ const connectDB = async () => {
       maxPoolSize: 10,
     });
     console.log(`MongoDB connected: ${cachedConn.connection.host}`);
+    
+    // Automatically reconcile & fix any outdated database indexes
+    try {
+      const User = require('../models/User');
+      await User.syncIndexes();
+      console.log('✅ User database indexes synchronized');
+    } catch (indexErr) {
+      console.warn('Index sync notice:', indexErr.message);
+    }
+
     await ensureKitchenUser();
     return cachedConn;
   } catch (error) {

@@ -71,28 +71,58 @@ const KitchenDashboard = () => {
   });
 
   const handleStatusUpdate = async (orderId, nextStatus) => {
+    // 1. Snapshot previous state for rollback safety
+    const previousOrders = [...orders];
+
+    // 2. INSTANT OPTIMISTIC TRANSITION (0ms latency)
+    setOrders((prev) => {
+      if (nextStatus === 'collected') {
+        return prev.filter((o) => o._id !== orderId);
+      }
+      return prev.map((o) =>
+        o._id === orderId ? { ...o, status: nextStatus } : o
+      );
+    });
+
+    // 3. Tactile haptic feedback for kitchen touchscreens / mobile
+    try {
+      if (navigator.vibrate) navigator.vibrate(30);
+    } catch (e) {}
+
+    // 4. Background network sync
     try {
       const updated = await updateOrderStatus(orderId, nextStatus);
-      if (nextStatus === 'collected') {
-        setOrders((prev) => prev.filter((o) => o._id !== orderId));
-      } else {
-        setOrders((prev) => prev.map((o) => (o._id === orderId ? updated : o)));
+      if (nextStatus !== 'collected' && updated) {
+        setOrders((prev) =>
+          prev.map((o) => (o._id === orderId ? { ...o, ...updated } : o))
+        );
       }
     } catch (err) {
-      console.error('Failed to update status', err);
+      console.error('Failed to update status, rolling back', err);
+      setOrders(previousOrders);
     }
   };
 
   const handleStockToggle = async (itemId, currentAvailability) => {
+    const nextAvailability = !currentAvailability;
+    const previousMenuItems = [...menuItems];
+
+    // INSTANT OPTIMISTIC UI FLIP (0ms latency)
+    setMenuItems((prev) =>
+      prev.map((item) =>
+        item._id === itemId ? { ...item, isAvailable: nextAvailability } : item
+      )
+    );
+
     try {
-      await api.put(`/menu/${itemId}`, { isAvailable: !currentAvailability });
-      setMenuItems((prev) =>
-        prev.map((item) =>
-          item._id === itemId ? { ...item, isAvailable: !currentAvailability } : item
-        )
-      );
+      if (navigator.vibrate) navigator.vibrate(25);
+    } catch (e) {}
+
+    try {
+      await api.put(`/menu/${itemId}`, { isAvailable: nextAvailability });
     } catch (err) {
-      console.error('Failed to toggle stock', err);
+      console.error('Failed to toggle stock, rolling back', err);
+      setMenuItems(previousMenuItems);
     }
   };
 

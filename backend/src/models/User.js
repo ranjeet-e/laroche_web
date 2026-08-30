@@ -9,15 +9,11 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      unique: true,
-      sparse: true,
       lowercase: true,
       trim: true,
     },
     phone: {
       type: String,
-      unique: true,
-      sparse: true,
       trim: true,
     },
     password: {
@@ -31,6 +27,24 @@ const userSchema = new mongoose.Schema(
     },
   },
   { timestamps: true }
+);
+
+// Enforce uniqueness ONLY when the field exists and is a valid string
+// This permanently prevents duplicate key collisions when users register with phone (no email) or email (no phone)
+userSchema.index(
+  { email: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { email: { $type: 'string' } },
+  }
+);
+
+userSchema.index(
+  { phone: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { phone: { $type: 'string' } },
+  }
 );
 
 module.exports = mongoose.model('User', userSchema);
