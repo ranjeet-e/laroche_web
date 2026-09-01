@@ -5,6 +5,7 @@ import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useState } from 'react';
 import IntroVideo from './components/IntroVideo';
+import SiteLock from './components/SiteLock';
 import Auth from './pages/Auth';
 import Menu from './pages/Menu';
 import Cart from './pages/Cart';
@@ -96,12 +97,14 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          {showIntro && <IntroVideo onFinish={handleIntroFinish} />}
-          <AppRoutes />
-        </CartProvider>
-      </AuthProvider>
+      <SiteLock>
+        <AuthProvider>
+          <CartProvider>
+            {showIntro && <IntroVideo onFinish={handleIntroFinish} />}
+            <AppRoutes />
+          </CartProvider>
+        </AuthProvider>
+      </SiteLock>
     </BrowserRouter>
   );
 };
