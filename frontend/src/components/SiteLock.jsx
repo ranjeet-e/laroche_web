@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Lock, KeyRound, Eye, EyeOff, ShieldCheck } from 'lucide-react';
-import './SiteLock.css';
 
 const SiteLock = ({ children }) => {
   const sitePassword = import.meta.env.VITE_SITE_PASSWORD;
@@ -44,11 +43,7 @@ const SiteLock = ({ children }) => {
           <Lock className="site-lock-icon" size={32} />
         </div>
 
-        <span className="site-lock-badge">Private Test Server</span>
-        <h1 className="site-lock-title">La Roche Cafe</h1>
-        <p className="site-lock-subtitle">
-          This preview deployment is private. Enter the server access password to view the site.
-        </p>
+        
 
         <form onSubmit={handleSubmit} className="site-lock-form">
           <div className="site-lock-input-wrap">
@@ -82,9 +77,7 @@ const SiteLock = ({ children }) => {
           </button>
         </form>
 
-        <div className="site-lock-footer">
-          🔒 Protected Preview Environment
-        </div>
+        
       </div>
     </div>
   );
