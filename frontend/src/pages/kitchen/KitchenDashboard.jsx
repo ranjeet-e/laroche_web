@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Bell, Camera, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Camera, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { getActiveKitchenOrders, updateOrderStatus } from '../../services/orderService';
 import { useSocket } from '../../hooks/useSocket';
 import { playOrderBellSound } from '../../utils/audioAlerts';
@@ -64,28 +64,6 @@ const KitchenDashboard = () => {
   const [orders, setOrders] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [soundEnabled, setSoundEnabled] = useState(() => {
-    return localStorage.getItem('kitchen_sound_enabled') !== 'false';
-  });
-
-  const soundEnabledRef = useRef(soundEnabled);
-  soundEnabledRef.current = soundEnabled;
-
-  const toggleSound = () => {
-    const next = !soundEnabled;
-    setSoundEnabled(next);
-    localStorage.setItem('kitchen_sound_enabled', String(next));
-    if (next) {
-      playOrderBellSound();
-    }
-  };
-
-  const handleTestChime = () => {
-    playOrderBellSound();
-    try {
-      if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
-    } catch (e) {}
-  };
 
   const fetchOrders = async () => {
     try {
@@ -119,13 +97,11 @@ const KitchenDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Real-time WebSocket: new orders trigger bell chime and instant card appearance
+  // Real-time WebSocket: automatically play counter service bell sound on new orders
   useSocket({
     onNewOrder: (newOrder) => {
-      // 1. Play crystal-clear counter bell chime
-      if (soundEnabledRef.current) {
-        playOrderBellSound();
-      }
+      // 1. Play crystal-clear counter bell chime automatically
+      playOrderBellSound();
 
       // 2. Haptic vibration for kitchen touchpads/mobiles
       try {
@@ -240,45 +216,18 @@ const KitchenDashboard = () => {
   return (
     <div className="kitchen-dashboard">
       <div className="dashboard-tabs">
-        <div className="dashboard-tabs-left">
-          <button
-            className={`tab ${activeTab === 'orders' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('orders')}
-          >
-            Orders ({orders.length})
-          </button>
-          <button
-            className={`tab ${activeTab === 'stock' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('stock')}
-          >
-            Menu Stock
-          </button>
-        </div>
-
-        {/* Audio Alert Controls */}
-        <div className="dashboard-audio-controls">
-          <button
-            type="button"
-            className={`audio-toggle-btn ${soundEnabled ? 'audio-on' : 'audio-off'}`}
-            onClick={toggleSound}
-            title={soundEnabled ? 'Click to Mute Bell' : 'Click to Enable Bell'}
-          >
-            {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-            <span>{soundEnabled ? 'Bell: ON' : 'Bell: MUTED'}</span>
-          </button>
-
-          {soundEnabled && (
-            <button
-              type="button"
-              className="audio-test-btn"
-              onClick={handleTestChime}
-              title="Test Sound Alert"
-            >
-              <Bell size={14} />
-              <span>Test Bell</span>
-            </button>
-          )}
-        </div>
+        <button
+          className={`tab ${activeTab === 'orders' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('orders')}
+        >
+          Orders ({orders.length})
+        </button>
+        <button
+          className={`tab ${activeTab === 'stock' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('stock')}
+        >
+          Menu Stock
+        </button>
       </div>
 
       {activeTab === 'orders' ? (
