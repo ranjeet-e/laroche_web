@@ -33,11 +33,11 @@ api.interceptors.response.use(
       error.config?.url?.includes('/auth/signup');
 
     if (error.response && error.response.status === 401 && !isAuthRoute) {
-      const hadToken = !!localStorage.getItem('token');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      if (hadToken && window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
-        window.location.href = '/login';
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login' && currentPath !== '/signup' && currentPath !== '/kitchen/login') {
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
       }
     }
     return Promise.reject(error);

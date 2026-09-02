@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
-import { Sparkles, Zap, Flame, Coffee, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Sparkles, Zap, Flame, Coffee, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import api from '../services/api';
 import './PromoBanner.css';
 
-const banners = [
+const DEFAULT_BANNERS = [
   {
     id: 1,
     tag: '⚡ SKIP THE QUEUE',
@@ -33,14 +34,42 @@ const banners = [
 ];
 
 const PromoBanner = () => {
+  const [banners, setBanners] = useState(DEFAULT_BANNERS);
   const [active, setActive] = useState(0);
 
+  // Fetch live banners from Cloudinary folder 'laroche_cafe/banners'
   useEffect(() => {
+    const fetchCloudinaryBanners = async () => {
+      try {
+        const response = await api.get('/upload/banners');
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          const cloudinaryBanners = response.data.map((b, i) => ({
+            id: `cld_${b.id || i}`,
+            tag: b.tag || '🔥 PROMO SPECIAL',
+            title: b.title || 'Artisanal Cafe Special',
+            subtitle: b.subtitle || 'Freshly prepared and ready for counter pickup.',
+            imageUrl: b.imageUrl,
+            bg: 'bg-gradient-to-r from-stone-900 via-espresso to-stone-900',
+            icon: <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 text-honey" />,
+            badgeColor: 'bg-terracotta text-white',
+          }));
+          setBanners([...cloudinaryBanners, ...DEFAULT_BANNERS]);
+        }
+      } catch (err) {
+        // Fallback gracefully to default banners
+      }
+    };
+
+    fetchCloudinaryBanners();
+  }, []);
+
+  useEffect(() => {
+    if (banners.length <= 1) return;
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % banners.length);
-    }, 5000);
+    }, 5500);
     return () => clearInterval(timer);
-  }, []);
+  }, [banners.length]);
 
   const handlePrev = () => {
     setActive((prev) => (prev === 0 ? banners.length - 1 : prev - 1));
@@ -50,13 +79,25 @@ const PromoBanner = () => {
     setActive((prev) => (prev + 1) % banners.length);
   };
 
-  const current = banners[active];
+  const current = banners[active] || banners[0];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 my-6">
       <div
         className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 md:p-10 ${current.bg} text-white shadow-warm-lg transition-all duration-500`}
       >
+        {/* If banner has a Cloudinary image, display as artistic background backdrop */}
+        {current.imageUrl && (
+          <div className="absolute inset-0 z-0">
+            <img
+              src={current.imageUrl}
+              alt={current.title}
+              className="w-full h-full object-cover opacity-25 filter blur-[1px] scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+          </div>
+        )}
+
         {/* Ambient background glow */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
 
@@ -76,8 +117,16 @@ const PromoBanner = () => {
             </p>
           </div>
 
-          <div className="hidden sm:flex items-center justify-center p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 self-start md:self-auto shadow-inner">
-            {current.icon}
+          <div className="hidden sm:flex items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 self-start md:self-auto shadow-inner overflow-hidden max-w-[120px] max-h-[120px]">
+            {current.imageUrl ? (
+              <img
+                src={current.imageUrl}
+                alt={current.title}
+                className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl shadow-md"
+              />
+            ) : (
+              current.icon
+            )}
           </div>
         </div>
 

@@ -7,6 +7,7 @@ import HeroSection from '../components/HeroSection';
 import CategoryRail from '../components/CategoryRail';
 import FeaturedCarousel from '../components/FeaturedCarousel';
 import PromoBanner from '../components/PromoBanner';
+import CafeScheduleBanner from '../components/CafeScheduleBanner';
 import FloatingOrderBar from '../components/FloatingOrderBar';
 import './Menu.css';
 
@@ -130,7 +131,10 @@ const Menu = () => {
       {/* 1. Full-Bleed Cinematic Hero Section (hidden when user is searching) */}
       {!searchQuery && <HeroSection onExploreClick={handleExploreClick} />}
 
-      {/* 2. Unified Sticky Category Rail */}
+      {/* 2. Cafe Operating & Pre-order Timing Banner */}
+      <CafeScheduleBanner />
+
+      {/* 3. Unified Sticky Category Rail */}
       {!searchQuery && (
         <CategoryRail
           categories={categories}

@@ -7,6 +7,7 @@ const menuRoutes = require('./routes/menuRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const kitchenRoutes = require('./routes/kitchenRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/api/menu', menuRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/kitchen', kitchenRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Health check
 app.get('/', (req, res) => {

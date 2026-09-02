@@ -10,6 +10,8 @@ import {
   notifyOrderPreparing,
   notifyOrderReady,
 } from '../utils/notifications';
+import OrderCountdownTimer from '../components/OrderCountdownTimer';
+import OrderQrPass from '../components/OrderQrPass';
 import './OrderHistory.css';
 
 const STATUS_STEPS = [
@@ -191,6 +193,11 @@ const OrderTracking = () => {
             </div>
           </div>
 
+          {/* Dynamic Live Preparation Countdown Widget */}
+          <div className="mt-6">
+            <OrderCountdownTimer order={order} />
+          </div>
+
           {/* Stepper Progress */}
           <div className="my-8 space-y-6">
             {STATUS_STEPS.map((step, idx) => {
@@ -262,6 +269,9 @@ const OrderTracking = () => {
               <span className="text-terracotta">₹{order.totalAmount}</span>
             </div>
           </div>
+
+          {/* Digital QR Pickup Verification Pass */}
+          <OrderQrPass order={order} />
 
         </div>
 

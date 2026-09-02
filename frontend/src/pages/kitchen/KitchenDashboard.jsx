@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { Volume2, VolumeX, Bell, Camera, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { getActiveKitchenOrders, updateOrderStatus } from '../../services/orderService';
 import { useSocket } from '../../hooks/useSocket';
+import { playOrderBellSound } from '../../utils/audioAlerts';
+import { uploadImage } from '../../services/uploadService';
 import api from '../../services/api';
 import './KitchenDashboard.css';
 
@@ -10,11 +13,79 @@ const columns = [
   { key: 'ready', label: 'Ready', actionLabel: 'Mark Collected', nextStatus: 'collected' },
 ];
 
+const KitchenOrderTimer = ({ createdAt, status }) => {
+  const [elapsed, setElapsed] = useState(() => {
+    return Math.max(0, Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000));
+  });
+
+  useEffect(() => {
+    if (status === 'collected') return;
+
+    const interval = setInterval(() => {
+      setElapsed(Math.max(0, Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000)));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [createdAt, status]);
+
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+  if (status === 'ready') {
+    return (
+      <div className="kitchen-order-timer timer-ready-state">
+        <span className="kitchen-timer-digits">✓ Ready</span>
+      </div>
+    );
+  }
+
+  let timerClass = 'timer-fresh';
+  let badgeLabel = 'Fresh';
+
+  if (mins >= 10) {
+    timerClass = 'timer-overdue';
+    badgeLabel = '🔥 Expedite';
+  } else if (mins >= 5) {
+    timerClass = 'timer-active';
+    badgeLabel = 'Active';
+  }
+
+  return (
+    <div className={`kitchen-order-timer ${timerClass}`}>
+      <span className="kitchen-timer-digits">⏱️ {timeStr}</span>
+      <span className="kitchen-timer-badge">{badgeLabel}</span>
+    </div>
+  );
+};
+
 const KitchenDashboard = () => {
   const [activeTab, setActiveTab] = useState('orders'); // orders | stock
   const [orders, setOrders] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    return localStorage.getItem('kitchen_sound_enabled') !== 'false';
+  });
+
+  const soundEnabledRef = useRef(soundEnabled);
+  soundEnabledRef.current = soundEnabled;
+
+  const toggleSound = () => {
+    const next = !soundEnabled;
+    setSoundEnabled(next);
+    localStorage.setItem('kitchen_sound_enabled', String(next));
+    if (next) {
+      playOrderBellSound();
+    }
+  };
+
+  const handleTestChime = () => {
+    playOrderBellSound();
+    try {
+      if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
+    } catch (e) {}
+  };
 
   const fetchOrders = async () => {
     try {
@@ -48,9 +119,19 @@ const KitchenDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Real-time WebSocket: new orders and status updates reflect instantly without reload
+  // Real-time WebSocket: new orders trigger bell chime and instant card appearance
   useSocket({
     onNewOrder: (newOrder) => {
+      // 1. Play crystal-clear counter bell chime
+      if (soundEnabledRef.current) {
+        playOrderBellSound();
+      }
+
+      // 2. Haptic vibration for kitchen touchpads/mobiles
+      try {
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      } catch (e) {}
+
       setOrders((prev) => {
         const exists = prev.some((o) => o._id === newOrder._id);
         if (exists) {
@@ -126,6 +207,32 @@ const KitchenDashboard = () => {
     }
   };
 
+  const [uploadingId, setUploadingId] = useState(null);
+
+  const handleImageUpload = async (itemId, file) => {
+    if (!file) return;
+    setUploadingId(itemId);
+    try {
+      // 1. Upload to Cloudinary via backend
+      const result = await uploadImage(file, 'laroche_cafe/menu_items');
+      
+      // 2. Save new image URL in MongoDB
+      await api.put(`/menu/${itemId}`, { imageUrl: result.url });
+
+      // 3. Update local state
+      setMenuItems((prev) =>
+        prev.map((item) =>
+          item._id === itemId ? { ...item, imageUrl: result.url } : item
+        )
+      );
+    } catch (err) {
+      console.error('Image upload failed:', err);
+      alert('Could not upload image. Please ensure you are connected and try again.');
+    } finally {
+      setUploadingId(null);
+    }
+  };
+
   if (loading) {
     return <div className="dashboard-loading">Loading dashboard...</div>;
   }
@@ -133,18 +240,45 @@ const KitchenDashboard = () => {
   return (
     <div className="kitchen-dashboard">
       <div className="dashboard-tabs">
-        <button
-          className={`tab ${activeTab === 'orders' ? 'tab-active' : ''}`}
-          onClick={() => setActiveTab('orders')}
-        >
-          Orders
-        </button>
-        <button
-          className={`tab ${activeTab === 'stock' ? 'tab-active' : ''}`}
-          onClick={() => setActiveTab('stock')}
-        >
-          Menu Stock
-        </button>
+        <div className="dashboard-tabs-left">
+          <button
+            className={`tab ${activeTab === 'orders' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('orders')}
+          >
+            Orders ({orders.length})
+          </button>
+          <button
+            className={`tab ${activeTab === 'stock' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('stock')}
+          >
+            Menu Stock
+          </button>
+        </div>
+
+        {/* Audio Alert Controls */}
+        <div className="dashboard-audio-controls">
+          <button
+            type="button"
+            className={`audio-toggle-btn ${soundEnabled ? 'audio-on' : 'audio-off'}`}
+            onClick={toggleSound}
+            title={soundEnabled ? 'Click to Mute Bell' : 'Click to Enable Bell'}
+          >
+            {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            <span>{soundEnabled ? 'Bell: ON' : 'Bell: MUTED'}</span>
+          </button>
+
+          {soundEnabled && (
+            <button
+              type="button"
+              className="audio-test-btn"
+              onClick={handleTestChime}
+              title="Test Sound Alert"
+            >
+              <Bell size={14} />
+              <span>Test Bell</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {activeTab === 'orders' ? (
@@ -161,6 +295,10 @@ const KitchenDashboard = () => {
                     <div className="order-card-kanban" key={order._id}>
                       <div className="order-card-kanban-top">
                         <span className="order-id">#{order._id.slice(-6).toUpperCase()}</span>
+                        <KitchenOrderTimer createdAt={order.createdAt} status={order.status} />
+                      </div>
+                      <div className="order-card-subinfo">
+                        <span className="order-card-kanban-student">{order.student?.name}</span>
                         <span className="order-time">
                           {new Date(order.createdAt).toLocaleTimeString('en-IN', {
                             hour: '2-digit',
@@ -168,7 +306,6 @@ const KitchenDashboard = () => {
                           })}
                         </span>
                       </div>
-                      <p className="order-card-kanban-student">{order.student?.name}</p>
                       <ul className="order-card-kanban-items">
                         {order.items.map((item, idx) => (
                           <li key={idx}>{item.name} x {item.quantity}</li>
@@ -191,7 +328,45 @@ const KitchenDashboard = () => {
         <div className="stock-list">
           {menuItems.map((item) => (
             <div className="stock-row" key={item._id}>
-              <span>{item.name}</span>
+              <div className="stock-item-info">
+                <div className="stock-thumb-wrap">
+                  {item.imageUrl ? (
+                    <img src={item.imageUrl} alt={item.name} className="stock-thumb" />
+                  ) : (
+                    <div className="stock-thumb-placeholder">
+                      <ImageIcon size={20} />
+                    </div>
+                  )}
+
+                  {/* Cloudinary Image Upload Trigger */}
+                  <label
+                    className={`stock-img-upload-btn ${uploadingId === item._id ? 'uploading' : ''}`}
+                    title="Upload / Change Photo to Cloudinary"
+                  >
+                    {uploadingId === item._id ? (
+                      <Loader2 size={13} className="animate-spin" />
+                    ) : (
+                      <Camera size={13} />
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden-file-input"
+                      disabled={uploadingId === item._id}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageUpload(item._id, file);
+                      }}
+                    />
+                  </label>
+                </div>
+
+                <div className="stock-item-details">
+                  <span className="stock-item-name">{item.name}</span>
+                  <span className="stock-item-meta">{item.category} • ₹{item.price}</span>
+                </div>
+              </div>
+
               <button
                 className={`stock-toggle ${item.isAvailable ? 'stock-in' : 'stock-out'}`}
                 onClick={() => handleStockToggle(item._id, item.isAvailable)}

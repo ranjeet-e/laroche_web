@@ -1,84 +1,51 @@
-import { useState } from 'react';
-import { Lock, KeyRound, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 
 const SiteLock = ({ children }) => {
   const sitePassword = import.meta.env.VITE_SITE_PASSWORD;
-
-  // If no password is configured in .env / Vercel, allow full public access
   const isLockEnabled = Boolean(sitePassword && sitePassword.trim() !== '');
 
+  // Check if session is already unlocked in this browser tab
   const [isUnlocked, setIsUnlocked] = useState(() => {
     if (!isLockEnabled) return true;
-    return localStorage.getItem('site_unlocked') === 'true';
+    return sessionStorage.getItem('site_unlocked') === 'true';
   });
 
-  const [inputPassword, setInputPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [isShaking, setIsShaking] = useState(false);
+  const hasPrompted = useRef(false);
 
-  // If lock is disabled or already unlocked, render the website directly
+  useEffect(() => {
+    // If lock is enabled, not yet unlocked, and hasn't prompted in this lifecycle
+    if (isLockEnabled && !isUnlocked && !hasPrompted.current) {
+      hasPrompted.current = true;
+      const userInput = window.prompt("Enter access password to view this site:");
+
+      if (userInput !== null && userInput.trim() === sitePassword.trim()) {
+        sessionStorage.setItem('site_unlocked', 'true');
+        setIsUnlocked(true);
+      } else {
+        alert("Incorrect password or action canceled.");
+      }
+    }
+  }, [isLockEnabled, isUnlocked, sitePassword]);
+
+  // If unlocked or lock is disabled, render the website directly
   if (!isLockEnabled || isUnlocked) {
     return <>{children}</>;
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError('');
-
-    if (inputPassword.trim() === sitePassword.trim()) {
-      localStorage.setItem('site_unlocked', 'true');
-      setIsUnlocked(true);
-    } else {
-      setError('Incorrect access code. Please try again.');
-      setIsShaking(true);
-      setTimeout(() => setIsShaking(false), 500);
-    }
-  };
-
+  // Fallback screen if user canceled or entered wrong password
   return (
-    <div className="site-lock-overlay">
-      <div className={`site-lock-card ${isShaking ? 'shake' : ''}`}>
-        <div className="site-lock-icon-wrap">
-          <Lock className="site-lock-icon" size={32} />
-        </div>
-
-        
-
-        <form onSubmit={handleSubmit} className="site-lock-form">
-          <div className="site-lock-input-wrap">
-            <KeyRound className="site-lock-input-icon" size={18} />
-            <input
-              type={showPassword ? 'text' : 'password'}
-              value={inputPassword}
-              onChange={(e) => {
-                setInputPassword(e.target.value);
-                if (error) setError('');
-              }}
-              placeholder="Enter access password"
-              autoFocus
-              className="site-lock-input"
-            />
-            <button
-              type="button"
-              className="site-lock-toggle-btn"
-              onClick={() => setShowPassword(!showPassword)}
-              tabIndex={-1}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-
-          {error && <p className="site-lock-error">{error}</p>}
-
-          <button type="submit" className="site-lock-btn">
-            <ShieldCheck size={18} />
-            <span>Unlock Access</span>
-          </button>
-        </form>
-
-        
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'sans-serif', backgroundColor: '#f9f9f9', color: '#333' }}>
+      <h2>Access Denied</h2>
+      <p>You need the correct password to view this site.</p>
+      <button 
+        onClick={() => {
+          sessionStorage.removeItem('site_unlocked');
+          window.location.reload();
+        }} 
+        style={{ padding: '10px 20px', marginTop: '10px', cursor: 'pointer', borderRadius: '6px', border: '1px solid #ccc', backgroundColor: '#fff' }}
+      >
+        Refresh & Try Again
+      </button>
     </div>
   );
 };

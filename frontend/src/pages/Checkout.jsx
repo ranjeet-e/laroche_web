@@ -19,6 +19,11 @@ const Checkout = () => {
   const [errorMsg, setErrorMsg] = useState('');
 
   const handlePayment = async () => {
+    if (!user || !localStorage.getItem('token')) {
+      navigate('/login?redirect=/checkout');
+      return;
+    }
+
     setStatus('placing');
     setErrorMsg('');
 

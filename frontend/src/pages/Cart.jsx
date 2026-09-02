@@ -1,12 +1,22 @@
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBag, ArrowRight, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ShoppingBag, ArrowRight, ArrowLeft, ShieldCheck, Lock, Clock } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { getCafeScheduleStatus } from '../utils/cafeSchedule';
 import CartItem from '../components/CartItem';
 import './Cart.css';
 
 const Cart = () => {
   const { cartItems, totalAmount } = useCart();
   const navigate = useNavigate();
+  const [scheduleStatus, setScheduleStatus] = useState(() => getCafeScheduleStatus());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setScheduleStatus(getCafeScheduleStatus());
+    }, 15000);
+    return () => clearInterval(interval);
+  }, []);
 
   if (cartItems.length === 0) {
     return (
@@ -93,14 +103,34 @@ const Cart = () => {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => navigate('/checkout')}
-              className="w-full mt-6 py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99]"
-            >
-              <span>Proceed to Pay ₹{grandTotal}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            {!scheduleStatus.isOpenForOrdering ? (
+              <div className="mt-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-center">
+                <div className="flex items-center justify-center gap-1.5 text-amber-800 font-bold text-xs mb-1">
+                  <Clock className="w-4 h-4" />
+                  <span>{scheduleStatus.message}</span>
+                </div>
+                <p className="text-[11px] text-amber-700">
+                  Pre-orders open daily at {scheduleStatus.formattedPreorderTime} (30 mins before counter pickup).
+                </p>
+                <button
+                  type="button"
+                  disabled
+                  className="w-full mt-3 py-3 rounded-full bg-stone-300 text-stone-500 font-bold text-xs cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>Ordering Currently Closed</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => navigate('/checkout')}
+                className="w-full mt-6 py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99]"
+              >
+                <span>Proceed to Pay ₹{grandTotal}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            )}
 
             <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-taupe mt-4">
               <ShieldCheck className="w-3.5 h-3.5 text-matcha" />

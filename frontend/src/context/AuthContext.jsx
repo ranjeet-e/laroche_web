@@ -8,10 +8,17 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Restore session from localStorage on app load/refresh
+    // Restore session from localStorage only if both user AND token exist
     const storedUser = getCurrentUser();
-    if (storedUser) {
+    const storedToken = localStorage.getItem('token');
+
+    if (storedUser && storedToken) {
       setUser(storedUser);
+    } else {
+      // Clear inconsistent state
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      setUser(null);
     }
     setLoading(false);
   }, []);
@@ -26,11 +33,17 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateUser = (updatedUser) => {
+    const merged = { ...user, ...updatedUser };
+    localStorage.setItem('user', JSON.stringify(merged));
+    setUser(merged);
+  };
+
   const isStudent = user?.role === 'student';
   const isKitchen = user?.role === 'kitchen';
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isStudent, isKitchen }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, updateUser, isStudent, isKitchen }}>
       {children}
     </AuthContext.Provider>
   );
