@@ -142,22 +142,22 @@ const OrderTracking = () => {
 
         {/* Browser Notification Permission Banner */}
         {isNotificationSupported() && notificationPermission !== 'granted' && (
-          <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-amber-50 border border-amber-200/80 shadow-warm-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-[#F5EBE6] dark:bg-[#362E2A] border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-full bg-terracotta text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+              <div className="w-9 h-9 rounded-full bg-[#9F7A60] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
                 <BellRing className="w-5 h-5 animate-bounce" />
               </div>
               <div>
-                <h4 className="font-bold text-espresso text-sm">Allow Order Alerts</h4>
-                <p className="text-xs text-taupe-muted mt-0.5">
-                  Get instant Chrome notifications the moment your order is preparing and ready!
+                <h4 className="font-bold text-[#231F20] dark:text-white text-sm">Allow Order Alerts</h4>
+                <p className="text-xs text-[#6B5B52] dark:text-[#C5B4A8] mt-0.5">
+                  Get instant notifications the moment your order is ready for pickup!
                 </p>
               </div>
             </div>
             <button
               type="button"
               onClick={handleEnableNotifications}
-              className="px-5 py-2 rounded-full bg-espresso hover:bg-espresso-light text-white font-bold text-xs shadow-sm transition-all flex-shrink-0 whitespace-nowrap self-start sm:self-auto"
+              className="px-5 py-2 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-xs shadow-sm transition-all flex-shrink-0 whitespace-nowrap self-start sm:self-auto"
             >
               Allow Notifications
             </button>
@@ -165,27 +165,27 @@ const OrderTracking = () => {
         )}
 
         {/* Main Tracking Card */}
-        <div className="bg-white rounded-3xl border border-stone-200/80 shadow-warm-xl p-6 sm:p-8">
+        <div className="bg-white dark:bg-[#2B2421] rounded-3xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-xl p-6 sm:p-8">
           
           {/* Card Header */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-stone-100">
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-[#E5D7D0] dark:border-[#4A3B32]">
             <div>
-              <span className="text-xs font-bold text-taupe uppercase tracking-wider block">
+              <span className="text-xs font-bold text-[#6B5B52] dark:text-[#C5B4A8] uppercase tracking-wider block">
                 Live Status Tracker
               </span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-espresso mt-0.5">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#231F20] dark:text-white mt-0.5">
                 Order #{order._id.slice(-6).toUpperCase()}
               </h2>
-              <span className="text-xs text-taupe-light mt-1 inline-flex items-center gap-1">
+              <span className="text-xs text-[#8F7E75] dark:text-[#A89B91] mt-1 inline-flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />
                 Placed at {new Date(order.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
 
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-terracotta/10 text-terracotta border border-terracotta/20 text-xs font-black uppercase tracking-wider shadow-sm">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#9F7A60]/15 text-[#9F7A60] dark:text-[#E8D8CD] border border-[#9F7A60]/30 text-xs font-black uppercase tracking-wider shadow-sm">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-terracotta opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-terracotta"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9F7A60] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#9F7A60]"></span>
               </span>
               <span>{order.status}</span>
             </div>
@@ -203,7 +203,7 @@ const OrderTracking = () => {
                   {idx < STATUS_STEPS.length - 1 && (
                     <div
                       className={`absolute left-4 top-8 bottom-0 w-0.5 -mb-6 transition-colors duration-500 ${
-                        currentStepIndex > idx ? 'bg-terracotta' : 'bg-stone-200'
+                        currentStepIndex > idx ? 'bg-[#9F7A60]' : 'bg-stone-200 dark:bg-[#4A3B32]'
                       }`}
                     />
                   )}
@@ -212,10 +212,10 @@ const OrderTracking = () => {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 z-10 transition-all duration-300 ${
                       isCompleted
-                        ? 'bg-terracotta text-white shadow-glow-terracotta'
+                        ? 'bg-[#9F7A60] text-white shadow-glow-terracotta'
                         : isCurrent
-                        ? 'bg-espresso text-white ring-4 ring-terracotta/20'
-                        : 'bg-stone-100 text-stone-400 border border-stone-200'
+                        ? 'bg-[#231F20] dark:bg-[#9F7A60] text-white ring-4 ring-[#9F7A60]/20'
+                        : 'bg-stone-100 dark:bg-[#362E2A] text-stone-400 dark:text-[#9F8E84] border border-stone-200 dark:border-[#4A3B32]'
                     }`}
                   >
                     {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
@@ -226,15 +226,15 @@ const OrderTracking = () => {
                     <div
                       className={`text-sm font-bold transition-colors ${
                         isCurrent
-                          ? 'text-terracotta text-base'
+                          ? 'text-[#9F7A60] text-base'
                           : isCompleted
-                          ? 'text-espresso'
-                          : 'text-stone-400'
+                          ? 'text-[#231F20] dark:text-white'
+                          : 'text-stone-400 dark:text-[#8F7E75]'
                       }`}
                     >
                       {step.label}
                     </div>
-                    <div className="text-xs text-taupe mt-0.5">
+                    <div className="text-xs text-[#6B5B52] dark:text-[#C5B4A8] mt-0.5">
                       {step.desc}
                     </div>
                   </div>
@@ -244,8 +244,8 @@ const OrderTracking = () => {
           </div>
 
           {/* Ordered Items Summary */}
-          <div className="pt-6 border-t border-stone-100">
-            <h4 className="font-serif font-bold text-espresso text-base mb-4">
+          <div className="pt-6 border-t border-[#E5D7D0] dark:border-[#4A3B32]">
+            <h4 className="font-bold text-[#231F20] dark:text-white text-base mb-4">
               Your Items
             </h4>
             <div className="space-y-2.5">

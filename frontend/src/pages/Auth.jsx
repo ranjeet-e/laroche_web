@@ -360,7 +360,7 @@ const Auth = ({ initialMode = 'login' }) => {
         {mode === 'login' && (
           <div>
             {/* 2 Sign In Methods Sub-Toggle */}
-            <div className="flex bg-stone-100 dark:bg-stone-800/60 p-1 rounded-full mb-6 border border-stone-200/60 dark:border-stone-700">
+            <div className="flex bg-[#F5EBE6] dark:bg-[#362E2A] p-1 rounded-full mb-6 border border-[#E5D7D0] dark:border-[#4A3B32]">
               <button
                 type="button"
                 onClick={() => {
@@ -370,8 +370,8 @@ const Auth = ({ initialMode = 'login' }) => {
                 }}
                 className={`flex-1 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                   loginMethod === 'phone'
-                    ? 'bg-white dark:bg-stone-700 text-espresso dark:text-white shadow-warm-sm'
-                    : 'text-taupe hover:text-espresso dark:text-stone-400'
+                    ? 'bg-[#9F7A60] text-white shadow-warm-sm'
+                    : 'text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white'
                 }`}
               >
                 <Smartphone className="w-3.5 h-3.5" />
@@ -387,8 +387,8 @@ const Auth = ({ initialMode = 'login' }) => {
                 }}
                 className={`flex-1 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                   loginMethod === 'email'
-                    ? 'bg-white dark:bg-stone-700 text-espresso dark:text-white shadow-warm-sm'
-                    : 'text-taupe hover:text-espresso dark:text-stone-400'
+                    ? 'bg-[#9F7A60] text-white shadow-warm-sm'
+                    : 'text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white'
                 }`}
               >
                 <Mail className="w-3.5 h-3.5" />
@@ -401,14 +401,14 @@ const Auth = ({ initialMode = 'login' }) => {
               phoneStep === 'enter_phone' ? (
                 <form onSubmit={handleSendLoginOtp} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-taupe mb-1.5">Mobile Number</label>
-                    <div className="flex items-center rounded-2xl border border-stone-200 bg-stone-50/50 overflow-hidden focus-within:border-terracotta focus-within:bg-white focus-within:ring-2 focus-within:ring-terracotta/10 transition-all">
-                      <span className="px-3.5 py-3 bg-stone-100 text-espresso text-xs font-bold border-r border-stone-200">
+                    <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Mobile Number</label>
+                    <div className="flex items-center rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] overflow-hidden focus-within:border-[#9F7A60] focus-within:ring-2 focus-within:ring-[#9F7A60]/20 transition-all">
+                      <span className="px-3.5 py-3 bg-[#FAF5F2] dark:bg-[#2B2421] text-[#231F20] dark:text-white text-xs font-bold border-r border-[#E5D7D0] dark:border-[#4A3B32]">
                         🇮🇳 +91
                       </span>
                       <input
                         type="tel"
-                        className="w-full px-3.5 py-3 bg-transparent text-espresso placeholder:text-stone-400 text-sm font-semibold focus:outline-none"
+                        className="w-full px-3.5 py-3 bg-transparent text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-sm font-semibold focus:outline-none"
                         placeholder="Enter 10-digit mobile"
                         value={phone}
                         maxLength={10}
@@ -424,7 +424,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   <button
                     type="submit"
                     disabled={loading || phone.length !== 10}
-                    className="w-full py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+                    className="w-full py-3.5 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
                   >
                     <span>{loading ? 'Sending code...' : 'Sign In via OTP'}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -432,27 +432,27 @@ const Auth = ({ initialMode = 'login' }) => {
                 </form>
               ) : (
                 <form onSubmit={handleVerifyLoginOtp} className="space-y-4">
-                  <div className="flex items-center justify-between text-xs text-taupe mb-1">
-                    <span>Sent to <strong>+91 {phone}</strong></span>
+                  <div className="flex items-center justify-between text-xs text-[#6B5B52] dark:text-[#D6C7BD] mb-1">
+                    <span>Sent to <strong className="text-[#231F20] dark:text-white">+91 {phone}</strong></span>
                     <button
                       type="button"
                       onClick={() => {
                         setPhoneStep('enter_phone');
                         setOtp('');
                       }}
-                      className="text-terracotta font-bold hover:underline"
+                      className="text-[#9F7A60] font-bold hover:underline"
                     >
                       Change
                     </button>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-taupe mb-1.5">Verification Code</label>
+                    <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Verification Code</label>
                     <input
                       ref={otpInputRef}
                       type="text"
                       inputMode="numeric"
-                      className="w-full px-4 py-3 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                      className="w-full px-4 py-3 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                       placeholder="••••••"
                       value={otp}
                       maxLength={6}
@@ -467,7 +467,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   <button
                     type="submit"
                     disabled={loading || otp.length !== 6}
-                    className="w-full py-3.5 rounded-full bg-espresso hover:bg-espresso-light text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3.5 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? 'Verifying...' : 'Verify & Proceed'}
                   </button>
@@ -479,13 +479,13 @@ const Auth = ({ initialMode = 'login' }) => {
             {loginMethod === 'email' && (
               <form onSubmit={handleEmailLoginSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-taupe mb-1.5">Email Address</label>
+                  <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Email Address</label>
                   <div className="relative flex items-center">
                     <Mail className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
                     <input
                       type="email"
                       name="email"
-                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                       placeholder="Enter your email"
@@ -497,7 +497,7 @@ const Auth = ({ initialMode = 'login' }) => {
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-xs font-bold text-taupe">Password</label>
+                    <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD]">Password</label>
                     <button
                       type="button"
                       onClick={() => {
@@ -506,7 +506,7 @@ const Auth = ({ initialMode = 'login' }) => {
                         setSuccessMessage('');
                         setForgotStep('enter_email');
                       }}
-                      className="text-xs font-bold text-terracotta hover:underline"
+                      className="text-xs font-bold text-[#9F7A60] hover:underline"
                     >
                       Forgot Password?
                     </button>
@@ -516,7 +516,7 @@ const Auth = ({ initialMode = 'login' }) => {
                     <input
                       type="password"
                       name="password"
-                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                       value={loginData.password}
                       onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                       placeholder="Enter your password"
@@ -529,7 +529,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 rounded-full bg-espresso hover:bg-espresso-light text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 mt-2"
+                  className="w-full py-3.5 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 mt-2"
                 >
                   {loading ? 'Authenticating...' : 'Sign In'}
                 </button>
@@ -537,11 +537,11 @@ const Auth = ({ initialMode = 'login' }) => {
             )}
 
             {/* Prominent Link to Create Account */}
-            <div className="mt-8 pt-5 border-t border-stone-100 text-center">
-              <p className="text-xs text-taupe mb-2">New User?</p>
+            <div className="mt-8 pt-5 border-t border-[#E5D7D0] dark:border-[#4A3B32] text-center">
+              <p className="text-xs text-[#6B5B52] dark:text-[#D6C7BD] mb-2">New User?</p>
               <Link
                 to={`/signup${searchParamStr}`}
-                className="inline-flex items-center justify-center gap-1.5 w-full py-3 rounded-full border-2 border-terracotta/30 text-terracotta hover:bg-terracotta/5 font-bold text-xs sm:text-sm transition-all"
+                className="inline-flex items-center justify-center gap-1.5 w-full py-3 rounded-full border-2 border-[#9F7A60] text-[#9F7A60] dark:text-[#E8D8CD] hover:bg-[#9F7A60]/10 font-bold text-xs sm:text-sm transition-all"
               >
                 <UserIcon className="w-4 h-4" />
                 <span>Create an Account</span>
@@ -557,12 +557,12 @@ const Auth = ({ initialMode = 'login' }) => {
           <div>
             <form onSubmit={handleSignupSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-taupe mb-1.5">Full Name</label>
+                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Full Name</label>
                 <div className="relative flex items-center">
                   <UserIcon className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
                   <input
                     type="text"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={signupData.name}
                     onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
                     placeholder="Enter your name"
@@ -572,14 +572,14 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-taupe mb-1.5">Phone Number</label>
-                <div className="flex items-center rounded-2xl border border-stone-200 bg-stone-50/50 overflow-hidden focus-within:border-terracotta focus-within:bg-white focus-within:ring-2 focus-within:ring-terracotta/10 transition-all">
-                  <span className="px-3.5 py-3 bg-stone-100 text-espresso text-xs font-bold border-r border-stone-200">
+                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Phone Number</label>
+                <div className="flex items-center rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] overflow-hidden focus-within:border-[#9F7A60] focus-within:ring-2 focus-within:ring-[#9F7A60]/20 transition-all">
+                  <span className="px-3.5 py-3 bg-[#FAF5F2] dark:bg-[#2B2421] text-[#231F20] dark:text-white text-xs font-bold border-r border-[#E5D7D0] dark:border-[#4A3B32]">
                     🇮🇳 +91
                   </span>
                   <input
                     type="tel"
-                    className="w-full px-3.5 py-3 bg-transparent text-espresso placeholder:text-stone-400 text-sm font-semibold focus:outline-none"
+                    className="w-full px-3.5 py-3 bg-transparent text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-sm font-semibold focus:outline-none"
                     placeholder="10-digit mobile"
                     value={signupData.phone}
                     maxLength={10}
@@ -590,12 +590,12 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-taupe mb-1.5">Email Address</label>
+                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Email Address</label>
                 <div className="relative flex items-center">
                   <Mail className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
                   <input
                     type="email"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={signupData.email}
                     onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
                     placeholder="yourname@gmail.com"
@@ -605,12 +605,12 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-taupe mb-1.5">Create Password</label>
+                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Create Password</label>
                 <div className="relative flex items-center">
                   <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
                   <input
                     type="password"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={signupData.password}
                     onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                     placeholder="At least 6 characters"
@@ -622,18 +622,18 @@ const Auth = ({ initialMode = 'login' }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 mt-2 flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 mt-2 flex items-center justify-center gap-2"
               >
                 <span>{loading ? 'Creating Account...' : 'Sign Up & Continue'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
 
-            <div className="mt-8 pt-5 border-t border-stone-100 text-center">
-              <p className="text-xs text-taupe mb-2">Already have an account?</p>
+            <div className="mt-8 pt-5 border-t border-[#E5D7D0] dark:border-[#4A3B32] text-center">
+              <p className="text-xs text-[#6B5B52] dark:text-[#D6C7BD] mb-2">Already have an account?</p>
               <Link
                 to={`/login${searchParamStr}`}
-                className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-espresso hover:text-terracotta transition-colors"
+                className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-[#9F7A60] dark:text-[#E8D8CD] hover:underline transition-colors"
               >
                 <span>Sign In Here</span>
                 <ArrowRight className="w-3.5 h-3.5" />
