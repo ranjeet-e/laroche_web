@@ -8,41 +8,64 @@ export default {
   theme: {
     extend: {
       colors: {
-        oat: {
-          DEFAULT: '#FAF7F2',
-          light: '#FDFBF8',
-          dark: '#F0EAE1',
-          surface: '#FFFFFF',
-          night: '#14100E',
-        },
+        // Cafe Core Palette
         espresso: {
-          DEFAULT: '#1A1615',
-          light: '#2E2725',
-          muted: '#4A403D',
-          dark: '#1F1916',
-          card: '#29211D',
+          DEFAULT: '#231F20', // Espresso / Near Black
+          pure: '#231F20',
+          dark: '#1A1718',    // Deep dark background
+          card: '#2B2421',    // Dark mode card
+          elevated: '#362E2A',
+          light: '#3C3430',
         },
-        taupe: {
-          DEFAULT: '#706E6B',
-          light: '#9E9C98',
-          muted: '#B8B6B2',
-          dark: '#A89B91',
+        copper: {
+          DEFAULT: '#4A3B32', // Burnt Copper / Dark Chocolate
+          dark: '#3A2E26',
+          border: '#4A3B32',
+          light: '#5E4B40',
+        },
+        caramel: {
+          DEFAULT: '#9F7A60', // Warm Taupe / Caramel
+          hover: '#87644C',
+          active: '#74533C',
+          light: '#E8D8CD',
+          subtle: '#F4ECE6',
+        },
+        cream: {
+          DEFAULT: '#F5EBE6', // Sandy Beige / Pale Cream
+          surface: '#FFFFFF',
+          card: '#FFFFFF',
+          border: '#E5D7D0',
+          darkBorder: '#4A3B32',
+        },
+        // Semantic Compatibility Aliases
+        oat: {
+          DEFAULT: '#F5EBE6',
+          light: '#FAF5F2',
+          dark: '#EDE0D8',
+          surface: '#FFFFFF',
+          night: '#1A1718',
         },
         terracotta: {
-          DEFAULT: '#E76F51',
-          hover: '#D65D3F',
-          light: '#FFF0EB',
-          dark: '#E07A5F',
+          DEFAULT: '#9F7A60',
+          hover: '#87644C',
+          light: '#F5EBE6',
+          dark: '#B48D71',
+        },
+        taupe: {
+          DEFAULT: '#6B5B52',
+          light: '#8F7E75',
+          muted: '#B0A198',
+          dark: '#C5B4A8',
         },
         honey: {
-          DEFAULT: '#D4A373',
-          light: '#FAEDCD',
-          dark: '#B98B5C',
+          DEFAULT: '#9F7A60',
+          light: '#F5EBE6',
+          dark: '#87644C',
         },
         matcha: {
-          DEFAULT: '#2D6A4F',
-          light: '#E8F5E9',
-          dark: '#1B4332',
+          DEFAULT: '#3E6B48',
+          light: '#EAF3EC',
+          dark: '#2A4E33',
         },
       },
       fontFamily: {
@@ -51,12 +74,12 @@ export default {
         serif: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
       },
       boxShadow: {
-        'warm-sm': '0 2px 8px rgba(26, 22, 21, 0.04)',
-        'warm-md': '0 4px 16px rgba(26, 22, 21, 0.06)',
-        'warm-lg': '0 10px 30px rgba(26, 22, 21, 0.08), 0 2px 8px rgba(26, 22, 21, 0.04)',
-        'warm-xl': '0 20px 40px rgba(26, 22, 21, 0.12), 0 4px 12px rgba(26, 22, 21, 0.04)',
-        'glow-terracotta': '0 4px 20px rgba(231, 111, 81, 0.35)',
-        'dark-card': '0 4px 20px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.2)',
+        'warm-sm': '0 2px 8px rgba(35, 31, 32, 0.04)',
+        'warm-md': '0 4px 16px rgba(35, 31, 32, 0.07)',
+        'warm-lg': '0 10px 30px rgba(35, 31, 32, 0.09), 0 2px 8px rgba(35, 31, 32, 0.04)',
+        'warm-xl': '0 20px 40px rgba(35, 31, 32, 0.12), 0 4px 12px rgba(35, 31, 32, 0.04)',
+        'glow-terracotta': '0 4px 20px rgba(159, 122, 96, 0.35)',
+        'dark-card': '0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.3)',
       },
       borderRadius: {
         '2xl': '1rem',
