@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useState } from 'react';
@@ -98,12 +99,14 @@ const App = () => {
   return (
     <BrowserRouter>
       <SiteLock>
-        <AuthProvider>
-          <CartProvider>
-            {showIntro && <IntroVideo onFinish={handleIntroFinish} />}
-            <AppRoutes />
-          </CartProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <CartProvider>
+              {showIntro && <IntroVideo onFinish={handleIntroFinish} />}
+              <AppRoutes />
+            </CartProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </SiteLock>
     </BrowserRouter>
   );

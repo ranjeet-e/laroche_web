@@ -192,4 +192,95 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { sendOtp, verifyOtp, signup, login };
+// @route POST /api/auth/forgot-password
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Please enter your registered email address' });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      return res.status(404).json({ message: 'No account found with this email address' });
+    }
+
+    // Generate 6-digit reset code
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Store in Otp collection with auto-expiry
+    await Otp.findOneAndUpdate(
+      { email: normalizedEmail },
+      { otp, createdAt: new Date() },
+      { upsert: true, new: true }
+    );
+
+    console.log(`\n========================================`);
+    console.log(`🔑 [PASSWORD RESET OTP] Sent to ${normalizedEmail}: ${otp}`);
+    console.log(`========================================\n`);
+
+    res.status(200).json({
+      message: `Verification code sent to ${normalizedEmail}`,
+      email: normalizedEmail,
+      otp, // included for seamless development & instant testing
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @route POST /api/auth/reset-password
+const resetPassword = async (req, res, next) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
+    const cleanOtp = otp?.toString().trim();
+
+    if (!normalizedEmail || !cleanOtp || !newPassword) {
+      return res.status(400).json({ message: 'Email, verification code, and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters long' });
+    }
+
+    const otpRecord = await Otp.findOne({ email: normalizedEmail });
+    if (!otpRecord || otpRecord.otp !== cleanOtp) {
+      return res.status(400).json({ message: 'Invalid or expired verification code. Please request a new one.' });
+    }
+
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      return res.status(404).json({ message: 'User account not found' });
+    }
+
+    // Hash new password and update
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    // Clear used reset OTP
+    await Otp.deleteOne({ _id: otpRecord._id });
+
+    // Auto-login after password reset
+    const token = generateToken(user);
+
+    res.status(200).json({
+      message: 'Password reset successful! You are now logged in.',
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone || '',
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { sendOtp, verifyOtp, signup, login, forgotPassword, resetPassword };
+

@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Smartphone, Mail, Lock, User, Sparkles, ArrowRight, ShieldCheck, ChefHat } from 'lucide-react';
+import { Smartphone, Mail, Lock, User, ArrowRight, ArrowLeft, KeyRound } from 'lucide-react';
 import {
   sendOtp as sendOtpService,
   verifyOtp as verifyOtpService,
   login as loginService,
   signup as signupService,
+  forgotPassword as forgotPasswordService,
+  resetPassword as resetPasswordService,
 } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -17,11 +19,11 @@ import {
 import './Auth.css';
 
 const Auth = ({ initialMode = 'login' }) => {
-  const [mode, setMode] = useState(initialMode); // 'login' | 'signup'
+  const [mode, setMode] = useState(initialMode); // 'login' | 'signup' | 'forgot'
   const [loginMethod, setLoginMethod] = useState('phone'); // 'phone' | 'email'
   const [signupMethod, setSignupMethod] = useState('phone'); // 'phone' | 'email'
 
-  // Phone OTP States
+  // Phone OTP States (Passwordless)
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [userName, setUserName] = useState('');
@@ -32,6 +34,14 @@ const Auth = ({ initialMode = 'login' }) => {
   // Email States
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [signupData, setSignupData] = useState({ name: '', email: '', password: '' });
+
+  // Forgot Password States
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [forgotNewPassword, setForgotNewPassword] = useState('');
+  const [forgotStep, setForgotStep] = useState('enter_email'); // 'enter_email' | 'enter_otp'
+  const [forgotReceivedOtp, setForgotReceivedOtp] = useState('');
+  const [forgotCountdown, setForgotCountdown] = useState(0);
 
   // Status & Errors
   const [errors, setErrors] = useState({});
@@ -52,7 +62,7 @@ const Auth = ({ initialMode = 'login' }) => {
     setSuccessMessage('');
   }, [initialMode, location.pathname]);
 
-  // Countdown timer for OTP
+  // Countdown timer for Phone OTP
   useEffect(() => {
     let timer;
     if (countdown > 0) {
@@ -60,6 +70,15 @@ const Auth = ({ initialMode = 'login' }) => {
     }
     return () => clearTimeout(timer);
   }, [countdown]);
+
+  // Countdown timer for Forgot Password OTP
+  useEffect(() => {
+    let timer;
+    if (forgotCountdown > 0) {
+      timer = setTimeout(() => setForgotCountdown(forgotCountdown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [forgotCountdown]);
 
   useEffect(() => {
     if (phoneStep === 'enter_otp' && otpInputRef.current) {
@@ -74,7 +93,11 @@ const Auth = ({ initialMode = 'login' }) => {
     setSuccessMessage('');
     setPhoneStep('enter_phone');
     setOtp('');
-    navigate(next === 'signup' ? '/signup' : '/login');
+    setForgotStep('enter_email');
+    setForgotOtp('');
+    setForgotNewPassword('');
+    if (next === 'signup') navigate('/signup');
+    else if (next === 'login') navigate('/login');
   };
 
   const handlePostAuthRedirect = (data) => {
@@ -88,6 +111,7 @@ const Auth = ({ initialMode = 'login' }) => {
     }
   };
 
+  // ---------------- PHONE OTP FLOW (PASSWORDLESS) ----------------
   const handleSendOtp = async (e) => {
     if (e) e.preventDefault();
     setServerError('');
@@ -96,6 +120,11 @@ const Auth = ({ initialMode = 'login' }) => {
     const cleanPhone = phone.replace(/\D/g, '');
     if (!isValidPhoneNumber(cleanPhone)) {
       setErrors({ phone: 'Enter a valid 10-digit mobile number' });
+      return;
+    }
+
+    if (mode === 'signup' && !userName.trim()) {
+      setErrors({ userName: 'Please enter your name' });
       return;
     }
 
@@ -144,6 +173,7 @@ const Auth = ({ initialMode = 'login' }) => {
     }
   };
 
+  // ---------------- EMAIL PASSWORD FLOW ----------------
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setServerError('');
@@ -171,7 +201,7 @@ const Auth = ({ initialMode = 'login' }) => {
       } else if (typeof err.response?.data === 'string' && err.response.data.includes('<!DOCTYPE')) {
         setServerError('API endpoint not found. Ensure backend is running.');
       } else {
-        setServerError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+        setServerError(err.response?.data?.message || 'Invalid credentials. Please check your email and password.');
       }
     } finally {
       setLoading(false);
@@ -203,6 +233,70 @@ const Auth = ({ initialMode = 'login' }) => {
       handlePostAuthRedirect(data);
     } catch (err) {
       setServerError(err.response?.data?.message || 'Signup failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------------- FORGOT PASSWORD FLOW ----------------
+  const handleForgotPasswordSubmit = async (e) => {
+    e.preventDefault();
+    setServerError('');
+    setSuccessMessage('');
+
+    const cleanEmail = forgotEmail.trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      setErrors({ forgotEmail: 'Please enter a valid email address' });
+      return;
+    }
+
+    setErrors({});
+    setLoading(true);
+
+    try {
+      const res = await forgotPasswordService({ email: cleanEmail });
+      setForgotStep('enter_otp');
+      setForgotCountdown(45);
+      if (res.otp) {
+        setForgotReceivedOtp(res.otp);
+      }
+      setSuccessMessage(`Reset code sent to ${cleanEmail}`);
+    } catch (err) {
+      setServerError(err.response?.data?.message || 'Failed to send reset code. Please verify your email.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPasswordSubmit = async (e) => {
+    e.preventDefault();
+    setServerError('');
+
+    const cleanEmail = forgotEmail.trim().toLowerCase();
+    const cleanOtp = forgotOtp.trim();
+
+    if (!cleanOtp || cleanOtp.length < 4) {
+      setErrors({ forgotOtp: 'Enter the 6-digit verification code' });
+      return;
+    }
+
+    if (!forgotNewPassword || forgotNewPassword.length < 6) {
+      setErrors({ forgotNewPassword: 'Password must be at least 6 characters' });
+      return;
+    }
+
+    setErrors({});
+    setLoading(true);
+
+    try {
+      const data = await resetPasswordService({
+        email: cleanEmail,
+        otp: cleanOtp,
+        newPassword: forgotNewPassword,
+      });
+      handlePostAuthRedirect(data);
+    } catch (err) {
+      setServerError(err.response?.data?.message || 'Failed to reset password. Code may be invalid or expired.');
     } finally {
       setLoading(false);
     }
@@ -437,7 +531,16 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-taupe mb-1.5">Password</label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold text-taupe">Password</label>
+                  <button
+                    type="button"
+                    onClick={() => switchTo('forgot')}
+                    className="text-xs font-bold text-terracotta hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
                 <div className="relative flex items-center">
                   <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
                   <input
@@ -477,9 +580,13 @@ const Auth = ({ initialMode = 'login' }) => {
                       className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
                       placeholder="Your full name"
                       value={userName}
-                      onChange={(e) => setUserName(e.target.value)}
+                      onChange={(e) => {
+                        setUserName(e.target.value);
+                        if (errors.userName) setErrors({});
+                      }}
                     />
                   </div>
+                  {errors.userName && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.userName}</p>}
                 </div>
 
                 <div>
@@ -528,19 +635,6 @@ const Auth = ({ initialMode = 'login' }) => {
                   </button>
                 </div>
 
-                {receivedOtp && (
-                  <div
-                    onClick={() => {
-                      setOtp(receivedOtp);
-                      if (errors.otp) setErrors({});
-                    }}
-                    className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium cursor-pointer hover:bg-amber-100 transition-colors flex items-center justify-between"
-                  >
-                    <span>💡 OTP: <strong>{receivedOtp}</strong></span>
-                    <span className="font-bold underline text-[11px]">Click to fill</span>
-                  </div>
-                )}
-
                 <div>
                   <label className="block text-xs font-bold text-taupe mb-1.5">Verification Code</label>
                   <input
@@ -566,6 +660,21 @@ const Auth = ({ initialMode = 'login' }) => {
                 >
                   {loading ? 'Creating account...' : 'Verify & Register'}
                 </button>
+
+                <div className="text-center pt-2">
+                  {countdown > 0 ? (
+                    <span className="text-xs text-taupe">Resend code in {countdown}s</span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      disabled={loading}
+                      className="text-xs font-bold text-terracotta hover:underline"
+                    >
+                      Resend OTP Code
+                    </button>
+                  )}
+                </div>
               </form>
             )
           ) : (
@@ -613,6 +722,121 @@ const Auth = ({ initialMode = 'login' }) => {
               >
                 {loading ? 'Creating account...' : 'Create Account'}
               </button>
+            </form>
+          )
+        )}
+
+        {/* ---------------- FORGOT PASSWORD FORM ---------------- */}
+        {mode === 'forgot' && (
+          forgotStep === 'enter_email' ? (
+            <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-taupe mb-1.5">Registered Email</label>
+                <div className="relative flex items-center">
+                  <Mail className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                  <input
+                    type="email"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    value={forgotEmail}
+                    onChange={(e) => {
+                      setForgotEmail(e.target.value);
+                      if (errors.forgotEmail) setErrors({});
+                    }}
+                    placeholder="Enter your registered email"
+                  />
+                </div>
+                {errors.forgotEmail && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.forgotEmail}</p>}
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || !forgotEmail}
+                className="w-full py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                <span>{loading ? 'Sending code...' : 'Send Reset Code'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => switchTo('login')}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-taupe hover:text-espresso transition-colors"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back to Sign In</span>
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
+              <div className="flex items-center justify-between text-xs text-taupe mb-1">
+                <span>Reset code sent to <strong>{forgotEmail}</strong></span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setForgotStep('enter_email');
+                    setForgotOtp('');
+                  }}
+                  className="text-terracotta font-bold hover:underline"
+                >
+                  Change
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-taupe mb-1.5">Verification Code</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="w-full px-4 py-3 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                  placeholder="••••••"
+                  value={forgotOtp}
+                  maxLength={6}
+                  onChange={(e) => {
+                    setForgotOtp(e.target.value.replace(/\D/g, ''));
+                    if (errors.forgotOtp) setErrors({});
+                  }}
+                />
+                {errors.forgotOtp && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.forgotOtp}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-taupe mb-1.5">New Password</label>
+                <div className="relative flex items-center">
+                  <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                  <input
+                    type="password"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    value={forgotNewPassword}
+                    onChange={(e) => {
+                      setForgotNewPassword(e.target.value);
+                      if (errors.forgotNewPassword) setErrors({});
+                    }}
+                    placeholder="Enter at least 6 characters"
+                  />
+                </div>
+                {errors.forgotNewPassword && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.forgotNewPassword}</p>}
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || forgotOtp.length !== 6 || forgotNewPassword.length < 6}
+                className="w-full py-3.5 rounded-full bg-espresso hover:bg-espresso-light text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50"
+              >
+                {loading ? 'Resetting password...' : 'Update Password & Sign In'}
+              </button>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => switchTo('login')}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-taupe hover:text-espresso transition-colors"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back to Sign In</span>
+                </button>
+              </div>
             </form>
           )
         )}

@@ -6,14 +6,33 @@
 :root {
   --bg-oat: #FAF7F2;
   --surface: #FFFFFF;
+  --surface-elevated: #FDFBF8;
   --espresso: #1A1615;
   --taupe: #706E6B;
   --terracotta: #E76F51;
   --honey: #D4A373;
   --matcha: #2D6A4F;
   --border-light: rgba(234, 228, 224, 0.8);
+  --border-subtle: #EBE4DC;
+  --glass-bg: rgba(250, 247, 242, 0.9);
+  --glass-border: rgba(234, 228, 224, 0.7);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.dark {
+  --bg-oat: #14100E;
+  --surface: #1E1815;
+  --surface-elevated: #28211D;
+  --espresso: #F5EBE1;
+  --taupe: #A89B91;
+  --terracotta: #E07A5F;
+  --honey: #D4A373;
+  --matcha: #40916C;
+  --border-light: rgba(60, 48, 42, 0.75);
+  --border-subtle: #342A24;
+  --glass-bg: rgba(20, 16, 14, 0.92);
+  --glass-border: rgba(60, 48, 42, 0.75);
 }
 
 *, *::before, *::after {
@@ -25,24 +44,32 @@ html {
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
   scroll-behavior: smooth;
-  background-color: #FAF7F2;
+  background-color: var(--bg-oat);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 body {
   margin: 0;
   padding: 0;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  background-color: #FAF7F2;
-  color: #1A1615;
+  background-color: var(--bg-oat);
+  color: var(--espresso);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   min-height: 100dvh;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.dark html, .dark body {
+  background-color: #14100E;
+  color: #F5EBE1;
 }
 
 /* Headings font */
 h1, h2, h3, .font-display, .font-serif {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.02em;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -58,24 +85,24 @@ h1, h2, h3, .font-display, .font-serif {
 
 /* Glassmorphism utilities */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-border);
 }
 
 .glass-pill {
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(234, 228, 224, 0.7);
+  border: 1px solid var(--border-light);
 }
 
 .glass-dark {
-  background: rgba(26, 22, 21, 0.75);
+  background: rgba(20, 16, 14, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* Hero video gradient fade mask */

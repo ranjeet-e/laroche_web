@@ -21,6 +21,16 @@ export const login = async ({ email, password }) => {
   return response.data;
 };
 
+export const forgotPassword = async ({ email }) => {
+  const response = await api.post('/auth/forgot-password', { email });
+  return response.data;
+};
+
+export const resetPassword = async ({ email, otp, newPassword }) => {
+  const response = await api.post('/auth/reset-password', { email, otp, newPassword });
+  return response.data;
+};
+
 export const logout = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
@@ -35,3 +45,4 @@ export const getCurrentUser = () => {
   const user = localStorage.getItem('user');
   return user ? JSON.parse(user) : null;
 };
+
