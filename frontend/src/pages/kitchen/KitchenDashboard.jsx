@@ -3,7 +3,7 @@ import { Camera, Image as ImageIcon, Loader2, Flame } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getActiveKitchenOrders, updateOrderStatus } from '../../services/orderService';
 import { useSocket } from '../../hooks/useSocket';
-import { playOrderBellSound } from '../../utils/audioAlerts';
+import { playOrderBellSound, unlockAudio } from '../../utils/audioAlerts';
 import { uploadImage } from '../../services/uploadService';
 import api from '../../services/api';
 import './KitchenDashboard.css';
@@ -218,18 +218,32 @@ const KitchenDashboard = () => {
 
   return (
     <div className="kitchen-dashboard">
-      <div className="dashboard-tabs">
+      <div className="flex items-center justify-between gap-4 flex-wrap mb-7">
+        <div className="dashboard-tabs !mb-0">
+          <button
+            className={`tab ${activeTab === 'orders' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('orders')}
+          >
+            Orders ({orders.length})
+          </button>
+          <button
+            className={`tab ${activeTab === 'stock' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('stock')}
+          >
+            Menu Stock
+          </button>
+        </div>
+
         <button
-          className={`tab ${activeTab === 'orders' ? 'tab-active' : ''}`}
-          onClick={() => setActiveTab('orders')}
+          type="button"
+          onClick={() => {
+            unlockAudio();
+            playOrderBellSound();
+          }}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#2B2421] border border-[#E5D7D0] dark:border-[#4A3B32] text-xs font-bold text-[#6B5B52] dark:text-[#E8D8CD] hover:text-[#231F20] dark:hover:text-white shadow-warm-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
-          Orders ({orders.length})
-        </button>
-        <button
-          className={`tab ${activeTab === 'stock' ? 'tab-active' : ''}`}
-          onClick={() => setActiveTab('stock')}
-        >
-          Menu Stock
+          <span>🔔</span>
+          <span>Test Bell Sound</span>
         </button>
       </div>
 

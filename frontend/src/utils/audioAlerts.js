@@ -6,7 +6,7 @@
 
 let audioCtxInstance = null;
 
-const getAudioContext = () => {
+export const getAudioContext = () => {
   if (typeof window === 'undefined') return null;
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) return null;
@@ -18,15 +18,43 @@ const getAudioContext = () => {
 };
 
 /**
+ * Resumes / unlocks the browser AudioContext
+ */
+export const unlockAudio = async () => {
+  try {
+    const ctx = getAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      await ctx.resume();
+    }
+    return ctx?.state === 'running';
+  } catch (e) {
+    return false;
+  }
+};
+
+// Global auto-unlock on first user gesture
+if (typeof window !== 'undefined') {
+  const autoUnlock = () => {
+    unlockAudio();
+    window.removeEventListener('click', autoUnlock);
+    window.removeEventListener('touchstart', autoUnlock);
+    window.removeEventListener('keydown', autoUnlock);
+  };
+  window.addEventListener('click', autoUnlock, { passive: true, once: true });
+  window.addEventListener('touchstart', autoUnlock, { passive: true, once: true });
+  window.addEventListener('keydown', autoUnlock, { passive: true, once: true });
+}
+
+/**
  * Plays a bright, resonant cafe service desk counter bell chime
  */
-export const playOrderBellSound = () => {
+export const playOrderBellSound = async () => {
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
 
     if (ctx.state === 'suspended') {
-      ctx.resume().catch(() => {});
+      await ctx.resume().catch(() => {});
     }
 
     const now = ctx.currentTime;
@@ -38,9 +66,9 @@ export const playOrderBellSound = () => {
       osc.type = type;
       osc.frequency.setValueAtTime(freq, start);
 
-      // Fast attack, smooth natural exponential decay
+      // Crisp counter attack & smooth decay
       gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.linearRampToValueAtTime(volume, start + 0.015);
+      gain.gain.linearRampToValueAtTime(volume, start + 0.012);
       gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
 
       osc.connect(gain);
@@ -50,16 +78,15 @@ export const playOrderBellSound = () => {
       osc.stop(start + duration);
     };
 
-    // First Ding (High melodic bell note)
-    playHarmonic(880, now, 0.9, 0.35); // A5
-    playHarmonic(1760, now, 0.7, 0.15); // A6 overtone
-    playHarmonic(2640, now, 0.5, 0.08); // Harmonic shimmer
+    // First Ding (Melodic Bell Note)
+    playHarmonic(880, now, 1.2, 0.7);       // A5
+    playHarmonic(1760, now, 0.9, 0.4);      // A6 overtone
+    playHarmonic(2640, now, 0.6, 0.2);      // Shimmer
 
-    // Second Ring (Higher resonant chime)
-    playHarmonic(1174.66, now + 0.15, 1.4, 0.45); // D6
-    playHarmonic(2349.32, now + 0.15, 1.1, 0.2);  // D7
-    playHarmonic(3520.0, now + 0.16, 0.8, 0.08);  // Crisp brass sparkle
-
+    // Second Ring (High resonant counter chime)
+    playHarmonic(1174.66, now + 0.18, 1.6, 0.85); // D6
+    playHarmonic(2349.32, now + 0.18, 1.2, 0.45); // D7
+    playHarmonic(3520.0, now + 0.19, 0.8, 0.2);   // Sparkle
   } catch (err) {
     console.warn('Could not play order bell alert:', err);
   }
