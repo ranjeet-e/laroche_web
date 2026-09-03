@@ -30,11 +30,23 @@ const normalizePhone = (phone) => {
 // @route POST /api/auth/send-otp
 const sendOtp = async (req, res, next) => {
   try {
-    const { phone } = req.body;
+    const { phone, mode } = req.body;
     const cleanPhone = normalizePhone(phone);
 
     if (!cleanPhone || cleanPhone.length !== 10) {
       return res.status(400).json({ message: 'Please enter a valid 10-digit mobile number' });
+    }
+
+    const existingUser = await User.findOne({ phone: cleanPhone });
+
+    // If user is trying to log in with phone, but has no account -> navigate to signup
+    if (mode === 'login' && !existingUser) {
+      return res.status(404).json({
+        isNewUser: true,
+        notFound: true,
+        phone: cleanPhone,
+        message: 'No account found with this phone number. Please create an account.',
+      });
     }
 
     // Generate 6-digit OTP
@@ -54,7 +66,8 @@ const sendOtp = async (req, res, next) => {
     res.status(200).json({
       message: 'OTP sent successfully to +91 ' + cleanPhone,
       phone: cleanPhone,
-      otp, // included for easy testing and instant auto-fill
+      otp,
+      isNewUser: !existingUser,
     });
   } catch (error) {
     next(error);
@@ -120,30 +133,42 @@ const verifyOtp = async (req, res, next) => {
 };
 
 // @route POST /api/auth/signup
-// Public student signup
+// Public student registration with Name, Phone, Email, Password
 const signup = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, phone, email, password } = req.body;
+    const cleanPhone = normalizePhone(phone);
     const normalizedEmail = email?.trim().toLowerCase();
     const trimmedName = name?.trim();
 
-    if (!trimmedName || !normalizedEmail || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+    if (!trimmedName) {
+      return res.status(400).json({ message: 'Full name is required' });
     }
-
-    if (!isValidStudentEmail(normalizedEmail)) {
+    if (!cleanPhone || cleanPhone.length !== 10) {
+      return res.status(400).json({ message: 'Valid 10-digit phone number is required' });
+    }
+    if (!normalizedEmail || !isValidStudentEmail(normalizedEmail)) {
       return res.status(400).json({ message: 'Please use a valid email address' });
     }
+    if (!password || password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
 
-    const existingUser = await User.findOne({ email: normalizedEmail });
-    if (existingUser) {
-      return res.status(409).json({ message: 'An account with this email already exists' });
+    const existingPhone = await User.findOne({ phone: cleanPhone });
+    if (existingPhone) {
+      return res.status(409).json({ message: 'An account with this phone number already exists. Please sign in.' });
+    }
+
+    const existingEmail = await User.findOne({ email: normalizedEmail });
+    if (existingEmail) {
+      return res.status(409).json({ message: 'An account with this email already exists. Please sign in.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
       name: trimmedName,
+      phone: cleanPhone,
       email: normalizedEmail,
       password: hashedPassword,
       role: 'student',
@@ -153,7 +178,14 @@ const signup = async (req, res, next) => {
 
     res.status(201).json({
       token,
-      user: { id: newUser._id, name: newUser.name, email: newUser.email, role: newUser.role },
+      message: 'Account created successfully!',
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        phone: newUser.phone,
+        email: newUser.email,
+        role: newUser.role,
+      },
     });
   } catch (error) {
     next(error);

@@ -1,8 +1,8 @@
 
 import api from './api';
 
-export const sendOtp = async ({ phone }) => {
-  const response = await api.post('/auth/send-otp', { phone });
+export const sendOtp = async ({ phone, mode }) => {
+  const response = await api.post('/auth/send-otp', { phone, mode });
   return response.data;
 };
 
@@ -11,8 +11,8 @@ export const verifyOtp = async ({ phone, otp, name }) => {
   return response.data;
 };
 
-export const signup = async ({ name, email, password, role }) => {
-  const response = await api.post('/auth/signup', { name, email, password, role });
+export const signup = async ({ name, phone, email, password, role }) => {
+  const response = await api.post('/auth/signup', { name, phone, email, password, role });
   return response.data;
 };
 
