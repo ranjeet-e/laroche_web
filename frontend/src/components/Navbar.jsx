@@ -61,13 +61,9 @@ const Navbar = () => {
           <div className="flex items-center gap-4 flex-shrink-0">
             <Link to="/" className="flex items-center gap-2 group">
               <img
-                src="/logo2.png"
+                src={isDark ? "/logo.png" : "/logo2.png"}
                 alt="La Roche Cafe"
-                className="h-11 w-auto object-contain mix-blend-multiply dark:mix-blend-screen dark:brightness-110 transition-transform duration-300 group-hover:scale-105"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/logo.png';
-                }}
+                className="h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
 

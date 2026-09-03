@@ -10,6 +10,7 @@ import {
   resetPassword as resetPasswordService,
 } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import {
   isValidPhoneNumber,
   isValidOtp,
@@ -23,6 +24,7 @@ const Auth = ({ initialMode = 'login' }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
+  const { isDark } = useTheme();
 
   // Mode: 'login' | 'signup' | 'forgot'
   const isSignupRoute = location.pathname === '/signup' || initialMode === 'signup';
@@ -317,13 +319,9 @@ const Auth = ({ initialMode = 'login' }) => {
         <div className="text-center mb-6">
           <Link to="/" className="inline-block mb-3">
             <img
-              src="/logo2.png"
+              src={isDark ? "/logo.png" : "/logo2.png"}
               alt="La Roche Cafe"
-              className="h-12 w-auto mx-auto object-contain mix-blend-multiply dark:mix-blend-screen"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = '/logo.png';
-              }}
+              className="h-12 w-auto mx-auto object-contain transition-transform duration-300"
             />
           </Link>
           <h2 className="text-2xl sm:text-3xl font-bold text-espresso tracking-tight">
