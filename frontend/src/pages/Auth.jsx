@@ -331,14 +331,14 @@ const Auth = ({ initialMode = 'login' }) => {
               ? 'Create Customer Account'
               : mode === 'forgot'
               ? 'Reset Password'
-              : 'Sign In to La Roche'}
+              : 'Sign In'}
           </h2>
           <p className="text-xs sm:text-sm text-taupe mt-1">
             {mode === 'signup'
               ? 'Join La Roche Cafe for quick ordering & instant counter pickup'
               : mode === 'forgot'
               ? 'Enter your email to receive a password reset code'
-              : 'Preorder your favorites & skip the counter queue'}
+              : ' '}
           </p>
         </div>
 
@@ -375,7 +375,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 }`}
               >
                 <Smartphone className="w-3.5 h-3.5" />
-                <span>Phone No. & OTP</span>
+                <span>Phone No.</span>
               </button>
 
               <button
@@ -538,7 +538,7 @@ const Auth = ({ initialMode = 'login' }) => {
 
             {/* Prominent Link to Create Account */}
             <div className="mt-8 pt-5 border-t border-stone-100 text-center">
-              <p className="text-xs text-taupe mb-2">First time at La Roche?</p>
+              <p className="text-xs text-taupe mb-2">New User?</p>
               <Link
                 to={`/signup${searchParamStr}`}
                 className="inline-flex items-center justify-center gap-1.5 w-full py-3 rounded-full border-2 border-terracotta/30 text-terracotta hover:bg-terracotta/5 font-bold text-xs sm:text-sm transition-all"

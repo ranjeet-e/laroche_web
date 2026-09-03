@@ -10,7 +10,6 @@ import {
   notifyOrderPreparing,
   notifyOrderReady,
 } from '../utils/notifications';
-import OrderCountdownTimer from '../components/OrderCountdownTimer';
 import './OrderHistory.css';
 
 const STATUS_STEPS = [
@@ -190,11 +189,6 @@ const OrderTracking = () => {
               </span>
               <span>{order.status}</span>
             </div>
-          </div>
-
-          {/* Dynamic Live Preparation Countdown Widget */}
-          <div className="mt-6">
-            <OrderCountdownTimer order={order} />
           </div>
 
           {/* Stepper Progress */}
