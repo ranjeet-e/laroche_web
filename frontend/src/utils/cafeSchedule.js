@@ -11,7 +11,7 @@ export const DEFAULT_SCHEDULE = {
   openTime: '09:00', // HH:mm 24-hr format
   closeTime: '21:00', // HH:mm 24-hr format
   preorderLeadMinutes: 30, // Orders open 30 mins before cafe open
-  enabled: true, // Master switch (set to false to disable schedule restriction)
+  enabled: false, // Master switch (set to false to disable schedule restriction)
 };
 
 export const getCafeScheduleStatus = (schedule = DEFAULT_SCHEDULE) => {

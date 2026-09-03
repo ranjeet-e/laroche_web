@@ -96,14 +96,17 @@ const Auth = ({ initialMode = 'login' }) => {
     setForgotStep('enter_email');
     setForgotOtp('');
     setForgotNewPassword('');
-    if (next === 'signup') navigate('/signup');
-    else if (next === 'login') navigate('/login');
+    const searchParam = location.search;
+    if (next === 'signup') navigate(`/signup${searchParam}`);
+    else if (next === 'login') navigate(`/login${searchParam}`);
   };
 
   const handlePostAuthRedirect = (data) => {
     login(data);
-    if (from) {
-      navigate(from);
+    const params = new URLSearchParams(location.search);
+    const redirectUrl = params.get('redirect') || from;
+    if (redirectUrl) {
+      navigate(redirectUrl);
     } else if (data.user?.role === 'kitchen') {
       navigate('/kitchen/dashboard');
     } else {

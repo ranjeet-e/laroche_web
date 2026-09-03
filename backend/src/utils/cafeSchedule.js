@@ -3,8 +3,8 @@
  */
 
 const DEFAULT_SCHEDULE = {
-  openTime: process.env.CAFE_OPEN_TIME || '09:00',
-  closeTime: process.env.CAFE_CLOSE_TIME || '21:00',
+  openTime: process.env.CAFE_OPEN_TIME || ' ',
+  closeTime: process.env.CAFE_CLOSE_TIME || ' ',
   preorderLeadMinutes: parseInt(process.env.CAFE_PREORDER_MINS || '30', 10),
   // Allow disabling via environment variable for 24/7 test environments
   enabled: process.env.DISABLE_SCHEDULE_CHECK !== 'true',
@@ -40,7 +40,7 @@ const isOrderingAllowed = (schedule = DEFAULT_SCHEDULE) => {
   // Ordering window: preorderStartMinutes <= currentMinutes < cafeCloseMinutes
   if (currentMinutes >= preorderStartMinutes && currentMinutes < cafeCloseMinutes) {
     return { allowed: true };
-  }
+  } 
 
   if (currentMinutes < preorderStartMinutes) {
     return {

@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Camera, Image as ImageIcon, Loader2, ChefHat, LogOut, ShieldCheck, Flame } from 'lucide-react';
+import { Camera, Image as ImageIcon, Loader2, Flame } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getActiveKitchenOrders, updateOrderStatus } from '../../services/orderService';
 import { useSocket } from '../../hooks/useSocket';
 import { playOrderBellSound } from '../../utils/audioAlerts';
 import { uploadImage } from '../../services/uploadService';
-import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import './KitchenDashboard.css';
 
@@ -62,19 +61,12 @@ const KitchenOrderTimer = ({ createdAt, status }) => {
 };
 
 const KitchenDashboard = () => {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('orders'); // orders | stock
   const [orders, setOrders] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    setShowLogoutModal(false);
-    navigate('/login');
-  };
 
   const fetchOrders = async () => {
     try {
@@ -226,30 +218,6 @@ const KitchenDashboard = () => {
 
   return (
     <div className="kitchen-dashboard">
-      {/* Kitchen Shift Control & Staff Status Bar */}
-      <div className="kitchen-shift-header">
-        <div className="kitchen-shift-info">
-          <div className="kitchen-status-pill">
-            <span className="kitchen-status-dot"></span>
-            <ChefHat className="w-4 h-4 text-terracotta" />
-            <span className="kitchen-status-text">KDS Station Active</span>
-          </div>
-          <span className="kitchen-staff-badge">
-            👤 {user?.name || user?.email || 'Kitchen Staff'}
-          </span>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setShowLogoutModal(true)}
-          className="kitchen-shift-logout-btn"
-          title="Sign out / End Shift"
-        >
-          <LogOut className="w-4 h-4" />
-          <span>End Shift / Sign Out</span>
-        </button>
-      </div>
-
       <div className="dashboard-tabs">
         <button
           className={`tab ${activeTab === 'orders' ? 'tab-active' : ''}`}
@@ -359,43 +327,6 @@ const KitchenDashboard = () => {
               </button>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Shift End / Sign Out Confirmation Modal */}
-      {showLogoutModal && (
-        <div
-          className="kitchen-logout-overlay"
-          onClick={() => setShowLogoutModal(false)}
-        >
-          <div
-            className="kitchen-logout-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="kitchen-logout-modal-icon">
-              <LogOut size={28} />
-            </div>
-            <h3 className="kitchen-logout-modal-title">End Kitchen Shift?</h3>
-            <p className="kitchen-logout-modal-desc">
-              You will be signed out from the Kitchen Display System. Incoming orders will continue to be received on active kitchen stations.
-            </p>
-            <div className="kitchen-logout-modal-actions">
-              <button
-                type="button"
-                onClick={() => setShowLogoutModal(false)}
-                className="kitchen-modal-btn kitchen-modal-cancel"
-              >
-                Stay on Duty
-              </button>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="kitchen-modal-btn kitchen-modal-confirm"
-              >
-                Sign Out / End Shift
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>

@@ -11,7 +11,6 @@ import {
   notifyOrderReady,
 } from '../utils/notifications';
 import OrderCountdownTimer from '../components/OrderCountdownTimer';
-import OrderQrPass from '../components/OrderQrPass';
 import './OrderHistory.css';
 
 const STATUS_STEPS = [
@@ -270,8 +269,18 @@ const OrderTracking = () => {
             </div>
           </div>
 
-          {/* Digital QR Pickup Verification Pass */}
-          <OrderQrPass order={order} />
+          {/* Counter Pickup Callout (No QR) */}
+          <div className="mt-6 p-4 rounded-2xl bg-stone-50 dark:bg-stone-800/80 border border-stone-200/80 dark:border-stone-700 text-center">
+            <span className="text-xs font-bold text-taupe uppercase tracking-wider block mb-1">
+              Counter Pickup Pass
+            </span>
+            <div className="text-2xl font-black text-terracotta font-mono">
+              #{order._id.slice(-6).toUpperCase()}
+            </div>
+            <p className="text-xs text-taupe mt-1">
+              Tell this Order ID at the counter when your status turns <strong>Ready for Pickup</strong>.
+            </p>
+          </div>
 
         </div>
 

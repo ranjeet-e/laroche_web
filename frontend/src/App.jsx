@@ -4,9 +4,10 @@ import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import IntroVideo from './components/IntroVideo';
 import SiteLock from './components/SiteLock';
+import AddToHomeScreen from './components/AddToHomeScreen';
 import Auth from './pages/Auth';
 import Menu from './pages/Menu';
 import Cart from './pages/Cart';
@@ -34,6 +35,7 @@ const AppRoutes = () => {
   return (
     <>
       <Navbar />
+      <AddToHomeScreen />
       <Routes>
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Auth initialMode="login" />} />
@@ -90,6 +92,33 @@ const App = () => {
   const [showIntro, setShowIntro] = useState(() => {
     return !sessionStorage.getItem('introShown');
   });
+
+  // 1-Hour Inactivity Reset: if site closed for > 1 hour, reset session
+  useEffect(() => {
+    const lastActive = localStorage.getItem('laroche_last_active');
+    const now = Date.now();
+    const oneHour = 60 * 60 * 1000;
+
+    if (lastActive && now - parseInt(lastActive, 10) > oneHour) {
+      sessionStorage.removeItem('introShown');
+      sessionStorage.removeItem('pwa_dismissed');
+      setShowIntro(true);
+    }
+
+    localStorage.setItem('laroche_last_active', String(now));
+
+    const updateActivity = () => {
+      localStorage.setItem('laroche_last_active', String(Date.now()));
+    };
+
+    window.addEventListener('click', updateActivity, { passive: true });
+    window.addEventListener('scroll', updateActivity, { passive: true });
+
+    return () => {
+      window.removeEventListener('click', updateActivity);
+      window.removeEventListener('scroll', updateActivity);
+    };
+  }, []);
 
   const handleIntroFinish = () => {
     sessionStorage.setItem('introShown', 'true');

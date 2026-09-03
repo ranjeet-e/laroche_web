@@ -131,9 +131,6 @@ const Menu = () => {
       {/* 1. Full-Bleed Cinematic Hero Section (hidden when user is searching) */}
       {!searchQuery && <HeroSection onExploreClick={handleExploreClick} />}
 
-      {/* 2. Cafe Operating & Pre-order Timing Banner */}
-      <CafeScheduleBanner />
-
       {/* 3. Unified Sticky Category Rail */}
       {!searchQuery && (
         <CategoryRail
@@ -204,7 +201,7 @@ const Menu = () => {
 
                     <div className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-terracotta">
                       <Sparkles className="w-3.5 h-3.5" />
-                      <span>Artisanal Kitchen</span>
+                      <span></span>
                     </div>
                   </div>
 
