@@ -189,7 +189,7 @@ const Menu = () => {
                   key={cat}
                   data-category={cat}
                   ref={(el) => (sectionRefs.current[cat] = el)}
-                  className="scroll-mt-36"
+                  className="scroll-mt-20 sm:scroll-mt-24"
                 >
                   {/* Category Header */}
                   <div className="flex items-end justify-between pb-3 mb-6 border-b border-stone-200/70">

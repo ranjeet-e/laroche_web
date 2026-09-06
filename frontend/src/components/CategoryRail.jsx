@@ -96,7 +96,7 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
   }, [activeCategory]);
 
   return (
-    <div id="category-rail-section" className="sticky top-16 sm:top-[72px] z-30 w-full py-3 sm:py-4 bg-[#FAF7F2]/98 dark:bg-[#14100E]/98 backdrop-blur-md border-b border-stone-200/70 dark:border-stone-800/80 shadow-sm transition-colors">
+    <div id="category-rail-section" className="relative w-full py-4 sm:py-6 bg-[#FAF7F2] dark:bg-[#14100E] border-b border-stone-200/70 dark:border-stone-800/80 transition-colors">
       <div className="max-w-7xl mx-auto px-2 sm:px-6 relative flex items-center">
         
         {/* Floating Left Scroll Arrow */}
