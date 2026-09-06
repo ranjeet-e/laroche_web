@@ -99,7 +99,7 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
   }, [activeCategory]);
 
   return (
-    <div id="category-rail-section" className="relative w-full py-4 sm:py-6 bg-[#FAF7F2] dark:bg-[#14100E] border-b border-stone-200/70 dark:border-stone-800/80 transition-colors">
+    <div id="category-rail-section" className="relative w-full py-4 sm:py-6 bg-transparent transition-colors">
       <div className="max-w-7xl mx-auto px-2 sm:px-6 relative flex items-center">
         
         {/* Floating Left Scroll Arrow */}
@@ -133,7 +133,7 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
                 <div
                   className={`w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden bg-white dark:bg-[#2B2421] shadow-warm-sm transition-all duration-200 p-0.5 ${
                     isActive
-                      ? 'ring-3 sm:ring-4 ring-terracotta ring-offset-2 ring-offset-[#FAF7F2] dark:ring-offset-[#14100E] scale-105 shadow-warm-md'
+                      ? 'ring-3 sm:ring-4 ring-terracotta ring-offset-2 ring-offset-oat dark:ring-offset-espresso-dark scale-105 shadow-warm-md'
                       : 'border-2 border-stone-200/80 dark:border-stone-700/80 group-hover:border-terracotta/60 group-hover:scale-105'
                   }`}
                 >
