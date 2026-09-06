@@ -59,7 +59,7 @@ const OrderHistory = () => {
             onClick={() => navigate(`/orders/${order._id}`)}
           >
             <div className="order-card-top">
-              <span className="order-id">#{order._id.slice(-6).toUpperCase()}</span>
+              <span className="order-id">Order #{order.orderNumber ? order.orderNumber : order._id.slice(-4).toUpperCase()}</span>
               <span className="order-status">{order.status}</span>
             </div>
             <p className="order-items-preview">

@@ -1,0 +1,26 @@
+{
+  "short_name": "La Roche",
+  "name": "La Roche Cafe",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "1024x1024"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#2E1A02",
+  "theme_color": "#2E1A02",
+  "display": "standalone",
+  "scope": "/"
+}

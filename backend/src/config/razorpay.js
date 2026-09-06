@@ -1,18 +1,22 @@
 require('dotenv').config();
 const Razorpay = require('razorpay');
 
-const key_id = process.env.RAZORPAY_KEY_ID || 'rzp_test_TLcPKP2TMp6rsX';
-const key_secret = process.env.RAZORPAY_KEY_SECRET || 'QP7Qr3FS4AGAhyjgQAaf6MgD';
+const key_id = process.env.RAZORPAY_KEY_ID;
+const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
 let razorpayInstance = null;
 
-try {
-  razorpayInstance = new Razorpay({
-    key_id,
-    key_secret,
-  });
-} catch (err) {
-  console.warn('Razorpay initialization warning:', err.message);
+if (key_id && key_secret) {
+  try {
+    razorpayInstance = new Razorpay({
+      key_id,
+      key_secret,
+    });
+  } catch (err) {
+    console.warn('Razorpay initialization warning:', err.message);
+  }
+} else {
+  console.warn('Razorpay keys not configured. Payment gateway will remain inactive until keys are provided in .env');
 }
 
 module.exports = razorpayInstance;

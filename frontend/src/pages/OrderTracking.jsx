@@ -174,7 +174,7 @@ const OrderTracking = () => {
                 Live Status Tracker
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold text-[#231F20] dark:text-white mt-0.5">
-                Order #{order._id.slice(-6).toUpperCase()}
+                Order #{order.orderNumber ? order.orderNumber : order._id.slice(-4).toUpperCase()}
               </h2>
               <span className="text-xs text-[#8F7E75] dark:text-[#A89B91] mt-1 inline-flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />

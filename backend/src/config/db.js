@@ -3,27 +3,30 @@ const bcrypt = require('bcryptjs');
 
 const ensureKitchenUser = async () => {
   try {
+    const kitchenEmail = process.env.KITCHEN_EMAIL;
+    const kitchenPassword = process.env.KITCHEN_PASSWORD;
+
+    if (!kitchenEmail || !kitchenPassword) {
+      return;
+    }
+
     const User = require('../models/User');
-    const kitchenEmail = (process.env.KITCHEN_EMAIL || 'kitchen@larochecafe.com').toLowerCase();
-    const existing = await User.findOne({ email: kitchenEmail });
+    const existing = await User.findOne({ email: kitchenEmail.toLowerCase() });
 
     if (!existing) {
-      const kitchenPassword = process.env.KITCHEN_PASSWORD || 'kitchen123';
       const hashedPassword = await bcrypt.hash(kitchenPassword, 10);
       await User.create({
         name: 'Kitchen Staff',
-        email: kitchenEmail,
+        email: kitchenEmail.toLowerCase(),
         password: hashedPassword,
         role: 'kitchen',
       });
-      console.log(`✅ Default Kitchen Staff account initialized (${kitchenEmail})`);
+      console.log(`✅ Default Kitchen Staff account initialized (${kitchenEmail.toLowerCase()})`);
     }
   } catch (err) {
     console.error(`Error ensuring kitchen user: ${err.message}`);
   }
 };
-
-const DEFAULT_MONGO_URI = 'mongodb+srv://ranjitepili08_db_user:lMTwp3IarUDmmlOP@cluster0.fkngqwf.mongodb.net/laroche_cafe?appName=Cluster0';
 
 let cachedConn = null;
 
@@ -36,7 +39,11 @@ const connectDB = async () => {
     return cachedConn;
   }
 
-  const uri = process.env.MONGO_URI || DEFAULT_MONGO_URI;
+  const uri = process.env.MONGO_URI;
+  if (!uri) {
+    throw new Error('MONGO_URI environment variable is not defined.');
+  }
+
   try {
     cachedConn = await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 8000,

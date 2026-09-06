@@ -1,5 +1,5 @@
 const Order = require('../models/Order');
-const { isOrderingAllowed } = require('../utils/cafeSchedule');
+const { isOrderingAllowed } = require('./cafeSchedule');
 
 // @route POST /api/orders
 // Student-only — place a new order (before payment)
@@ -21,7 +21,12 @@ const placeOrder = async (req, res, next) => {
       0
     );
 
+    // Calculate sequential order number (Order #1, #2, #3...)
+    const lastOrder = await Order.findOne().sort({ createdAt: -1 });
+    const orderNumber = (lastOrder?.orderNumber ? lastOrder.orderNumber : await Order.countDocuments()) + 1;
+
     const newOrder = await Order.create({
+      orderNumber,
       student: req.user.id,
       items,
       totalAmount,

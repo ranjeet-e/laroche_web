@@ -260,7 +260,7 @@ const KitchenDashboard = () => {
                   colOrders.map((order) => (
                     <div className="order-card-kanban" key={order._id}>
                       <div className="order-card-kanban-top">
-                        <span className="order-id">#{order._id.slice(-6).toUpperCase()}</span>
+                        <span className="order-id">Order #{order.orderNumber ? order.orderNumber : order._id.slice(-4).toUpperCase()}</span>
                         <KitchenOrderTimer createdAt={order.createdAt} status={order.status} />
                       </div>
                       <div className="order-card-subinfo">

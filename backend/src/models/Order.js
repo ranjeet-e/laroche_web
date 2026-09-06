@@ -26,6 +26,10 @@ const orderItemSchema = new mongoose.Schema(
 
 const orderSchema = new mongoose.Schema(
   {
+    orderNumber: {
+      type: Number,
+      index: true,
+    },
     student: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

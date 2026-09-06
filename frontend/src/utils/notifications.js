@@ -38,8 +38,8 @@ export const sendBrowserNotification = (title, options = {}) => {
 
   try {
     const defaultOptions = {
-      icon: '/logo.png',
-      badge: '/logo.png',
+      icon: '/logo2.png',
+      badge: '/logo2.png',
       vibrate: [200, 100, 200],
       requireInteraction: false,
       ...options,
@@ -66,7 +66,7 @@ export const notifyOrderPreparing = (order) => {
   return sendBrowserNotification('🍳 Order is Being Prepared!', {
     body: `Chefs at La Roche Cafe are now freshly preparing your order #${shortId}. It will be ready shortly!`,
     tag: `order-prep-${order?._id || Date.now()}`,
-    icon: '/logo.png',
+    icon: '/logo2.png',
   });
 };
 
@@ -75,7 +75,7 @@ export const notifyOrderReady = (order) => {
   return sendBrowserNotification('🎉 Order Ready for Pickup!', {
     body: `Your delicious meal for Order #${shortId} is hot & fresh at the counter. Grab it now!`,
     tag: `order-ready-${order?._id || Date.now()}`,
-    icon: '/logo.png',
+    icon: '/logo2.png',
     requireInteraction: true,
   });
 };

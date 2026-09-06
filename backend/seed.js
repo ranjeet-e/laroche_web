@@ -196,6 +196,10 @@ const menuItems = [
 
 const seedDatabase = async () => {
   try {
+    if (!process.env.MONGO_URI) {
+      console.error('Error: MONGO_URI must be defined in your .env file.');
+      process.exit(1);
+    }
     await mongoose.connect(process.env.MONGO_URI);
     console.log('MongoDB connected for seeding...');
 

@@ -2,9 +2,9 @@ const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'hs9vvez4',
-  api_key: process.env.CLOUDINARY_API_KEY || '673671639866368',
-  api_secret: process.env.CLOUDINARY_API_SECRET || '6TaUH0i771MIddZs1kxjiofmiG0',
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 // Configure Multer to keep files in memory buffer before sending to Cloudinary

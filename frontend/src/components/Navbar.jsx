@@ -16,6 +16,7 @@ const Navbar = () => {
 
   const [searchValue, setSearchValue] = useState('');
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showProfileSheet, setShowProfileSheet] = useState(false);
 
   // Keep search in sync with query parameter
   useEffect(() => {
@@ -29,10 +30,12 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     setShowLogoutModal(false);
+    setShowProfileSheet(false);
     navigate('/menu');
   };
 
   const confirmLogout = () => {
+    setShowProfileSheet(false);
     setShowLogoutModal(true);
   };
 
@@ -54,16 +57,16 @@ const Navbar = () => {
   return (
     <>
       {/* Pinned Frosted Glass Navigation Bar */}
-      <nav className="sticky top-0 z-40 w-full h-[72px] bg-[#FAF7F2]/90 dark:bg-[#14100E]/95 backdrop-blur-md border-b border-stone-200/60 dark:border-stone-800/80 px-4 sm:px-6 transition-colors duration-300">
-        <div className="max-w-7xl h-full mx-auto flex items-center justify-between gap-4">
+      <nav className="sticky top-0 z-40 w-full h-[64px] sm:h-[72px] bg-[#FAF7F2]/95 dark:bg-[#14100E]/95 backdrop-blur-md border-b border-stone-200/70 dark:border-stone-800/80 px-3 sm:px-6 transition-colors duration-300">
+        <div className="max-w-7xl h-full mx-auto flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Brand Logo & Live Counter */}
-          <div className="flex items-center gap-4 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             <Link to="/" className="flex items-center gap-2 group">
               <img
                 src={isDark ? "/logo.png" : "/logo2.png"}
                 alt="La Roche Cafe"
-                className="h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                className="h-8 sm:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
 
@@ -78,15 +81,15 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Search Bar (Menu Page & Public) */}
+          {/* Expanded Search Bar (Takes maximum available width on mobile & desktop) */}
           {!isKitchen && (
-            <div className="flex-1 max-w-md relative">
+            <div className="flex-1 min-w-0 mx-1 sm:mx-2 max-w-lg relative">
               <div className="relative flex items-center">
-                <Search className="w-4 h-4 text-taupe dark:text-stone-400 absolute left-3.5 pointer-events-none" />
+                <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-taupe dark:text-stone-400 absolute left-3 pointer-events-none" />
                 <input
                   type="text"
-                  className="w-full h-10 pl-10 pr-9 rounded-full bg-white dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 text-espresso dark:text-stone-100 placeholder:text-taupe-light dark:placeholder:text-stone-500 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:ring-2 focus:ring-terracotta/10 shadow-warm-sm transition-all duration-200"
-                  placeholder="Search toasties, pizzas, frappes, coffee..."
+                  className="w-full h-9 sm:h-10 pl-8 sm:pl-10 pr-8 sm:pr-9 rounded-full bg-white dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 text-espresso dark:text-stone-100 placeholder:text-taupe-light dark:placeholder:text-stone-500 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:ring-2 focus:ring-terracotta/10 shadow-warm-sm transition-all duration-200"
+                  placeholder="Search dishes..."
                   value={searchValue}
                   onChange={handleSearchChange}
                 />
@@ -94,10 +97,10 @@ const Navbar = () => {
                   <button
                     type="button"
                     onClick={clearSearch}
-                    className="absolute right-3 text-taupe hover:text-espresso dark:text-stone-400 dark:hover:text-stone-200 p-0.5 rounded-full hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
+                    className="absolute right-2.5 text-taupe hover:text-espresso dark:text-stone-400 dark:hover:text-stone-200 p-0.5 rounded-full hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
                     aria-label="Clear search"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <X className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </button>
                 )}
               </div>
@@ -211,65 +214,175 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Right Action */}
-          <div className="flex md:hidden items-center gap-2">
-            {/* Mobile Theme Toggle */}
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="p-2 rounded-full border border-stone-200/80 dark:border-stone-700 bg-white/80 dark:bg-stone-800 text-espresso dark:text-amber-300 shadow-warm-sm transition-all"
-              title="Toggle theme"
-              aria-label="Toggle theme"
-            >
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-
+          {/* Clean Mobile Right Action (Cart + Profile Avatar Button) */}
+          <div className="flex md:hidden items-center gap-1.5 flex-shrink-0">
             {!isKitchen && (
               <Link
                 to="/cart"
-                className="relative p-2.5 rounded-full bg-white dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 text-espresso dark:text-stone-200 shadow-warm-sm"
+                className="relative p-2 rounded-full bg-white dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 text-espresso dark:text-stone-200 shadow-warm-sm"
                 aria-label="Cart"
               >
                 <ShoppingBag className="w-4 h-4" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-terracotta text-white text-[10px] flex items-center justify-center font-extrabold shadow-sm">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-terracotta text-white text-[9px] flex items-center justify-center font-extrabold shadow-sm">
                     {totalItems}
                   </span>
                 )}
               </Link>
             )}
 
-            {user ? (
-              <div className="flex items-center gap-1.5">
-                <Link
-                  to={isKitchen ? '/kitchen/dashboard' : '/orders'}
-                  className="w-8 h-8 rounded-full bg-terracotta/10 text-terracotta flex items-center justify-center font-bold text-xs border border-terracotta/20 shadow-warm-sm active:scale-95 transition-transform"
-                  title="My Account"
-                >
-                  {user.name ? user.name.charAt(0).toUpperCase() : '👤'}
-                </Link>
-                <button
-                  type="button"
-                  onClick={confirmLogout}
-                  className="p-2 rounded-full text-stone-600 dark:text-stone-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 border border-stone-200/80 dark:border-stone-700 bg-white dark:bg-stone-800 shadow-warm-sm active:scale-95 transition-all"
-                  title="Sign out"
-                  aria-label="Sign out"
-                >
-                  <LogOut className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300 hover:text-red-600" />
-                </button>
-              </div>
-            ) : (
-              <Link
-                to="/login"
-                className="px-3 py-1.5 rounded-full bg-espresso dark:bg-stone-100 text-white dark:text-stone-900 text-xs font-bold"
-              >
-                Sign In
-              </Link>
-            )}
+            {/* Profile Avatar Button (PPF) -> Opens Bottom Sheet with Dark Mode & Signout */}
+            <button
+              type="button"
+              onClick={() => setShowProfileSheet(true)}
+              className="w-8 h-8 rounded-full bg-[#9F7A60]/15 dark:bg-stone-800 text-[#9F7A60] dark:text-stone-100 border border-[#9F7A60]/30 dark:border-stone-700 flex items-center justify-center font-extrabold text-xs shadow-warm-sm active:scale-95 transition-transform"
+              title="Profile & Settings"
+              aria-label="Profile and Settings"
+            >
+              {user?.name ? user.name.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
+            </button>
           </div>
 
         </div>
       </nav>
+
+      {/* Mobile Profile & Settings Drawer / Bottom Sheet */}
+      {showProfileSheet && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm transition-all p-0 sm:p-4"
+          onClick={() => setShowProfileSheet(false)}
+        >
+          <div
+            className="w-full sm:max-w-sm bg-white dark:bg-[#1C1715] rounded-t-3xl sm:rounded-3xl p-6 shadow-warm-xl border-t sm:border border-stone-200/80 dark:border-stone-800 transform transition-all animate-slideUp sm:animate-scaleUp max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drawer Top Handle (Mobile) */}
+            <div className="w-12 h-1 bg-stone-300 dark:bg-stone-700 rounded-full mx-auto mb-4 sm:hidden" />
+
+            {/* Header User Card */}
+            <div className="flex items-center justify-between pb-4 border-b border-stone-100 dark:border-stone-800 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-terracotta/15 text-terracotta flex items-center justify-center text-lg font-black border border-terracotta/30">
+                  {user?.name ? user.name.charAt(0).toUpperCase() : <User className="w-6 h-6" />}
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-espresso dark:text-white text-base">
+                    {user ? user.name : 'Welcome Guest'}
+                  </h3>
+                  <p className="text-xs text-taupe dark:text-stone-400">
+                    {user ? (user.email || user.phone || 'Campus Member') : 'Sign in for pre-orders & passes'}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowProfileSheet(false)}
+                className="p-1.5 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-taupe dark:text-stone-400"
+                aria-label="Close profile drawer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Profile Action Items */}
+            <div className="space-y-2">
+              
+              {/* 1. Dark Mode Toggle Row (Inside PPF) */}
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-stone-50 dark:bg-[#28211E] border border-stone-200/60 dark:border-stone-800/80">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-white dark:bg-stone-800 text-amber-500 shadow-sm">
+                    {isDark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                  </div>
+                  <div>
+                    <span className="text-xs sm:text-sm font-bold text-espresso dark:text-stone-100 block">Dark Mode</span>
+                    <span className="text-[11px] text-taupe dark:text-stone-400">{isDark ? 'Dark Mocha Theme' : 'Warm Cream Theme'}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className={`w-12 h-7 rounded-full transition-colors relative p-1 focus:outline-none ${
+                    isDark ? 'bg-terracotta' : 'bg-stone-300'
+                  }`}
+                  aria-label="Toggle theme"
+                >
+                  <div
+                    className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform ${
+                      isDark ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* 2. My Orders Link */}
+              {user && isStudent && (
+                <Link
+                  to="/orders"
+                  onClick={() => setShowProfileSheet(false)}
+                  className="flex items-center gap-3 p-3.5 rounded-2xl hover:bg-stone-50 dark:hover:bg-[#28211E] text-espresso dark:text-stone-200 font-bold text-xs sm:text-sm transition-colors border border-transparent hover:border-stone-200/60 dark:hover:border-stone-800"
+                >
+                  <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-terracotta">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <span>My Active & Past Orders</span>
+                </Link>
+              )}
+
+              {/* 3. Kitchen Dashboard Link (if kitchen) */}
+              {user && isKitchen && (
+                <Link
+                  to="/kitchen/dashboard"
+                  onClick={() => setShowProfileSheet(false)}
+                  className="flex items-center gap-3 p-3.5 rounded-2xl hover:bg-stone-50 dark:hover:bg-[#28211E] text-espresso dark:text-stone-200 font-bold text-xs sm:text-sm transition-colors"
+                >
+                  <div className="p-2 rounded-xl bg-terracotta/15 text-terracotta">
+                    <ChefHat className="w-4 h-4" />
+                  </div>
+                  <span>Kitchen Live Dashboard</span>
+                </Link>
+              )}
+
+              {/* 4. Menu Link */}
+              <Link
+                to="/menu"
+                onClick={() => setShowProfileSheet(false)}
+                className="flex items-center gap-3 p-3.5 rounded-2xl hover:bg-stone-50 dark:hover:bg-[#28211E] text-espresso dark:text-stone-200 font-bold text-xs sm:text-sm transition-colors"
+              >
+                <div className="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 text-espresso dark:text-stone-200">
+                  <UtensilsCrossed className="w-4 h-4" />
+                </div>
+                <span>Explore Full Menu</span>
+              </Link>
+            </div>
+
+            {/* Bottom Auth CTA (Sign Out or Sign In) */}
+            <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800">
+              {user ? (
+                <button
+                  type="button"
+                  onClick={confirmLogout}
+                  className="w-full py-3 rounded-2xl bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/50 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 border border-red-200/60 dark:border-red-900/40 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign Out of Cafe Account</span>
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setShowProfileSheet(false)}
+                  className="w-full py-3 rounded-2xl bg-espresso dark:bg-stone-100 text-white dark:text-stone-900 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-warm-sm"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Sign In / Register</span>
+                </Link>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* Mobile App Bottom Floating Bar Navigation */}
       {!isKitchen && (

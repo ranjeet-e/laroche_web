@@ -2,20 +2,38 @@ import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import './AddonsModal.css';
 
-const ADDON_TRIGGER_CATEGORIES = [
-  'Sandwiches', 'Maggie', 'Pasta', 'Flatbread Pizza', 'Quick Bites & Café Snacks',
-];
+// Intelligent add-on relevance mapping by category
+const CATEGORY_ALLOWED_ADDONS = {
+  'Sandwiches': ['Cheese', 'Mayonnaise', 'Paneer', 'Brown Bread', 'Schewan Sauce', 'Schezwan Sauce'],
+  'Flatbread Pizza': ['Cheese', 'Paneer', 'Schewan Sauce', 'Schezwan Sauce'],
+  'Pasta': ['Cheese', 'Paneer', 'Schewan Sauce', 'Schezwan Sauce'],
+  'Maggie': ['Cheese', 'Paneer', 'Schewan Sauce', 'Schezwan Sauce'],
+  'Quick Bites & Café Snacks': ['Cheese', 'Mayonnaise', 'Schewan Sauce', 'Schezwan Sauce'], // NO bread, NO paneer on fries/snacks
+  'Chat Counter': ['Cheese', 'Schewan Sauce', 'Schezwan Sauce'],
+};
+
+export const getRelevantAddons = (item, allItems) => {
+  if (!item || !item.category) return [];
+  const allowedNames = CATEGORY_ALLOWED_ADDONS[item.category] || [];
+  if (allowedNames.length === 0) return [];
+
+  return allItems.filter((i) => {
+    if (i.category !== 'Add-ons') return false;
+    return allowedNames.some((allowed) =>
+      i.name.toLowerCase().includes(allowed.toLowerCase())
+    );
+  });
+};
 
 export const shouldShowAddons = (item, allItems) => {
-  if (!ADDON_TRIGGER_CATEGORIES.includes(item.category)) return false;
-  return allItems.some((i) => i.category === 'Add-ons');
+  return getRelevantAddons(item, allItems).length > 0;
 };
 
 const AddonsModal = ({ baseItem, allItems, onClose }) => {
   const { addToCart } = useCart();
   const [selected, setSelected] = useState([]);
 
-  const addonOptions = allItems.filter((i) => i.category === 'Add-ons');
+  const addonOptions = getRelevantAddons(baseItem, allItems);
 
   const toggleAddon = (addon) => {
     setSelected((prev) =>

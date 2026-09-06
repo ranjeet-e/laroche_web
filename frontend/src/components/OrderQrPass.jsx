@@ -59,7 +59,7 @@ const OrderQrPass = ({ order }) => {
           <QrCode size={14} />
           <span>Counter Pickup Pass</span>
         </div>
-        <span className="qr-pass-token">Token #{shortToken}</span>
+        <span className="qr-pass-token">Order #{order.orderNumber ? order.orderNumber : shortToken}</span>
       </div>
 
       <div className="qr-code-wrapper">

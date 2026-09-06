@@ -7,7 +7,7 @@ const {
   login,
   forgotPassword,
   resetPassword,
-} = require('../controllers/authController');
+} = require('../utils/authController');
 
 router.post('/send-otp', sendOtp);
 router.post('/verify-otp', verifyOtp);

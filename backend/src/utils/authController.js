@@ -2,14 +2,20 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Otp = require('../models/Otp');
-const { isValidStudentEmail } = require('../utils/emailValidator');
+const { isValidStudentEmail } = require('./emailValidator');
 
-const JWT_SECRET = process.env.JWT_SECRET || '8f3a1c9e2b7d4f6a0e5c8b2d9f1a3e7c4b6d8f0a2c5e9b1d3f7a0c4e8b2d6f9a';
+const getJwtSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is not defined.');
+  }
+  return secret;
+};
 
 const generateToken = (user) => {
   return jwt.sign(
     { id: user._id, role: user.role },
-    JWT_SECRET,
+    getJwtSecret(),
     { expiresIn: '7d' }
   );
 };
@@ -59,16 +65,24 @@ const sendOtp = async (req, res, next) => {
       { upsert: true, new: true }
     );
 
-    console.log(`\n========================================`);
-    console.log(`📲 [SMS OTP] Sent to +91 ${cleanPhone}: ${otp}`);
-    console.log(`========================================\n`);
+    const isDev = process.env.NODE_ENV === 'development';
+    if (isDev) {
+      console.log(`\n========================================`);
+      console.log(`📲 [SMS OTP] Sent to +91 ${cleanPhone}: ${otp}`);
+      console.log(`========================================\n`);
+    }
 
-    res.status(200).json({
+    const responsePayload = {
       message: 'OTP sent successfully to +91 ' + cleanPhone,
       phone: cleanPhone,
-      otp,
       isNewUser: !existingUser,
-    });
+    };
+
+    if (isDev) {
+      responsePayload.otp = otp;
+    }
+
+    res.status(200).json(responsePayload);
   } catch (error) {
     next(error);
   }
@@ -248,15 +262,23 @@ const forgotPassword = async (req, res, next) => {
       { upsert: true, new: true }
     );
 
-    console.log(`\n========================================`);
-    console.log(`🔑 [PASSWORD RESET OTP] Sent to ${normalizedEmail}: ${otp}`);
-    console.log(`========================================\n`);
+    const isDev = process.env.NODE_ENV === 'development';
+    if (isDev) {
+      console.log(`\n========================================`);
+      console.log(`🔑 [PASSWORD RESET OTP] Sent to ${normalizedEmail}: ${otp}`);
+      console.log(`========================================\n`);
+    }
 
-    res.status(200).json({
+    const responsePayload = {
       message: `Verification code sent to ${normalizedEmail}`,
       email: normalizedEmail,
-      otp, // included for seamless development & instant testing
-    });
+    };
+
+    if (isDev) {
+      responsePayload.otp = otp;
+    }
+
+    res.status(200).json(responsePayload);
   } catch (error) {
     next(error);
   }

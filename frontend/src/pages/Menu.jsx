@@ -15,7 +15,7 @@ const Menu = () => {
   const [items, setItems] = useState([]);
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('q') || '';
-  const [activeCategory, setActiveCategory] = useState('popular');
+  const [activeCategory, setActiveCategory] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -38,6 +38,12 @@ const Menu = () => {
   const categories = useMemo(() => {
     return [...new Set(items.map((item) => item.category))].filter((c) => c !== 'Add-ons');
   }, [items]);
+
+  useEffect(() => {
+    if (categories.length > 0 && !activeCategory) {
+      setActiveCategory(categories[0]);
+    }
+  }, [categories, activeCategory]);
 
   const groupedItems = useMemo(() => {
     const groups = {};
@@ -81,10 +87,7 @@ const Menu = () => {
 
   const handleSelectCategory = (catKey) => {
     setActiveCategory(catKey);
-    if (catKey === 'popular') {
-      const el = document.getElementById('section-popular') || document.getElementById('category-rail-section');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (sectionRefs.current[catKey]) {
+    if (sectionRefs.current[catKey]) {
       sectionRefs.current[catKey].scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
@@ -131,7 +134,13 @@ const Menu = () => {
       {/* 1. Full-Bleed Cinematic Hero Section (hidden when user is searching) */}
       {!searchQuery && <HeroSection onExploreClick={handleExploreClick} />}
 
-      {/* 3. Unified Sticky Category Rail */}
+      {/* 2. Promotional Highlight Banner */}
+      {!searchQuery && <PromoBanner />}
+
+      {/* 3. Dynamic "Popular Right Now" Curated Spotlight Carousel */}
+      {!searchQuery && <FeaturedCarousel allItems={items} />}
+
+      {/* 4. Unified Sticky Category Rail (Circular icons like Fig 3) */}
       {!searchQuery && (
         <CategoryRail
           categories={categories}
@@ -139,12 +148,6 @@ const Menu = () => {
           onSelectCategory={handleSelectCategory}
         />
       )}
-
-      {/* 3. Promotional Highlight Banner */}
-      {!searchQuery && <PromoBanner />}
-
-      {/* 4. Dynamic "Popular Right Now" Curated Spotlight Carousel */}
-      {!searchQuery && <FeaturedCarousel allItems={items} />}
 
       {/* 5. Main Menu Content */}
       <main id="menu-content" className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
@@ -167,7 +170,7 @@ const Menu = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
                 {searchResults.map((item) => (
                   <FoodCard key={item._id} item={item} allItems={items} />
                 ))}
@@ -205,8 +208,8 @@ const Menu = () => {
                     </div>
                   </div>
 
-                  {/* Food Cards Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+                  {/* Food Cards Grid (2-Column Mobile like Fig 1) */}
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
                     {catItems.map((item) => (
                       <FoodCard key={item._id} item={item} allItems={items} />
                     ))}

@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   getActiveOrders,
   updateOrderStatus,
-} = require('../controllers/kitchenController');
+} = require('../utils/kitchenController');
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 

@@ -38,10 +38,10 @@ const FoodCard = ({ item, allItems = [] }) => {
 
   return (
     <>
-      <div className="group bg-white rounded-2xl border border-stone-200/80 shadow-warm-sm hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between">
+      <div className="group bg-white dark:bg-[#2B2421] rounded-2xl border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-sm hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between">
         
         {/* Media Wrap (Uniform 4/3 Aspect Ratio) */}
-        <div className="relative w-full aspect-[4/3] bg-stone-100 overflow-hidden">
+        <div className="relative w-full aspect-[4/3] bg-stone-100 dark:bg-stone-800 overflow-hidden">
           <img
             src={item.imageUrl || '/placeholder-food.png'}
             alt={item.name}
@@ -53,74 +53,73 @@ const FoodCard = ({ item, allItems = [] }) => {
             }}
           />
 
-          {/* Veg Dot Badge */}
-          <div className="absolute top-3 left-3 w-5 h-5 rounded-md bg-white/90 backdrop-blur-sm border border-matcha/50 flex items-center justify-center shadow-sm" title="Vegetarian">
-            <div className="w-2.5 h-2.5 rounded-full bg-matcha" />
+          {/* Veg Dot Badge (Green Square like Fig 1) */}
+          <div className="absolute top-2 left-2 w-4 h-4 sm:w-5 sm:h-5 rounded-md bg-white/95 dark:bg-stone-900/90 backdrop-blur-sm border border-emerald-500 flex items-center justify-center shadow-sm" title="Vegetarian">
+            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-600" />
           </div>
 
           {/* Customisable Indicator Pill */}
           {(hasMultipleVariants || showAddons) && (
-            <div className="absolute top-3 right-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/90 backdrop-blur-md text-espresso border border-stone-200/60 shadow-sm">
-              <SlidersHorizontal className="w-2.5 h-2.5 text-terracotta" />
-              <span>Customisable</span>
+            <div className="absolute top-2 right-2 inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-bold uppercase tracking-wider bg-white/95 dark:bg-stone-900/90 backdrop-blur-md text-espresso dark:text-stone-200 border border-stone-200/60 dark:border-stone-700 shadow-sm">
+              <SlidersHorizontal className="w-2 h-2 text-terracotta" />
+              <span className="hidden xs:inline">Custom</span>
             </div>
           )}
         </div>
 
         {/* Card Details */}
-        <div className="p-4 flex-1 flex flex-col justify-between">
+        <div className="p-2.5 sm:p-4 flex-1 flex flex-col justify-between">
           <div>
-            <span className="text-[11px] font-semibold text-taupe uppercase tracking-wider">
+            <span className="text-[10px] sm:text-[11px] font-semibold text-taupe dark:text-stone-400 uppercase tracking-wider line-clamp-1">
               {item.category}
             </span>
-            <h3 className="font-bold text-espresso text-base sm:text-lg leading-snug group-hover:text-terracotta transition-colors mt-0.5" title={item.name}>
+            <h3 className="font-bold text-espresso dark:text-stone-100 text-xs sm:text-base leading-snug group-hover:text-terracotta transition-colors mt-0.5 line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]" title={item.name}>
               {item.name}
             </h3>
             {item.description && (
-              <p className="text-xs text-taupe-light mt-1 line-clamp-2 leading-relaxed">
+              <p className="hidden sm:block text-xs text-taupe-light dark:text-stone-400 mt-1 line-clamp-2 leading-relaxed">
                 {item.description}
               </p>
             )}
           </div>
 
           {/* Footer Price & Action */}
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-100">
+          <div className="flex items-center justify-between gap-1 mt-2.5 sm:mt-4 pt-2 sm:pt-3 border-t border-stone-100 dark:border-stone-800">
             <div>
-              <span className="text-[11px] text-taupe block">Price</span>
-              <p className="font-extrabold text-espresso text-base sm:text-lg">
-                {hasMultipleVariants ? `From ₹${displayPrice}` : `₹${displayPrice}`}
+              <p className="font-extrabold text-espresso dark:text-stone-100 text-xs sm:text-base whitespace-nowrap">
+                {hasMultipleVariants ? `₹${displayPrice}+` : `₹${displayPrice}`}
               </p>
             </div>
 
-            {/* Dynamic CTA Pill */}
+            {/* Dynamic CTA Pill (Fig 1 style ADD button) */}
             <div>
               {quantity === 0 ? (
                 <button
                   type="button"
                   onClick={handleAddClick}
-                  className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-terracotta hover:bg-terracotta-hover text-white text-xs sm:text-sm font-bold shadow-sm hover:shadow-warm-md active:scale-95 transition-all duration-200"
+                  className="inline-flex items-center justify-center gap-1 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-lg sm:rounded-full bg-white dark:bg-stone-800 border border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-[11px] sm:text-xs font-extrabold shadow-sm active:scale-95 transition-all duration-200 uppercase tracking-wide"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3 h-3 stroke-[2.5]" />
                   <span>ADD</span>
                 </button>
               ) : (
-                <div className="inline-flex items-center bg-espresso text-white rounded-full p-1 shadow-sm">
+                <div className="inline-flex items-center bg-emerald-600 text-white rounded-lg sm:rounded-full p-0.5 sm:p-1 shadow-sm">
                   <button
                     type="button"
                     onClick={handleDecrease}
-                    className="w-7 h-7 rounded-full hover:bg-white/20 flex items-center justify-center transition-colors"
+                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-full hover:bg-black/15 flex items-center justify-center transition-colors"
                     aria-label="Decrease"
                   >
-                    <Minus className="w-3.5 h-3.5" />
+                    <Minus className="w-3 h-3 stroke-[2.5]" />
                   </button>
-                  <span className="px-2.5 font-bold text-xs sm:text-sm">{quantity}</span>
+                  <span className="px-1.5 sm:px-2 font-extrabold text-[11px] sm:text-xs">{quantity}</span>
                   <button
                     type="button"
                     onClick={handleAddClick}
-                    className="w-7 h-7 rounded-full hover:bg-white/20 flex items-center justify-center transition-colors"
+                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-full hover:bg-black/15 flex items-center justify-center transition-colors"
                     aria-label="Increase"
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <Plus className="w-3 h-3 stroke-[2.5]" />
                   </button>
                 </div>
               )}

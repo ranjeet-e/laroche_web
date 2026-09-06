@@ -6,7 +6,7 @@ const {
   addMenuItem,
   updateMenuItem,
   deleteMenuItem,
-} = require('../controllers/menuController');
+} = require('../utils/menuController');
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 
