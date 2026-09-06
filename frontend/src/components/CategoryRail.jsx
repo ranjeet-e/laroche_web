@@ -1,5 +1,5 @@
-import { useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Flame } from 'lucide-react';
+import { useRef, useEffect, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './CategoryRail.css';
 
 // Clean Category metadata with real image assets matching Inspiration style
@@ -48,6 +48,8 @@ const categoryMeta = {
 
 const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }) => {
   const railRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
   const allCategoryPills = categories.map((cat) => ({
     key: cat,
@@ -55,11 +57,32 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
     image: categoryMeta[cat]?.image || '/category-icons/pizza.png',
   }));
 
-  const handleScroll = (direction) => {
+  const checkScrollability = () => {
     if (railRef.current) {
-      railRef.current.scrollBy({ left: direction * 300, behavior: 'smooth' });
+      const { scrollLeft, scrollWidth, clientWidth } = railRef.current;
+      setCanScrollLeft(scrollLeft > 15);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 15);
     }
   };
+
+  const handleScroll = (direction) => {
+    if (railRef.current) {
+      railRef.current.scrollBy({ left: direction * 280, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    checkScrollability();
+    const rail = railRef.current;
+    if (rail) {
+      rail.addEventListener('scroll', checkScrollability, { passive: true });
+      window.addEventListener('resize', checkScrollability);
+      return () => {
+        rail.removeEventListener('scroll', checkScrollability);
+        window.removeEventListener('resize', checkScrollability);
+      };
+    }
+  }, [categories]);
 
   // Center the active category in the rail on change
   useEffect(() => {
@@ -68,27 +91,30 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
       if (activeEl) {
         activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       }
+      setTimeout(checkScrollability, 350);
     }
   }, [activeCategory]);
 
   return (
-    <div id="category-rail-section" className="sticky top-[72px] z-30 w-full py-4 bg-[#F5EBE6]/95 dark:bg-[#1A1718]/95 backdrop-blur-md border-b border-[#E5D7D0] dark:border-[#4A3B32] shadow-sm transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative flex items-center">
+    <div id="category-rail-section" className="sticky top-16 sm:top-[72px] z-30 w-full py-3 sm:py-4 bg-[#FAF7F2]/98 dark:bg-[#14100E]/98 backdrop-blur-md border-b border-stone-200/70 dark:border-stone-800/80 shadow-sm transition-colors">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 relative flex items-center">
         
-        {/* Left Scroll Arrow */}
-        <button
-          type="button"
-          onClick={() => handleScroll(-1)}
-          className="hidden md:flex items-center justify-center w-9 h-9 rounded-full bg-white dark:bg-[#2B2421] border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm text-espresso dark:text-[#F5EBE6] hover:bg-stone-50 dark:hover:bg-[#362E2A] transition-all mr-3 flex-shrink-0"
-          aria-label="Scroll categories left"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
+        {/* Floating Left Scroll Arrow */}
+        {canScrollLeft && (
+          <button
+            type="button"
+            onClick={() => handleScroll(-1)}
+            className="absolute left-1 sm:left-3 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/95 dark:bg-[#2B2421]/95 backdrop-blur-md border border-stone-200/90 dark:border-stone-700 shadow-warm-md text-espresso dark:text-[#F5EBE6] hover:bg-white hover:scale-110 active:scale-95 transition-all cursor-pointer"
+            aria-label="Scroll categories left"
+          >
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-espresso dark:text-stone-100" />
+          </button>
+        )}
 
         {/* Horizontal Circular Category Track (Large Zomato Inspiration Style) */}
         <div
           ref={railRef}
-          className="flex items-start gap-4 sm:gap-6 md:gap-8 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1 flex-1"
+          className="flex items-start gap-3 sm:gap-6 md:gap-8 overflow-x-auto no-scrollbar scroll-smooth py-2 px-2 sm:px-3 flex-1"
         >
           {allCategoryPills.map((pill) => {
             const isActive = activeCategory === pill.key;
@@ -104,7 +130,7 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
                 <div
                   className={`w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden bg-white dark:bg-[#2B2421] shadow-warm-sm transition-all duration-200 p-0.5 ${
                     isActive
-                      ? 'ring-3 sm:ring-4 ring-terracotta ring-offset-2 ring-offset-[#F5EBE6] dark:ring-offset-[#1A1718] scale-105 shadow-warm-md'
+                      ? 'ring-3 sm:ring-4 ring-terracotta ring-offset-2 ring-offset-[#FAF7F2] dark:ring-offset-[#14100E] scale-105 shadow-warm-md'
                       : 'border-2 border-stone-200/80 dark:border-stone-700/80 group-hover:border-terracotta/60 group-hover:scale-105'
                   }`}
                 >
@@ -121,7 +147,7 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
 
                 {/* Clear & Larger Category Label */}
                 <span
-                  className={`mt-2.5 text-sm sm:text-base font-bold tracking-tight text-center leading-snug transition-colors line-clamp-1 ${
+                  className={`mt-2.5 text-xs sm:text-base font-bold tracking-tight text-center leading-snug transition-colors line-clamp-1 ${
                     isActive
                       ? 'text-terracotta font-extrabold'
                       : 'text-espresso dark:text-stone-200 group-hover:text-terracotta'
@@ -134,15 +160,17 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
           })}
         </div>
 
-        {/* Right Scroll Arrow */}
-        <button
-          type="button"
-          onClick={() => handleScroll(1)}
-          className="hidden md:flex items-center justify-center w-9 h-9 rounded-full bg-white dark:bg-[#2B2421] border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm text-espresso dark:text-[#F5EBE6] hover:bg-stone-50 dark:hover:bg-[#362E2A] transition-all ml-3 flex-shrink-0"
-          aria-label="Scroll categories right"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
+        {/* Floating Right Scroll Arrow */}
+        {canScrollRight && (
+          <button
+            type="button"
+            onClick={() => handleScroll(1)}
+            className="absolute right-1 sm:right-3 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/95 dark:bg-[#2B2421]/95 backdrop-blur-md border border-stone-200/90 dark:border-stone-700 shadow-warm-md text-espresso dark:text-[#F5EBE6] hover:bg-white hover:scale-110 active:scale-95 transition-all cursor-pointer"
+            aria-label="Scroll categories right"
+          >
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-espresso dark:text-stone-100" />
+          </button>
+        )}
 
       </div>
     </div>
