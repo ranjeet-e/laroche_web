@@ -9,12 +9,19 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const kitchenRoutes = require('./routes/kitchenRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const errorHandler = require('./middleware/errorHandler');
+const { globalLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
+
+// Trust reverse proxy (Render, Vercel, Cloudflare, Nginx) for accurate IP rate limiting
+app.set('trust proxy', 1);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Global Rate Limiting for all API endpoints
+app.use('/api', globalLimiter);
 
 // Routes
 app.use('/api/auth', authRoutes);
