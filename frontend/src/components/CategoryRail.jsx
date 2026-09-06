@@ -84,12 +84,15 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
     }
   }, [categories]);
 
-  // Center the active category in the rail on change
+  // Center the active category in the rail horizontally without triggering window vertical scroll
   useEffect(() => {
     if (railRef.current && activeCategory) {
-      const activeEl = railRef.current.querySelector(`[data-category-pill="${activeCategory}"]`);
+      const container = railRef.current;
+      const activeEl = container.querySelector(`[data-category-pill="${activeCategory}"]`);
       if (activeEl) {
-        activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        const targetLeft =
+          activeEl.offsetLeft - container.clientWidth / 2 + activeEl.clientWidth / 2;
+        container.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
       }
       setTimeout(checkScrollability, 350);
     }
