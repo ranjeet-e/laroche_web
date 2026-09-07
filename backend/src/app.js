@@ -17,7 +17,15 @@ const app = express();
 app.set('trust proxy', 1);
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  })
+);
+app.options('*', cors());
 app.use(express.json());
 
 // Global Rate Limiting for all API endpoints
