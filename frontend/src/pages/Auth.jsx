@@ -503,6 +503,9 @@ const Auth = ({ initialMode = 'login' }) => {
                         setServerError('');
                         setSuccessMessage('');
                         setForgotStep('enter_email');
+                        setForgotEmail('');
+                        setForgotOtp('');
+                        setForgotNewPassword('');
                       }}
                       className="text-xs font-bold text-[#9F7A60] hover:underline"
                     >
@@ -714,6 +717,8 @@ const Auth = ({ initialMode = 'login' }) => {
                   <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
                   <input
                     type="password"
+                    name="new_password_field"
+                    autoComplete="new-password"
                     className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
                     value={forgotNewPassword}
                     onChange={(e) => setForgotNewPassword(e.target.value)}
