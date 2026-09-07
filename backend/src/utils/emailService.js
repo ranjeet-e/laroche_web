@@ -13,11 +13,18 @@ const getTransporter = () => {
     }
 
     transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      pool: true,
+      maxConnections: 3,
       auth: {
         user: user.trim(),
         pass: pass.trim().replace(/\s+/g, ''), // Strip any spaces from the 16-char app password
       },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
     });
   }
   return transporter;
@@ -32,12 +39,12 @@ const sendOtpEmail = async ({ to, otp, type = 'verification' }) => {
 
   const isReset = type === 'reset';
   const subject = isReset
-    ? '🔑 La Roche Cafe — Password Reset Code'
-    : '✨ La Roche Cafe — Your Verification Code';
+    ? 'La Roche Cafe — Password Reset Code'
+    : ' La Roche Cafe — Your Verification Code';
 
   const heading = isReset ? 'Reset Your Password' : 'Verify Your Email';
   const subtext = isReset
-    ? 'Use the 6-digit code below to reset your La Roche Cafe password. This code will expire in 10 minutes.'
+    ? 'Use the 6-digit code below to reset your La Roche Cafe account password. This code will expire in 10 minutes.'
     : 'Welcome to La Roche Cafe! Use the 6-digit code below to verify your account and order fresh brews & bites.';
 
   const html = `
@@ -61,7 +68,7 @@ const sendOtpEmail = async ({ to, otp, type = 'verification' }) => {
                       LA ROCHE CAFE
                     </h1>
                     <p style="margin: 6px 0 0; color: #9F7A60; font-size: 13px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">
-                      Preorder & Counter Pickup
+                      
                     </p>
                   </td>
                 </tr>
@@ -84,7 +91,7 @@ const sendOtpEmail = async ({ to, otp, type = 'verification' }) => {
                     </div>
 
                     <p style="margin: 0 0 10px; color: #8F7E75; font-size: 13px;">
-                      ⏱️ Valid for <strong>10 minutes</strong>. Do not share this code with anyone.
+                      Do not share this code with anyone.
                     </p>
                     <p style="margin: 0; color: #B0A198; font-size: 12px;">
                       If you didn't request this code, you can safely ignore this email.
@@ -96,7 +103,6 @@ const sendOtpEmail = async ({ to, otp, type = 'verification' }) => {
                 <tr>
                   <td style="background-color: #FAF5F2; padding: 20px; text-align: center; border-top: 1px solid #E5D7D0;">
                     <p style="margin: 0; color: #8F7E75; font-size: 12px;">
-                      Crafted for the Hustle. Brewed for the Break. ☕<br>
                       &copy; ${new Date().getFullYear()} La Roche Cafe. All rights reserved.
                     </p>
                   </td>

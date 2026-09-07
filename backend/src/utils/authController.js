@@ -263,17 +263,17 @@ const forgotPassword = async (req, res, next) => {
       { upsert: true, new: true }
     );
 
-    // Send Real Email via Nodemailer
-    const emailSent = await sendOtpEmail({
+    // Send Real Email via Nodemailer (asynchronously for instant UI response)
+    sendOtpEmail({
       to: normalizedEmail,
       otp,
       type: 'reset',
-    });
+    }).catch((err) => console.error('❌ [EmailService] Reset email error:', err.message));
 
     const isDev = process.env.NODE_ENV === 'development';
     if (isDev) {
       console.log(`\n========================================`);
-      console.log(`🔑 [PASSWORD RESET OTP] Sent to ${normalizedEmail}: ${otp} (Email Delivered: ${emailSent})`);
+      console.log(`🔑 [PASSWORD RESET OTP] Dispatched to ${normalizedEmail}: ${otp}`);
       console.log(`========================================\n`);
     }
 
