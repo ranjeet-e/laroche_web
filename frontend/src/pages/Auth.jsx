@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link, useSearchParams } from 'react-router-dom';
-import { Smartphone, Mail, Lock, User as UserIcon, ArrowRight, ArrowLeft, ShieldCheck, KeyRound } from 'lucide-react';
+import { Smartphone, Mail, Lock, User as UserIcon, ArrowRight, ArrowLeft, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import {
   sendOtp as sendOtpService,
   verifyOtp as verifyOtpService,
   login as loginService,
   signup as signupService,
   forgotPassword as forgotPasswordService,
+  verifyResetOtp as verifyResetOtpService,
   resetPassword as resetPasswordService,
 } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
@@ -48,12 +49,14 @@ const Auth = ({ initialMode = 'login' }) => {
     password: '',
   });
 
-  // Forgot Password States
+  // Forgot Password States (3-Step Dedicated Flow)
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotOtp, setForgotOtp] = useState('');
   const [forgotNewPassword, setForgotNewPassword] = useState('');
-  const [forgotStep, setForgotStep] = useState('enter_email'); // 'enter_email' | 'enter_otp'
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState('');
+  const [forgotStep, setForgotStep] = useState('enter_email'); // 'enter_email' | 'enter_otp' | 'enter_new_password'
   const [forgotCountdown, setForgotCountdown] = useState(0);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   // Status & Feedback
   const [errors, setErrors] = useState({});
@@ -248,7 +251,8 @@ const Auth = ({ initialMode = 'login' }) => {
     }
   };
 
-  // ---------------- FORGOT PASSWORD FLOW ----------------
+  // ---------------- FORGOT PASSWORD FLOW (3-STEP) ----------------
+  // Step 1: Send OTP to email
   const handleForgotPasswordSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     setServerError('');
@@ -267,7 +271,7 @@ const Auth = ({ initialMode = 'login' }) => {
       await forgotPasswordService({ email: cleanEmail });
       setForgotStep('enter_otp');
       setForgotCountdown(45);
-      setSuccessMessage(`Reset code sent to ${cleanEmail}`);
+      setSuccessMessage(`Verification code sent to ${cleanEmail}`);
     } catch (err) {
       setServerError(err.response?.data?.message || 'Failed to send reset code. Please check your email.');
     } finally {
@@ -275,20 +279,52 @@ const Auth = ({ initialMode = 'login' }) => {
     }
   };
 
-  const handleResetPasswordSubmit = async (e) => {
-    e.preventDefault();
+  // Step 2: Verify OTP code first
+  const handleVerifyResetOtp = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     setServerError('');
+    setSuccessMessage('');
 
     const cleanEmail = forgotEmail.trim().toLowerCase();
     const cleanOtp = forgotOtp.trim();
 
-    if (!cleanOtp || cleanOtp.length < 4) {
-      setErrors({ forgotOtp: 'Enter the 6-digit verification code' });
+    if (!cleanOtp || cleanOtp.length !== 6) {
+      setErrors({ forgotOtp: 'Please enter the 6-digit verification code' });
       return;
     }
 
+    setErrors({});
+    setLoading(true);
+
+    try {
+      await verifyResetOtpService({ email: cleanEmail, otp: cleanOtp });
+      setForgotStep('enter_new_password');
+      setForgotNewPassword('');
+      setForgotConfirmPassword('');
+      setSuccessMessage('Code verified! Please create your new password below.');
+    } catch (err) {
+      setServerError(err.response?.data?.message || 'Invalid or expired verification code. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Step 3: Set New Password & Sign In
+  const handleResetPasswordSubmit = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setServerError('');
+    setSuccessMessage('');
+
+    const cleanEmail = forgotEmail.trim().toLowerCase();
+    const cleanOtp = forgotOtp.trim();
+
     if (!forgotNewPassword || forgotNewPassword.length < 6) {
       setErrors({ forgotNewPassword: 'Password must be at least 6 characters' });
+      return;
+    }
+
+    if (forgotConfirmPassword && forgotNewPassword !== forgotConfirmPassword) {
+      setErrors({ forgotConfirmPassword: 'Passwords do not match' });
       return;
     }
 
@@ -303,7 +339,7 @@ const Auth = ({ initialMode = 'login' }) => {
       });
       handlePostAuthRedirect(data);
     } catch (err) {
-      setServerError(err.response?.data?.message || 'Password reset failed. Code may be expired.');
+      setServerError(err.response?.data?.message || 'Password reset failed. Code may have expired.');
     } finally {
       setLoading(false);
     }
@@ -328,14 +364,22 @@ const Auth = ({ initialMode = 'login' }) => {
             {mode === 'signup'
               ? 'Create Customer Account'
               : mode === 'forgot'
-              ? 'Reset Password'
+              ? forgotStep === 'enter_otp'
+                ? 'Verify Reset Code'
+                : forgotStep === 'enter_new_password'
+                ? 'Create New Password'
+                : 'Reset Password'
               : 'Sign In'}
           </h2>
           <p className="text-xs sm:text-sm text-taupe mt-1">
             {mode === 'signup'
               ? 'Join La Roche Cafe for quick ordering & instant counter pickup'
               : mode === 'forgot'
-              ? 'Enter your email to receive a password reset code'
+              ? forgotStep === 'enter_otp'
+                ? 'Enter the 6-digit verification code sent to your email'
+                : forgotStep === 'enter_new_password'
+                ? 'Set a new password for your account'
+                : 'Enter your email to receive a password reset code'
               : ' '}
           </p>
         </div>
@@ -656,10 +700,11 @@ const Auth = ({ initialMode = 'login' }) => {
         )}
 
         {/* =========================================================================
-            3. FORGOT PASSWORD VIEW
+            3. FORGOT PASSWORD VIEW (3-STEP DEDICATED SCREENS)
            ========================================================================= */}
         {mode === 'forgot' && (
           forgotStep === 'enter_email' ? (
+            /* STEP 1: Enter Email */
             <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-taupe mb-1.5">Registered Email Address</label>
@@ -681,7 +726,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 disabled={loading || !forgotEmail}
                 className="w-full py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                <span>{loading ? 'Sending code...' : 'Send Reset Code'}</span>
+                <span>{loading ? 'Sending code...' : 'Send Verification Code'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -696,13 +741,17 @@ const Auth = ({ initialMode = 'login' }) => {
                 </button>
               </div>
             </form>
-          ) : (
-            <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
+          ) : forgotStep === 'enter_otp' ? (
+            /* STEP 2: Dedicated OTP Verification Screen */
+            <form onSubmit={handleVerifyResetOtp} className="space-y-4">
               <div className="flex items-center justify-between text-xs text-taupe mb-1">
                 <span>Sent to <strong>{forgotEmail}</strong></span>
                 <button
                   type="button"
-                  onClick={() => setForgotStep('enter_email')}
+                  onClick={() => {
+                    setForgotStep('enter_email');
+                    setForgotOtp('');
+                  }}
                   className="text-terracotta font-bold hover:underline"
                 >
                   Change
@@ -718,7 +767,10 @@ const Auth = ({ initialMode = 'login' }) => {
                   placeholder="••••••"
                   value={forgotOtp}
                   maxLength={6}
-                  onChange={(e) => setForgotOtp(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => {
+                    setForgotOtp(e.target.value.replace(/\D/g, ''));
+                    if (errors.forgotOtp) setErrors({});
+                  }}
                 />
                 {errors.forgotOtp && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.forgotOtp}</p>}
               </div>
@@ -735,29 +787,89 @@ const Auth = ({ initialMode = 'login' }) => {
                 </button>
               </div>
 
+              <button
+                type="submit"
+                disabled={loading || forgotOtp.length !== 6}
+                className="w-full py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+              >
+                <span>{loading ? 'Verifying...' : 'Verify Code & Proceed'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => setMode('login')}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-taupe hover:text-espresso transition-colors"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back to Sign In</span>
+                </button>
+              </div>
+            </form>
+          ) : (
+            /* STEP 3: Dedicated Create New Password Screen */
+            <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
+              <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 mb-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                <span>Code verified for <strong>{forgotEmail}</strong></span>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-taupe mb-1.5">New Password</label>
                 <div className="relative flex items-center">
                   <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
                   <input
-                    type="password"
+                    type={showNewPassword ? 'text' : 'password'}
                     name="new_password_field"
                     autoComplete="new-password"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-10 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
                     value={forgotNewPassword}
-                    onChange={(e) => setForgotNewPassword(e.target.value)}
+                    onChange={(e) => {
+                      setForgotNewPassword(e.target.value);
+                      if (errors.forgotNewPassword) setErrors({});
+                    }}
                     placeholder="Enter at least 6 characters"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3.5 text-taupe hover:text-espresso focus:outline-none"
+                    aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
                 {errors.forgotNewPassword && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.forgotNewPassword}</p>}
               </div>
 
+              <div>
+                <label className="block text-xs font-bold text-taupe mb-1.5">Confirm New Password</label>
+                <div className="relative flex items-center">
+                  <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    name="confirm_password_field"
+                    autoComplete="new-password"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    value={forgotConfirmPassword}
+                    onChange={(e) => {
+                      setForgotConfirmPassword(e.target.value);
+                      if (errors.forgotConfirmPassword) setErrors({});
+                    }}
+                    placeholder="Re-enter your new password"
+                  />
+                </div>
+                {errors.forgotConfirmPassword && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.forgotConfirmPassword}</p>}
+              </div>
+
               <button
                 type="submit"
-                disabled={loading || forgotOtp.length !== 6 || forgotNewPassword.length < 6}
-                className="w-full py-3.5 rounded-full bg-espresso hover:bg-espresso-light text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50"
+                disabled={loading || forgotNewPassword.length < 6}
+                className="w-full py-3.5 rounded-full bg-espresso hover:bg-espresso-light text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
               >
-                {loading ? 'Updating...' : 'Update Password & Sign In'}
+                <span>{loading ? 'Saving New Password...' : 'Save Password & Sign In'}</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
 
               <div className="text-center pt-2">

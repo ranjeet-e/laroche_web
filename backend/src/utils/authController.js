@@ -344,5 +344,36 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
-module.exports = { sendOtp, verifyOtp, signup, login, forgotPassword, resetPassword };
+// @route POST /api/auth/verify-reset-otp
+// Step 2 of password reset: verify OTP code before showing new password page
+const verifyResetOtp = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
+    const cleanOtp = otp?.toString().trim();
+
+    if (!normalizedEmail || !cleanOtp) {
+      return res.status(400).json({ message: 'Email and verification code are required' });
+    }
+
+    const otpRecord = await Otp.findOne({ email: normalizedEmail });
+    if (!otpRecord || otpRecord.otp !== cleanOtp) {
+      return res.status(400).json({ message: 'Invalid or expired verification code. Please request a new one.' });
+    }
+
+    res.status(200).json({ message: 'Verification code confirmed', valid: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  sendOtp,
+  verifyOtp,
+  signup,
+  login,
+  forgotPassword,
+  verifyResetOtp,
+  resetPassword,
+};
 
