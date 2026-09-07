@@ -3,6 +3,7 @@ const razorpayInstance = require('../config/razorpay');
 const Order = require('../models/Order');
 const Payment = require('../models/Payment');
 const { notifyKitchenNewOrder } = require('../sockets/notificationSocket');
+const { sendOrderConfirmationEmail } = require('./emailService');
 
 // @route POST /api/payment/create-order
 // Student-only — creates a Razorpay order for an existing (unpaid) order
@@ -87,6 +88,14 @@ const verifyPayment = async (req, res, next) => {
 
     // Instantly push order to kitchen dashboard in real-time
     notifyKitchenNewOrder(order);
+
+    // Send order confirmation receipt via email asynchronously
+    if (order.student?.email) {
+      sendOrderConfirmationEmail({
+        to: order.student.email,
+        order,
+      }).catch((err) => console.error('Order email error:', err.message));
+    }
 
     res.status(200).json({ message: 'Payment verified successfully', order });
   } catch (error) {

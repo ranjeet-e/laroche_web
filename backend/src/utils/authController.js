@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Otp = require('../models/Otp');
 const { isValidStudentEmail } = require('./emailValidator');
+const { sendOtpEmail } = require('./emailService');
 
 const getJwtSecret = () => {
   const secret = process.env.JWT_SECRET;
@@ -262,10 +263,17 @@ const forgotPassword = async (req, res, next) => {
       { upsert: true, new: true }
     );
 
+    // Send Real Email via Nodemailer
+    const emailSent = await sendOtpEmail({
+      to: normalizedEmail,
+      otp,
+      type: 'reset',
+    });
+
     const isDev = process.env.NODE_ENV === 'development';
     if (isDev) {
       console.log(`\n========================================`);
-      console.log(`🔑 [PASSWORD RESET OTP] Sent to ${normalizedEmail}: ${otp}`);
+      console.log(`🔑 [PASSWORD RESET OTP] Sent to ${normalizedEmail}: ${otp} (Email Delivered: ${emailSent})`);
       console.log(`========================================\n`);
     }
 
