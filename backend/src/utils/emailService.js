@@ -1,4 +1,9 @@
 const nodemailer = require('nodemailer');
+const dns = require('dns');
+
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 let transporter = null;
 
@@ -13,18 +18,11 @@ const getTransporter = () => {
     }
 
     transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      pool: true,
-      maxConnections: 3,
+      service: 'gmail',
       auth: {
         user: user.trim(),
         pass: pass.trim().replace(/\s+/g, ''), // Strip any spaces from the 16-char app password
       },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 15000,
     });
   }
   return transporter;
