@@ -250,7 +250,7 @@ const Auth = ({ initialMode = 'login' }) => {
 
   // ---------------- FORGOT PASSWORD FLOW ----------------
   const handleForgotPasswordSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setServerError('');
     setSuccessMessage('');
 
@@ -460,6 +460,18 @@ const Auth = ({ initialMode = 'login' }) => {
                       }}
                     />
                     {errors.otp && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.otp}</p>}
+                  </div>
+
+                  <div className="flex items-center justify-between px-1 text-xs">
+                    <span className="text-[#6B5B52] dark:text-[#D6C7BD]">Didn't receive code?</span>
+                    <button
+                      type="button"
+                      disabled={countdown > 0 || loading}
+                      onClick={handleSendLoginOtp}
+                      className="font-bold text-[#9F7A60] dark:text-[#E8D8CD] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {countdown > 0 ? `Resend in ${countdown}s` : 'Resend Code'}
+                    </button>
                   </div>
 
                   <button
@@ -709,6 +721,18 @@ const Auth = ({ initialMode = 'login' }) => {
                   onChange={(e) => setForgotOtp(e.target.value.replace(/\D/g, ''))}
                 />
                 {errors.forgotOtp && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.forgotOtp}</p>}
+              </div>
+
+              <div className="flex items-center justify-between px-1 text-xs">
+                <span className="text-taupe">Didn't receive email code?</span>
+                <button
+                  type="button"
+                  disabled={forgotCountdown > 0 || loading}
+                  onClick={handleForgotPasswordSubmit}
+                  className="font-bold text-terracotta hover:underline disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {forgotCountdown > 0 ? `Resend in ${forgotCountdown}s` : 'Resend Code'}
+                </button>
               </div>
 
               <div>
