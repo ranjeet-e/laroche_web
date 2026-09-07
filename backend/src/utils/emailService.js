@@ -69,6 +69,30 @@ const sendViaResend = async ({ to, subject, html }) => {
 };
 
 /**
+ * Send email via Google Apps Script (100% Free HTTPS webhook using your own Gmail — no card, no port blocks)
+ */
+const sendViaGoogleScript = async ({ to, subject, html }) => {
+  const scriptUrl =
+    process.env.GOOGLE_SCRIPT_EMAIL_URL ||
+    'https://script.google.com/macros/s/AKfycbzpeOIw2WotTDWKolUNMlBBPRWEzNvsaA11NwzXPXWx4aKadiFtBgWtW2TIwTurQcA/exec';
+  if (!scriptUrl) return null;
+  try {
+    const response = await fetch(scriptUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ to, subject, html }),
+      redirect: 'follow',
+    });
+    const text = await response.text();
+    console.log(`✉️ [Google Apps Script Gmail] Dispatched to ${to}: ${text}`);
+    return { success: true, provider: 'google_script' };
+  } catch (err) {
+    console.error(`❌ [Google Apps Script Gmail] Request failed:`, err.message);
+    return null;
+  }
+};
+
+/**
  * Send email via Brevo HTTP REST API (port 443 — 300 free emails/day)
  */
 const sendViaBrevo = async ({ to, subject, html }) => {
@@ -185,15 +209,19 @@ const sendOtpEmail = async ({ to, otp, type = 'verification' }) => {
     </html>
   `;
 
-  // 1. Try Resend HTTP API
+  // 1. Try Google Apps Script (100% Free HTTPS webhook using your own Gmail — No Port Blocks)
+  const gscriptResult = await sendViaGoogleScript({ to, subject, html });
+  if (gscriptResult?.success) return true;
+
+  // 2. Try Resend HTTP API
   const resendResult = await sendViaResend({ to, subject, html });
   if (resendResult?.success) return true;
 
-  // 2. Try Brevo HTTP API
+  // 3. Try Brevo HTTP API
   const brevoResult = await sendViaBrevo({ to, subject, html });
   if (brevoResult?.success) return true;
 
-  // 3. Fallback to Nodemailer SMTP
+  // 4. Fallback to Nodemailer SMTP
   const mailer = getTransporter();
   if (!mailer) return false;
 
@@ -277,15 +305,19 @@ const sendOrderConfirmationEmail = async ({ to, order }) => {
     </html>
   `;
 
-  // 1. Try Resend HTTP
+  // 1. Try Google Apps Script
+  const gscriptResult = await sendViaGoogleScript({ to, subject, html });
+  if (gscriptResult?.success) return true;
+
+  // 2. Try Resend HTTP
   const resendResult = await sendViaResend({ to, subject, html });
   if (resendResult?.success) return true;
 
-  // 2. Try Brevo HTTP
+  // 3. Try Brevo HTTP
   const brevoResult = await sendViaBrevo({ to, subject, html });
   if (brevoResult?.success) return true;
 
-  // 3. Fallback to Nodemailer
+  // 4. Fallback to Nodemailer
   const mailer = getTransporter();
   if (!mailer) return false;
 
@@ -312,6 +344,17 @@ const testEmailConnection = async (testRecipient = null) => {
   const resendKey = process.env.RESEND_API_KEY;
   const brevoKey = process.env.BREVO_API_KEY;
 
+  if (testRecipient) {
+    const gs = await sendViaGoogleScript({
+      to: testRecipient,
+      subject: '🧪 La Roche Cafe — Direct Gmail Live Test',
+      html: '<p>Test email delivered directly via Google Apps Script (100% Free HTTPS Gmail Webhook).</p>',
+    });
+    if (gs?.success) {
+      return { success: true, provider: 'google_script', message: `Email delivered to ${testRecipient}` };
+    }
+  }
+
   if (resendKey && testRecipient) {
     const res = await sendViaResend({
       to: testRecipient,
@@ -337,7 +380,7 @@ const testEmailConnection = async (testRecipient = null) => {
   if (!user || !pass) {
     return {
       success: false,
-      error: 'No email service configured (EMAIL_USER/EMAIL_PASS or RESEND_API_KEY)',
+      error: 'No email service configured (EMAIL_USER/EMAIL_PASS or GOOGLE_SCRIPT_EMAIL_URL)',
     };
   }
 
