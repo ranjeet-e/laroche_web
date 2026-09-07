@@ -18,11 +18,18 @@ const getTransporter = () => {
     }
 
     transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      family: 4,
       auth: {
         user: user.trim(),
         pass: pass.trim().replace(/\s+/g, ''), // Strip any spaces from the 16-char app password
       },
+      tls: {
+        rejectUnauthorized: false,
+      },
+      connectionTimeout: 10000,
     });
   }
   return transporter;
