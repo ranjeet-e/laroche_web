@@ -9,6 +9,7 @@ const {
   verifyResetOtp,
   resetPassword,
 } = require('../utils/authController');
+const { authLimiter } = require('../middleware/rateLimiter');
 const { testEmailConnection } = require('../utils/emailService');
 
 router.post('/send-otp', authLimiter, sendOtp);
