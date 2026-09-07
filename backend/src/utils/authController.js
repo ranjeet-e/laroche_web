@@ -280,7 +280,6 @@ const forgotPassword = async (req, res, next) => {
     const responsePayload = {
       message: `Verification code sent to ${normalizedEmail}`,
       email: normalizedEmail,
-      otp, // Provided for instant testing assistance
     };
 
     res.status(200).json(responsePayload);
