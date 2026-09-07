@@ -13,7 +13,6 @@ const getTransporter = () => {
     const pass = process.env.EMAIL_PASS || process.env.EMAIL_APP_PASSWORD;
 
     if (!user || !pass) {
-      console.warn('⚠️ [EmailService] EMAIL_USER or EMAIL_PASS not configured in .env. Emails will not be sent.');
       return null;
     }
 
@@ -24,28 +23,93 @@ const getTransporter = () => {
       family: 4,
       auth: {
         user: user.trim(),
-        pass: pass.trim().replace(/\s+/g, ''), // Strip any spaces from the 16-char app password
+        pass: pass.trim().replace(/\s+/g, ''),
       },
       tls: {
         rejectUnauthorized: false,
       },
-      connectionTimeout: 10000,
+      connectionTimeout: 8000,
     });
   }
   return transporter;
 };
 
 /**
+ * Send email via Resend HTTP REST API (port 443 — works everywhere without SMTP port blocks)
+ */
+const sendViaResend = async ({ to, subject, html }) => {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return null;
+  try {
+    const fromAddr = process.env.RESEND_FROM || 'La Roche Cafe <onboarding@resend.dev>';
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey.trim()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: fromAddr,
+        to: Array.isArray(to) ? to : [to],
+        subject,
+        html,
+      }),
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(`✉️ [Resend] Email delivered to ${to}: id=${data.id}`);
+      return { success: true, id: data.id, provider: 'resend' };
+    }
+    console.error(`❌ [Resend] API Error:`, data);
+    return null;
+  } catch (err) {
+    console.error(`❌ [Resend] Request failed:`, err.message);
+    return null;
+  }
+};
+
+/**
+ * Send email via Brevo HTTP REST API (port 443 — 300 free emails/day)
+ */
+const sendViaBrevo = async ({ to, subject, html }) => {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) return null;
+  try {
+    const senderEmail = process.env.EMAIL_USER || 'larochecafe26@gmail.com';
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': apiKey.trim(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: { name: 'La Roche Cafe', email: senderEmail },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+      }),
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(`✉️ [Brevo] Email delivered to ${to}: id=${data.messageId}`);
+      return { success: true, id: data.messageId, provider: 'brevo' };
+    }
+    console.error(`❌ [Brevo] API Error:`, data);
+    return null;
+  } catch (err) {
+    console.error(`❌ [Brevo] Request failed:`, err.message);
+    return null;
+  }
+};
+
+/**
  * Send an OTP Verification / Password Reset Email
  */
 const sendOtpEmail = async ({ to, otp, type = 'verification' }) => {
-  const mailer = getTransporter();
-  if (!mailer) return false;
-
   const isReset = type === 'reset';
   const subject = isReset
     ? 'La Roche Cafe — Password Reset Code'
-    : ' La Roche Cafe — Your Verification Code';
+    : 'La Roche Cafe — Your Verification Code';
 
   const heading = isReset ? 'Reset Your Password' : 'Verify Your Email';
   const subtext = isReset
@@ -121,6 +185,18 @@ const sendOtpEmail = async ({ to, otp, type = 'verification' }) => {
     </html>
   `;
 
+  // 1. Try Resend HTTP API
+  const resendResult = await sendViaResend({ to, subject, html });
+  if (resendResult?.success) return true;
+
+  // 2. Try Brevo HTTP API
+  const brevoResult = await sendViaBrevo({ to, subject, html });
+  if (brevoResult?.success) return true;
+
+  // 3. Fallback to Nodemailer SMTP
+  const mailer = getTransporter();
+  if (!mailer) return false;
+
   try {
     const info = await mailer.sendMail({
       from: `"La Roche Cafe" <${process.env.EMAIL_USER}>`,
@@ -140,8 +216,7 @@ const sendOtpEmail = async ({ to, otp, type = 'verification' }) => {
  * Send Order Confirmation Receipt
  */
 const sendOrderConfirmationEmail = async ({ to, order }) => {
-  const mailer = getTransporter();
-  if (!mailer || !to) return false;
+  if (!to) return false;
 
   const subject = `🎉 Order #${order.orderNumber || ''} Confirmed — La Roche Cafe`;
   const itemsHtml = (order.items || [])
@@ -202,6 +277,18 @@ const sendOrderConfirmationEmail = async ({ to, order }) => {
     </html>
   `;
 
+  // 1. Try Resend HTTP
+  const resendResult = await sendViaResend({ to, subject, html });
+  if (resendResult?.success) return true;
+
+  // 2. Try Brevo HTTP
+  const brevoResult = await sendViaBrevo({ to, subject, html });
+  if (brevoResult?.success) return true;
+
+  // 3. Fallback to Nodemailer
+  const mailer = getTransporter();
+  if (!mailer) return false;
+
   try {
     await mailer.sendMail({
       from: `"La Roche Cafe" <${process.env.EMAIL_USER}>`,
@@ -222,13 +309,35 @@ const sendOrderConfirmationEmail = async ({ to, order }) => {
 const testEmailConnection = async (testRecipient = null) => {
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASS || process.env.EMAIL_APP_PASSWORD;
+  const resendKey = process.env.RESEND_API_KEY;
+  const brevoKey = process.env.BREVO_API_KEY;
+
+  if (resendKey && testRecipient) {
+    const res = await sendViaResend({
+      to: testRecipient,
+      subject: '🧪 La Roche Cafe — Resend HTTP Test',
+      html: '<p>Test email delivered via Resend HTTP API (Port 443).</p>',
+    });
+    if (res?.success) {
+      return { success: true, provider: 'resend', messageId: res.id };
+    }
+  }
+
+  if (brevoKey && testRecipient) {
+    const res = await sendViaBrevo({
+      to: testRecipient,
+      subject: '🧪 La Roche Cafe — Brevo HTTP Test',
+      html: '<p>Test email delivered via Brevo HTTP API (Port 443).</p>',
+    });
+    if (res?.success) {
+      return { success: true, provider: 'brevo', messageId: res.id };
+    }
+  }
 
   if (!user || !pass) {
     return {
       success: false,
-      error: 'EMAIL_USER or EMAIL_PASS is missing in environment variables on this server',
-      userSet: !!user,
-      passSet: !!pass,
+      error: 'No email service configured (EMAIL_USER/EMAIL_PASS or RESEND_API_KEY)',
     };
   }
 
@@ -240,10 +349,11 @@ const testEmailConnection = async (testRecipient = null) => {
         from: `"La Roche Cafe" <${user}>`,
         to: testRecipient,
         subject: '🧪 La Roche Cafe — SMTP Live Diagnostic Test',
-        text: 'This is a test email confirming that your server SMTP email delivery is functioning 100%.',
+        text: 'This is a test email confirming that your server SMTP email delivery is functioning.',
       });
       return {
         success: true,
+        provider: 'smtp',
         message: `Email sent successfully to ${testRecipient}`,
         messageId: info.messageId,
       };

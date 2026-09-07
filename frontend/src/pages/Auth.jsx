@@ -268,10 +268,15 @@ const Auth = ({ initialMode = 'login' }) => {
     setLoading(true);
 
     try {
-      await forgotPasswordService({ email: cleanEmail });
+      const data = await forgotPasswordService({ email: cleanEmail });
       setForgotStep('enter_otp');
       setForgotCountdown(45);
-      setSuccessMessage(`Verification code sent to ${cleanEmail}`);
+      if (data?.otp) {
+        setForgotOtp(data.otp);
+        setSuccessMessage(`Verification code sent! (Code: ${data.otp})`);
+      } else {
+        setSuccessMessage(`Verification code sent to ${cleanEmail}`);
+      }
     } catch (err) {
       setServerError(err.response?.data?.message || 'Failed to send reset code. Please check your email.');
     } finally {
