@@ -211,8 +211,52 @@ const sendOrderConfirmationEmail = async ({ to, order }) => {
   }
 };
 
+/**
+ * Diagnostic method to test SMTP configuration and send test emails
+ */
+const testEmailConnection = async (testRecipient = null) => {
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASS || process.env.EMAIL_APP_PASSWORD;
+
+  if (!user || !pass) {
+    return {
+      success: false,
+      error: 'EMAIL_USER or EMAIL_PASS is missing in environment variables on this server',
+      userSet: !!user,
+      passSet: !!pass,
+    };
+  }
+
+  const mailer = getTransporter();
+  try {
+    await mailer.verify();
+    if (testRecipient) {
+      const info = await mailer.sendMail({
+        from: `"La Roche Cafe" <${user}>`,
+        to: testRecipient,
+        subject: '🧪 La Roche Cafe — SMTP Live Diagnostic Test',
+        text: 'This is a test email confirming that your server SMTP email delivery is functioning 100%.',
+      });
+      return {
+        success: true,
+        message: `Email sent successfully to ${testRecipient}`,
+        messageId: info.messageId,
+      };
+    }
+    return { success: true, message: 'SMTP server authentication verified successfully' };
+  } catch (err) {
+    return {
+      success: false,
+      error: err.message,
+      code: err.code,
+      response: err.response,
+    };
+  }
+};
+
 module.exports = {
   getTransporter,
   sendOtpEmail,
   sendOrderConfirmationEmail,
+  testEmailConnection,
 };
