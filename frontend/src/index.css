@@ -11,12 +11,26 @@
   --espresso: #231F20;            /* Espresso / Near Black */
   --copper: #4A3B32;              /* Burnt Copper / Dark Chocolate */
   --caramel: #9F7A60;             /* Warm Taupe / Caramel */
+  --terracotta: #9F7A60;
   --border-light: #E5D7D0;        /* Subtle Pale Cream Border */
   --border-subtle: #EFE6E1;
+  --border: #E5D7D0;
   --glass-bg: rgba(245, 235, 230, 0.92);
   --glass-border: rgba(229, 215, 208, 0.85);
   --text-primary: #231F20;
   --text-secondary: #6B5B52;
+  --taupe: #6B5B52;
+  --on-surface: #231F20;
+  --on-surface-secondary: #6B5B52;
+  --on-surface-tertiary: #8F7E75;
+  --brand-primary: #9F7A60;
+  --brand-gradient: linear-gradient(135deg, #9F7A60 0%, #87644C 100%);
+  --shadow-card: 0 4px 16px rgba(35, 31, 32, 0.06);
+  --shadow-hover: 0 8px 24px rgba(35, 31, 32, 0.12);
+  --radius-lg: 1.25rem;
+  --radius-md: 0.875rem;
+  --radius-pill: 9999px;
+  --space-lg: 1.5rem;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -29,12 +43,22 @@
   --espresso: #F5EBE6;            /* Light Cream Text */
   --copper: #4A3B32;              /* Burnt Copper Border / Accent */
   --caramel: #9F7A60;             /* Warm Caramel Button / Accent */
+  --terracotta: #B48D71;
   --border-light: #4A3B32;        /* Burnt Copper Border */
   --border-subtle: #3A2E26;
+  --border: #4A3B32;
   --glass-bg: rgba(26, 23, 24, 0.94);
   --glass-border: rgba(74, 59, 50, 0.85);
   --text-primary: #F5EBE6;
   --text-secondary: #C5B4A8;
+  --taupe: #C5B4A8;
+  --on-surface: #FFFFFF;
+  --on-surface-secondary: #D6C7BD;
+  --on-surface-tertiary: #A89B91;
+  --brand-primary: #9F7A60;
+  --brand-gradient: linear-gradient(135deg, #9F7A60 0%, #B48D71 100%);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.45);
+  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.6);
 }
 
 *, *::before, *::after {
@@ -112,7 +136,39 @@ h1, h2, h3, .font-display, .font-serif {
   -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
 }
 
-/* --- Dark Mode Semantic & Inverted Font Classes --- */
+/* =========================================================================
+   STRICT GLOBAL BACKGROUND VIDEO CONTROLS SUPPRESSION
+   Completely removes any native iOS/Safari/Chrome/Android play-pause overlays
+   ========================================================================= */
+video {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+video::-webkit-media-controls,
+video::-webkit-media-controls-enclosure,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-overlay-play-button,
+video::-webkit-media-controls-overlay-enclosure,
+video::-webkit-media-controls-timeline,
+video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-time-remaining-display,
+video::-webkit-media-controls-mute-button,
+video::-webkit-media-controls-toggle-closed-captions-button,
+video::-webkit-media-controls-volume-slider {
+  display: none !important;
+  -webkit-appearance: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* --- Dark Mode Semantic Classes --- */
 .dark body,
 .dark h1,
 .dark h2,
@@ -120,7 +176,7 @@ h1, h2, h3, .font-display, .font-serif {
 .dark h4,
 .dark h5,
 .dark h6 {
-  color: #FFFFFF !important;
+  color: #FFFFFF;
 }
 
 .dark p,
@@ -128,64 +184,33 @@ h1, h2, h3, .font-display, .font-serif {
   color: #F5EBE6;
 }
 
-.dark .text-espresso,
-.dark .text-black,
-.dark .text-stone-900,
-.dark .text-stone-800 {
-  color: #FFFFFF !important;
+.dark .text-espresso {
+  color: #FFFFFF;
 }
 
-.dark .text-taupe,
-.dark .text-stone-600,
-.dark .text-stone-500 {
-  color: #D6C7BD !important;
+.dark .text-taupe {
+  color: #D6C7BD;
 }
 
-.dark .text-taupe-light,
-.dark .text-stone-400 {
-  color: #B4A49A !important;
-}
-
-.dark .bg-white {
-  background-color: #2B2421 !important;
-  color: #FFFFFF !important;
+.dark .text-taupe-light {
+  color: #B4A49A;
 }
 
 .dark .bg-oat {
-  background-color: #1A1718 !important;
-}
-
-.dark .bg-stone-50,
-.dark .bg-stone-100 {
-  background-color: #362E2A !important;
-  color: #FFFFFF !important;
-}
-
-.dark .border-stone-200,
-.dark .border-stone-200\/80,
-.dark .border-stone-200\/60,
-.dark .border-stone-200\/70,
-.dark .border-stone-100 {
-  border-color: #4A3B32 !important;
-}
-
-.dark .shadow-warm-sm,
-.dark .shadow-warm-md,
-.dark .shadow-warm-lg,
-.dark .shadow-warm-xl {
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45) !important;
+  background-color: #1A1718;
 }
 
 .dark input,
 .dark textarea,
 .dark select {
-  background-color: #362E2A !important;
-  color: #FFFFFF !important;
-  border-color: #4A3B32 !important;
+  background-color: #362E2A;
+  color: #FFFFFF;
+  border-color: #4A3B32;
 }
 
 .dark input::placeholder {
-  color: #9F8E84 !important;
+  color: #9F8E84;
 }
+
 
 

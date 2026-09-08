@@ -13,11 +13,30 @@ const IntroVideo = ({ onFinish }) => {
   };
 
   useEffect(() => {
-    // Attempt auto-play with safety fallback
+    // Explicitly enforce muted DOM property before playback to guarantee autoplay across iOS/Chrome
     if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Autoplay may be handled silently by browser
-      });
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      videoRef.current.playsInline = true;
+      videoRef.current.setAttribute('muted', '');
+      videoRef.current.setAttribute('playsinline', '');
+      videoRef.current.setAttribute('webkit-playsinline', 'true');
+
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // If browser suspended autoplay, kickstart on first user gesture
+          const handleFirstGesture = () => {
+            if (videoRef.current) {
+              videoRef.current.defaultMuted = true;
+              videoRef.current.muted = true;
+              videoRef.current.play().catch(() => {});
+            }
+          };
+          window.addEventListener('touchstart', handleFirstGesture, { once: true, passive: true });
+          window.addEventListener('click', handleFirstGesture, { once: true, passive: true });
+        });
+      }
     }
 
     // Allow wheel scrolling or swipe up to enter
@@ -57,7 +76,7 @@ const IntroVideo = ({ onFinish }) => {
       {/* Background B-Roll Video with pointer-events disabled to prevent native browser pause overlay */}
       <video
         ref={videoRef}
-        className="intro-video"
+        className="intro-video pointer-events-none select-none"
         src="/intro.mp4"
         autoPlay
         muted
@@ -66,6 +85,8 @@ const IntroVideo = ({ onFinish }) => {
         webkit-playsinline="true"
         x5-playsinline="true"
         disablePictureInPicture
+        disableRemotePlayback
+        tabIndex={-1}
         controlsList="nodownload nofullscreen noremoteplayback"
       />
 

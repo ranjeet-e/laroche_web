@@ -272,7 +272,7 @@ const Auth = ({ initialMode = 'login' }) => {
       setForgotStep('enter_otp');
       setForgotOtp('');
       setForgotCountdown(45);
-      setSuccessMessage(`A 6-digit verification code has been sent to ${cleanEmail}. Please check your inbox.`);
+      setSuccessMessage(`A 6-digit verification code has been sent to ${cleanEmail}.`);
     } catch (err) {
       setServerError(err.response?.data?.message || 'Failed to send reset code. Please check your email.');
     } finally {

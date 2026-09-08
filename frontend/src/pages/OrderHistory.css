@@ -5,10 +5,10 @@
 }
 
 .orders-page h1 {
-  font-size: 1.65rem;
+  font-size: 1.85rem;
   font-weight: 800;
   margin: 0 0 24px 0;
-  color: var(--on-surface);
+  color: var(--espresso);
   letter-spacing: -0.02em;
 }
 
@@ -20,18 +20,18 @@
 
 .order-card {
   background-color: var(--surface);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  border-radius: 1.5rem;
   padding: 20px 24px;
   cursor: pointer;
-  box-shadow: var(--shadow-card);
-  transition: transform 0.2s var(--transition-bounce), box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 16px rgba(35, 31, 32, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .order-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-hover);
-  border-color: rgba(232, 93, 4, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(35, 31, 32, 0.1);
+  border-color: #9F7A60;
 }
 
 .order-card-top {
@@ -43,15 +43,27 @@
 
 .order-id {
   font-weight: 800;
-  color: var(--on-surface);
-  font-size: 0.95rem;
+  color: var(--espresso);
+  font-size: 1rem;
+}
+
+.order-status {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: rgba(159, 122, 96, 0.15);
+  color: #9F7A60;
+  border: 1px solid rgba(159, 122, 96, 0.3);
 }
 
 .order-items-preview {
-  color: var(--on-surface-secondary);
+  color: var(--taupe);
   font-size: 0.9rem;
   margin: 0 0 16px 0;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .order-card-bottom {
@@ -59,15 +71,15 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
-  color: var(--on-surface-tertiary);
-  border-top: 1px solid var(--border);
+  color: var(--taupe);
+  border-top: 1px solid var(--border-subtle);
   padding-top: 12px;
 }
 
 .order-total {
   font-weight: 800;
-  color: var(--brand-primary);
-  font-size: 1rem;
+  color: #9F7A60;
+  font-size: 1.1rem;
 }
 
 .orders-loading,
@@ -78,25 +90,28 @@
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  gap: var(--space-lg);
+  gap: 16px;
   text-align: center;
-  color: var(--on-surface-secondary);
+  color: var(--taupe);
 }
 
 .orders-empty button,
 .orders-error button {
-  background: var(--brand-gradient);
+  background: #9F7A60;
   color: #ffffff;
   border: none;
   padding: 12px 28px;
-  border-radius: var(--radius-pill);
+  border-radius: 9999px;
   font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(232, 93, 4, 0.3);
+  box-shadow: 0 4px 16px rgba(159, 122, 96, 0.35);
   transition: all 0.2s ease;
 }
 
-.orders-empty button:hover {
+.orders-empty button:hover,
+.orders-error button:hover {
+  background: #87644C;
   transform: translateY(-2px);
 }
 
@@ -106,21 +121,21 @@
   }
 
   .orders-page h1 {
-    font-size: 1.35rem;
+    font-size: 1.45rem;
     margin-bottom: 18px;
   }
 
   .order-card {
-    padding: 16px 16px;
-    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    border-radius: 1.25rem;
   }
 
   .order-id {
-    font-size: 0.875rem;
+    font-size: 0.925rem;
   }
 
   .order-items-preview {
-    font-size: 0.825rem;
+    font-size: 0.85rem;
     margin-bottom: 12px;
   }
 
@@ -130,6 +145,7 @@
   }
 
   .order-total {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 }
+

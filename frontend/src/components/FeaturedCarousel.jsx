@@ -74,14 +74,14 @@ const FeaturedCarousel = ({ allItems = [] }) => {
       {/* Header Row */}
       <div className="flex items-end justify-between mb-6">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-terracotta/10 text-terracotta text-xs font-bold uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-terracotta/10 text-terracotta dark:bg-terracotta/20 dark:text-terracotta-light text-xs font-bold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5 fill-terracotta" />
             <span>Trending on Campus</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-espresso tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-espresso dark:text-white tracking-tight">
             Popular Right Now
           </h2>
-          <p className="text-taupe text-xs sm:text-sm mt-1">
+          <p className="text-taupe dark:text-stone-400 text-xs sm:text-sm mt-1">
             Real-time signature favorites ranked from the last 30 kitchen orders.
           </p>
         </div>
@@ -91,7 +91,7 @@ const FeaturedCarousel = ({ allItems = [] }) => {
           <button
             type="button"
             onClick={() => scroll(-1)}
-            className="w-9 h-9 rounded-full bg-white border border-stone-200/80 shadow-warm-sm text-espresso hover:bg-stone-50 hover:border-stone-300 flex items-center justify-center transition-all duration-200"
+            className="w-9 h-9 rounded-full bg-white dark:bg-[#2B2421] border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-sm text-espresso dark:text-stone-100 hover:bg-stone-50 dark:hover:bg-[#362E2A] hover:border-stone-300 dark:hover:border-stone-600 flex items-center justify-center transition-all duration-200"
             aria-label="Scroll left"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -99,7 +99,7 @@ const FeaturedCarousel = ({ allItems = [] }) => {
           <button
             type="button"
             onClick={() => scroll(1)}
-            className="w-9 h-9 rounded-full bg-white border border-stone-200/80 shadow-warm-sm text-espresso hover:bg-stone-50 hover:border-stone-300 flex items-center justify-center transition-all duration-200"
+            className="w-9 h-9 rounded-full bg-white dark:bg-[#2B2421] border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-sm text-espresso dark:text-stone-100 hover:bg-stone-50 dark:hover:bg-[#362E2A] hover:border-stone-300 dark:hover:border-stone-600 flex items-center justify-center transition-all duration-200"
             aria-label="Scroll right"
           >
             <ChevronRight className="w-4 h-4" />
@@ -127,10 +127,10 @@ const FeaturedCarousel = ({ allItems = [] }) => {
           return (
             <div
               key={item._id || idx}
-              className="group flex-shrink-0 w-[240px] sm:w-[270px] bg-white rounded-2xl border border-stone-200/70 shadow-warm-sm hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between"
+              className="group flex-shrink-0 w-[240px] sm:w-[270px] bg-white dark:bg-[#2B2421] rounded-2xl border border-stone-200/70 dark:border-[#4A3B32] shadow-warm-sm hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between"
             >
               {/* Card Image Wrap (Aspect 4/3) */}
-              <div className="relative w-full aspect-[4/3] bg-stone-100 overflow-hidden">
+              <div className="relative w-full aspect-[4/3] bg-stone-100 dark:bg-stone-800 overflow-hidden">
                 <img
                   src={item.imageUrl || '/placeholder-food.png'}
                   alt={item.name}
@@ -144,32 +144,32 @@ const FeaturedCarousel = ({ allItems = [] }) => {
 
                 {/* Badges */}
                 <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-espresso/80 backdrop-blur-md text-white shadow-sm">
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-espresso/80 dark:bg-black/80 backdrop-blur-md text-white shadow-sm">
                     #{idx + 1} Best
                   </span>
                 </div>
 
                 {/* Veg Indicator Mini Badge */}
-                <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-md bg-white/90 backdrop-blur-sm border border-matcha/40 flex items-center justify-center shadow-sm">
-                  <div className="w-2.5 h-2.5 rounded-full bg-matcha" />
+                <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-md bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm border border-emerald-500/40 flex items-center justify-center shadow-sm">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
                 </div>
               </div>
 
               {/* Card Details */}
               <div className="p-4 flex-1 flex flex-col justify-between">
                 <div>
-                  <span className="text-[11px] font-semibold text-taupe tracking-wide uppercase">
+                  <span className="text-[11px] font-semibold text-taupe dark:text-stone-400 tracking-wide uppercase">
                     {item.category}
                   </span>
-                  <h3 className="font-bold text-espresso text-base line-clamp-1 group-hover:text-terracotta transition-colors mt-0.5" title={item.name}>
+                  <h3 className="font-bold text-espresso dark:text-stone-100 text-base line-clamp-1 group-hover:text-terracotta transition-colors mt-0.5" title={item.name}>
                     {item.name}
                   </h3>
                 </div>
 
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-100">
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-100 dark:border-stone-800">
                   <div>
-                    <span className="text-xs text-taupe">Price</span>
-                    <p className="font-extrabold text-espresso text-base">
+                    <span className="text-xs text-taupe dark:text-stone-400">Price</span>
+                    <p className="font-extrabold text-espresso dark:text-stone-100 text-base">
                       {hasMultipleVariants ? `From ₹${displayPrice}` : `₹${displayPrice}`}
                     </p>
                   </div>
@@ -186,7 +186,7 @@ const FeaturedCarousel = ({ allItems = [] }) => {
                         <span>ADD</span>
                       </button>
                     ) : (
-                      <div className="inline-flex items-center bg-espresso text-white rounded-full p-1 shadow-sm">
+                      <div className="inline-flex items-center bg-espresso dark:bg-stone-800 text-white rounded-full p-1 shadow-sm border border-transparent dark:border-stone-700">
                         <button
                           type="button"
                           onClick={() => decreaseQuantity(item._id, displayName)}
