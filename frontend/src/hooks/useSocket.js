@@ -3,14 +3,14 @@ import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 
 const getSocketUrl = () => {
-  const envUrl = import.meta.env.VITE_API_BASE_URL;
-  if (import.meta.env.PROD && (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1'))) {
-    return window.location.origin;
+  const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+    return envUrl.replace(/\/api\/?$/, '');
   }
-  if (envUrl) {
-    return envUrl.replace('/api', '');
+  if (import.meta.env.PROD) {
+    return 'https://laroche-web.onrender.com';
   }
-  return undefined; // automatically connects to window.location.origin
+  return undefined;
 };
 
 export const useSocket = ({ onNewOrder, onOrderReady, onOrderStatusUpdated, orderId } = {}) => {

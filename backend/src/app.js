@@ -38,11 +38,17 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, server-to-server) or matching allowed origins
-      if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      // Allow requests with no origin (curl, mobile), matching CLIENT_URL, localhost, or any *.vercel.app deployment
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        origin.includes('vercel.app') ||
+        process.env.NODE_ENV !== 'production'
+      ) {
         callback(null, true);
       } else {
-        callback(new Error('CORS blocked: Origin not allowed'));
+        callback(new Error(`CORS blocked for origin: ${origin}`));
       }
     },
     credentials: true,

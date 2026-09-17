@@ -6,6 +6,10 @@ const getApiBaseUrl = () => {
     const cleanUrl = envUrl.trim().replace(/\/$/, '');
     return cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
   }
+  // Automatic production fallback to your active Render backend
+  if (import.meta.env.PROD) {
+    return 'https://laroche-web.onrender.com/api';
+  }
   return '/api';
 };
 
