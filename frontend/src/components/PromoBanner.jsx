@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Sparkles, Zap, Flame, Coffee, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
-import api from '../services/api';
+import api, { resolveAssetUrl } from '../services/api';
 import './PromoBanner.css';
 
 const DEFAULT_BANNERS = [
@@ -37,30 +37,42 @@ const PromoBanner = () => {
   const [banners, setBanners] = useState(DEFAULT_BANNERS);
   const [active, setActive] = useState(0);
 
-  // Fetch live banners from Cloudinary folder 'laroche_cafe/banners'
+  // Fetch live banners from In-House CMS or Cloudinary
   useEffect(() => {
-    const fetchCloudinaryBanners = async () => {
+    const fetchBanners = async () => {
       try {
-        const response = await api.get('/upload/banners');
-        if (Array.isArray(response.data) && response.data.length > 0) {
-          const cloudinaryBanners = response.data.map((b, i) => ({
-            id: `cld_${b.id || i}`,
+        let resData = [];
+        try {
+          const cmsRes = await api.get('/cms/banners');
+          if (Array.isArray(cmsRes.data) && cmsRes.data.length > 0) {
+            resData = cmsRes.data;
+          }
+        } catch (cmsErr) {
+          const fallbackRes = await api.get('/upload/banners');
+          if (Array.isArray(fallbackRes.data) && fallbackRes.data.length > 0) {
+            resData = fallbackRes.data;
+          }
+        }
+
+        if (resData.length > 0) {
+          const formattedBanners = resData.map((b, i) => ({
+            id: b._id || `cld_${b.id || i}`,
             tag: b.tag || '🔥 PROMO SPECIAL',
             title: b.title || 'Artisanal Cafe Special',
             subtitle: b.subtitle || 'Freshly prepared and ready for counter pickup.',
-            imageUrl: b.imageUrl,
+            imageUrl: resolveAssetUrl(b.imageUrl),
             bg: 'bg-gradient-to-r from-stone-900 via-espresso to-stone-900',
             icon: <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 text-honey" />,
             badgeColor: 'bg-terracotta text-white',
           }));
-          setBanners([...cloudinaryBanners, ...DEFAULT_BANNERS]);
+          setBanners([...formattedBanners, ...DEFAULT_BANNERS]);
         }
       } catch (err) {
         // Fallback gracefully to default banners
       }
     };
 
-    fetchCloudinaryBanners();
+    fetchBanners();
   }, []);
 
   useEffect(() => {

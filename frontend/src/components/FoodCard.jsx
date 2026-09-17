@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Plus, Minus, SlidersHorizontal, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { triggerFlyToCart } from '../utils/flyToCart';
+import { resolveAssetUrl } from '../services/api';
 import CustomizeModal from './CustomizeModal';
 import AddonsModal, { shouldShowAddons } from './AddonsModal';
 import './FoodCard.css';
@@ -71,7 +72,7 @@ const FoodCard = ({ item, allItems = [] }) => {
         <div className="relative w-full aspect-[4/3] bg-stone-100 dark:bg-stone-800 overflow-hidden">
           <img
             ref={imgRef}
-            src={item.imageUrl || '/placeholder-food.png'}
+            src={resolveAssetUrl(item.imageUrl) || '/placeholder-food.png'}
             alt={item.name}
             loading="lazy"
             decoding="async"

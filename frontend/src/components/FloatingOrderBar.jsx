@@ -22,6 +22,7 @@ const FloatingOrderBar = () => {
   return (
     <aside aria-label="Cart Overview" className="fixed bottom-4 sm:bottom-6 left-0 right-0 z-40 px-4 sm:px-6 pointer-events-none flex justify-center animate-cart-float-in">
       <div
+        id="floating-cart-pill"
         role="button"
         tabIndex={0}
         onClick={() => navigate('/cart')}
@@ -34,7 +35,7 @@ const FloatingOrderBar = () => {
         className="group pointer-events-auto w-full max-w-sm sm:max-w-md bg-[#221C19] dark:bg-[#1E1715] text-white rounded-full pl-3 pr-2.5 sm:pl-3.5 sm:pr-3 py-2 sm:py-2.5 shadow-cart-pill shadow-2xl border border-white/15 dark:border-[#4A3B32] flex items-center justify-between cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 backdrop-blur-md"
       >
         {/* Left: Tiny stacked/overlapping circular thumbnails */}
-        <div className="flex items-center -space-x-2.5 overflow-hidden flex-shrink-0 pl-0.5">
+        <div id="floating-cart-thumbnails" className="flex items-center -space-x-2.5 overflow-hidden flex-shrink-0 pl-0.5">
           {visibleThumbnails.length > 0 ? (
             visibleThumbnails.map((item, idx) => (
               <div

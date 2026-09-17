@@ -1,5 +1,29 @@
 import axios from 'axios';
 
+export const getBackendBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+    return envUrl.trim().replace(/\/api\/?$/, '').replace(/\/$/, '');
+  }
+  if (import.meta.env.PROD) {
+    return 'https://laroche-web.onrender.com';
+  }
+  return '';
+};
+
+export const resolveAssetUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:') || url.startsWith('blob:')) {
+    return url;
+  }
+  // In-house backend uploads
+  if (url.startsWith('/uploads')) {
+    const backendBase = getBackendBaseUrl();
+    return `${backendBase}${url}`;
+  }
+  return url;
+};
+
 const getApiBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL;
   if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {

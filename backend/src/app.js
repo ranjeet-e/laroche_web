@@ -6,12 +6,17 @@ const authRoutes = require('./routes/authRoutes');
 const menuRoutes = require('./routes/menuRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const path = require('path');
 const kitchenRoutes = require('./routes/kitchenRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const cmsRoutes = require('./routes/cmsRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const { globalLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
+
+// Serve in-house static uploads
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Trust reverse proxy (Render, Vercel, Cloudflare, Nginx) for accurate IP rate limiting
 app.set('trust proxy', 1);
@@ -77,6 +82,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/kitchen', kitchenRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/cms', cmsRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

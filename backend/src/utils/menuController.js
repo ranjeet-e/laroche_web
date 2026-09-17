@@ -4,9 +4,11 @@ const MenuItem = require('../models/MenuItem');
 // Public — anyone (even logged out) can view the menu
 const getMenu = async (req, res, next) => {
   try {
-    // Cache for 60 seconds with stale-while-revalidate for instant subsequent loads
-    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
-    const items = await MenuItem.find({ isAvailable: true })
+    const filter = req.query.all === 'true' ? {} : { isAvailable: true };
+    if (req.query.all !== 'true') {
+      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+    }
+    const items = await MenuItem.find(filter)
       .sort({ category: 1, name: 1 })
       .lean();
     res.status(200).json(items);

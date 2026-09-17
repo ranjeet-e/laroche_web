@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import { triggerFlyToCart } from '../utils/flyToCart';
 import CustomizeModal from './CustomizeModal';
 import AddonsModal, { shouldShowAddons } from './AddonsModal';
-import api from '../services/api';
+import api, { resolveAssetUrl } from '../services/api';
 import './FeaturedCarousel.css';
 
 const FeaturedCarousel = ({ allItems = [] }) => {
@@ -154,7 +154,7 @@ const FeaturedCarousel = ({ allItems = [] }) => {
                   ref={(el) => {
                     if (el && item._id) imgRefs.current[item._id] = el;
                   }}
-                  src={item.imageUrl || '/placeholder-food.png'}
+                  src={resolveAssetUrl(item.imageUrl) || '/placeholder-food.png'}
                   alt={item.name}
                   loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
