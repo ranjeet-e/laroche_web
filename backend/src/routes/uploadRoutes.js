@@ -9,7 +9,7 @@ const { upload, uploadToCloudinary, cloudinary } = require('../config/cloudinary
 router.post(
   '/image',
   authMiddleware,
-  roleMiddleware('kitchen'),
+  roleMiddleware('kitchen', 'cms', 'admin'),
   upload.single('image'),
   async (req, res, next) => {
     try {
@@ -35,28 +35,47 @@ router.post(
 );
 
 // @route GET /api/upload/banners
-// Public — dynamically fetch all promo banners uploaded to Cloudinary folder "laroche_cafe/banners"
+// Public — dynamically fetch all active promo banners from DB and Cloudinary
 router.get('/banners', async (req, res, next) => {
   try {
-    // Search for images in folder laroche_cafe/banners or tagged promo_banner
-    const searchResult = await cloudinary.search
-      .expression('folder:laroche_cafe/banners OR tags=promo_banner')
-      .sort_by('created_at', 'desc')
-      .max_results(8)
-      .execute();
+    const Banner = require('../models/Banner');
+    const dbBanners = await Banner.find({ isActive: true }).sort({ order: 1, createdAt: -1 }).lean();
 
-    const banners = (searchResult.resources || []).map((resource, idx) => ({
-      id: resource.asset_id || `banner_${idx}`,
-      imageUrl: resource.secure_url,
-      publicId: resource.public_id,
-      title: resource.context?.custom?.caption || resource.context?.custom?.title || 'Artisanal Cafe Special',
-      subtitle: resource.context?.custom?.alt || 'Freshly prepared and ready for counter pickup.',
-      tag: resource.context?.custom?.tag || '🔥 SPECIAL OFFER',
+    let formattedDbBanners = dbBanners.map((b) => ({
+      id: b._id.toString(),
+      imageUrl: b.imageUrl,
+      title: b.title,
+      subtitle: b.subtitle,
+      tag: b.tag,
+      badgeColor: b.badgeColor,
+      bg: b.bg,
     }));
 
-    res.status(200).json(banners);
+    try {
+      // Also query Cloudinary folder "laroche_cafe/banners" if available
+      const searchResult = await cloudinary.search
+        .expression('folder:laroche_cafe/banners OR tags=promo_banner')
+        .sort_by('created_at', 'desc')
+        .max_results(8)
+        .execute();
+
+      const cldBanners = (searchResult.resources || []).map((resource, idx) => ({
+        id: resource.asset_id || `banner_${idx}`,
+        imageUrl: resource.secure_url,
+        publicId: resource.public_id,
+        title: resource.context?.custom?.caption || resource.context?.custom?.title || 'Artisanal Cafe Special',
+        subtitle: resource.context?.custom?.alt || 'Freshly prepared and ready for counter pickup.',
+        tag: resource.context?.custom?.tag || '🔥 SPECIAL OFFER',
+      }));
+
+      formattedDbBanners = [...formattedDbBanners, ...cldBanners];
+    } catch (cldErr) {
+      // Cloudinary error ignored, use db banners
+    }
+
+    res.status(200).json(formattedDbBanners);
   } catch (error) {
-    console.warn('Cloudinary banner query note:', error.message);
+    console.warn('Banner query note:', error.message);
     res.status(200).json([]);
   }
 });

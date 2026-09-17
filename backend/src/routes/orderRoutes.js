@@ -4,7 +4,7 @@ const {
   placeOrder,
   getMyOrders,
   getOrderById,
-} = require('../utils/orderController');
+} = require('../controllers/orderController');
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 const { orderLimiter } = require('../middleware/rateLimiter');

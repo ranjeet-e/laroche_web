@@ -8,7 +8,7 @@ const {
   forgotPassword,
   verifyResetOtp,
   resetPassword,
-} = require('../utils/authController');
+} = require('../controllers/authController');
 const { authLimiter } = require('../middleware/rateLimiter');
 const { testEmailConnection } = require('../utils/emailService');
 

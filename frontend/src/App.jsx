@@ -1,23 +1,23 @@
-import { lazy, Suspense, useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
+import { useState, useEffect } from 'react';
 import IntroVideo from './components/IntroVideo';
 import SiteLock from './components/SiteLock';
 import AddToHomeScreen from './components/AddToHomeScreen';
-
-// Route-level Code Splitting: load pages on demand
-const Auth = lazy(() => import('./pages/Auth'));
-const Menu = lazy(() => import('./pages/Menu'));
-const Cart = lazy(() => import('./pages/Cart'));
-const Checkout = lazy(() => import('./pages/Checkout'));
-const OrderHistory = lazy(() => import('./pages/OrderHistory'));
-const OrderTracking = lazy(() => import('./pages/OrderTracking'));
-const KitchenDashboard = lazy(() => import('./pages/kitchen/KitchenDashboard'));
-const KitchenLogin = lazy(() => import('./pages/kitchen/KitchenLogin'));
+import Auth from './pages/Auth';
+import Menu from './pages/Menu';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import OrderHistory from './pages/OrderHistory';
+import OrderTracking from './pages/OrderTracking';
+import KitchenDashboard from './pages/kitchen/KitchenDashboard';
+import KitchenLogin from './pages/kitchen/KitchenLogin';
+import CmsLogin from './pages/cms/CmsLogin';
+import CmsDashboard from './pages/cms/CmsDashboard';
 
 import { theme } from './theme.ts';
 
@@ -28,6 +28,7 @@ const RootRedirect = () => {
   if (loading) return <div className="route-loading">Loading...</div>;
 
   if (user?.role === 'kitchen') return <Navigate to="/kitchen/dashboard" replace />;
+  if (user?.role === 'cms' || user?.role === 'admin') return <Navigate to="/cms/dashboard" replace />;
   return <Navigate to="/menu" replace />;
 };
 
@@ -38,62 +39,65 @@ const AppRoutes = () => {
     <>
       <Navbar />
       <AddToHomeScreen />
-      <Suspense
-        fallback={
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="w-8 h-8 rounded-full border-2 border-terracotta border-t-transparent animate-spin" />
-          </div>
-        }
-      >
-        <Routes>
-          <Route path="/" element={<RootRedirect />} />
-          <Route path="/login" element={<Auth initialMode="login" />} />
-          <Route path="/signup" element={<Auth initialMode="signup" />} />
-          <Route path="/kitchen/login" element={<KitchenLogin />} />
+      <Routes>
+        <Route path="/" element={<RootRedirect />} />
+        <Route path="/login" element={<Auth initialMode="login" />} />
+        <Route path="/signup" element={<Auth initialMode="signup" />} />
+        <Route path="/kitchen/login" element={<KitchenLogin />} />
+        <Route path="/cms/login" element={<CmsLogin />} />
 
-          {/* Student-only routes */}
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/cart" element={<Cart />} />
+        {/* Student-only routes */}
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/cart" element={<Cart />} />
 
-          <Route
-            path="/checkout"
-            element={
-              <ProtectedRoute allowedRoles={['student']}>
-                <Checkout />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/orders"
-            element={
-              <ProtectedRoute allowedRoles={['student']}>
-                <OrderHistory />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/orders/:id"
-            element={
-              <ProtectedRoute allowedRoles={['student']}>
-                <OrderTracking />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <OrderHistory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders/:id"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <OrderTracking />
+            </ProtectedRoute>
+          }
+        />
 
-          {/* Kitchen-only route */}
-          <Route
-            path="/kitchen/dashboard"
-            element={
-              <ProtectedRoute allowedRoles={['kitchen']}>
-                <KitchenDashboard />
-              </ProtectedRoute>
-            }
-          />
+        {/* Kitchen-only route */}
+        <Route
+          path="/kitchen/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['kitchen']}>
+              <KitchenDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-          {/* Catch-all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
+        {/* CMS-only route */}
+        <Route
+          path="/cms/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['cms', 'admin']}>
+              <CmsDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </>
   );
 };

@@ -1,5 +1,18 @@
 import axios from 'axios';
 
+export const getApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+    const cleanUrl = envUrl.trim().replace(/\/$/, '');
+    return cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
+  }
+  // Automatic fallback to active Render production backend
+  if (import.meta.env.PROD) {
+    return 'https://laroche-web.onrender.com/api';
+  }
+  return '/api';
+};
+
 export const getBackendBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL;
   if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
@@ -9,32 +22,6 @@ export const getBackendBaseUrl = () => {
     return 'https://laroche-web.onrender.com';
   }
   return '';
-};
-
-export const resolveAssetUrl = (url) => {
-  if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:') || url.startsWith('blob:')) {
-    return url;
-  }
-  // In-house backend uploads
-  if (url.startsWith('/uploads')) {
-    const backendBase = getBackendBaseUrl();
-    return `${backendBase}${url}`;
-  }
-  return url;
-};
-
-const getApiBaseUrl = () => {
-  const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL;
-  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
-    const cleanUrl = envUrl.trim().replace(/\/$/, '');
-    return cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
-  }
-  // Automatic production fallback to your active Render backend
-  if (import.meta.env.PROD) {
-    return 'https://laroche-web.onrender.com/api';
-  }
-  return '/api';
 };
 
 const api = axios.create({
@@ -65,12 +52,37 @@ api.interceptors.response.use(
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       const currentPath = window.location.pathname;
-      if (currentPath !== '/login' && currentPath !== '/signup' && currentPath !== '/kitchen/login') {
-        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+      if (
+        currentPath !== '/login' &&
+        currentPath !== '/signup' &&
+        currentPath !== '/kitchen/login' &&
+        currentPath !== '/cms/login'
+      ) {
+        const loginUrl = currentPath.startsWith('/cms')
+          ? '/cms/login'
+          : currentPath.startsWith('/kitchen')
+          ? '/kitchen/login'
+          : '/login';
+        window.location.href = `${loginUrl}?redirect=${encodeURIComponent(currentPath)}`;
       }
     }
     return Promise.reject(error);
   }
 );
+
+export const resolveAssetUrl = (path) => {
+  if (!path) return '';
+  if (
+    path.startsWith('http://') ||
+    path.startsWith('https://') ||
+    path.startsWith('data:') ||
+    path.startsWith('blob:')
+  ) {
+    return path;
+  }
+  const backendBase = getBackendBaseUrl();
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${backendBase}${cleanPath}`;
+};
 
 export default api;

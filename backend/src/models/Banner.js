@@ -21,13 +21,21 @@ const bannerSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    badgeColor: {
+      type: String,
+      default: 'bg-terracotta text-white',
+    },
+    bg: {
+      type: String,
+      default: 'bg-gradient-to-r from-espresso via-espresso-light to-stone-900',
+    },
+    order: {
+      type: Number,
+      default: 0,
+    },
     isActive: {
       type: Boolean,
       default: true,
-    },
-    displayOrder: {
-      type: Number,
-      default: 0,
     },
   },
   { timestamps: true }
