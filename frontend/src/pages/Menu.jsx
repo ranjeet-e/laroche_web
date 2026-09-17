@@ -40,8 +40,18 @@ const Menu = () => {
     const fetchMenu = async () => {
       try {
         const response = await api.get('/menu');
-        setItems(response.data);
-        localStorage.setItem('laroche_menu_cache', JSON.stringify(response.data));
+        if (Array.isArray(response.data)) {
+          setItems(response.data);
+          localStorage.setItem('laroche_menu_cache', JSON.stringify(response.data));
+        } else {
+          console.warn('API returned non-array menu data:', response.data);
+          setItems((current) => {
+            if (!current || current.length === 0) {
+              setError('Unable to load dishes. Please ensure the backend server is active.');
+            }
+            return current;
+          });
+        }
       } catch (err) {
         // Only display error UI if there's no cached data already rendering
         setItems((current) => {
@@ -58,7 +68,8 @@ const Menu = () => {
   }, []);
 
   const categories = useMemo(() => {
-    return [...new Set(items.map((item) => item.category))].filter((c) => c !== 'Add-ons');
+    if (!Array.isArray(items) || items.length === 0) return [];
+    return [...new Set(items.map((item) => item.category))].filter((c) => c && c !== 'Add-ons');
   }, [items]);
 
   useEffect(() => {
@@ -68,6 +79,7 @@ const Menu = () => {
   }, [categories, activeCategory]);
 
   const groupedItems = useMemo(() => {
+    if (!Array.isArray(items) || items.length === 0) return {};
     const groups = {};
     categories.forEach((cat) => {
       groups[cat] = items.filter((item) => item.category === cat);
