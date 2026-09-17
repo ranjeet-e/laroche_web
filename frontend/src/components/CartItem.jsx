@@ -6,16 +6,18 @@ const CartItem = ({ item }) => {
   const { addToCart, decreaseQuantity, removeFromCart } = useCart();
 
   const handleIncrease = () => {
-    addToCart({ menuItem: item.menuItem, name: item.name, price: item.price });
+    addToCart(item);
   };
 
   const handleDecrease = () => {
-    decreaseQuantity(item.menuItem, item.name);
+    decreaseQuantity(item);
   };
 
   const handleRemove = () => {
-    removeFromCart(item.menuItem, item.name);
+    removeFromCart(item);
   };
+
+  const hasAddons = Array.isArray(item.addons) && item.addons.length > 0;
 
   return (
     <div className="flex items-center justify-between p-4 sm:p-5 bg-white dark:bg-[#2B2421] rounded-2xl border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-sm hover:shadow-warm-md transition-all duration-200">
@@ -23,7 +25,23 @@ const CartItem = ({ item }) => {
         <h4 className="font-bold text-espresso dark:text-stone-100 text-sm sm:text-base leading-snug">
           {item.name}
         </h4>
-        <p className="text-xs text-taupe dark:text-stone-400 mt-1">
+
+        {/* Attached Add-ons list / sub-tag */}
+        {hasAddons && (
+          <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+            {item.addons.map((addon, i) => (
+              <span
+                key={addon._id || i}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[#F5EFEB] dark:bg-[#362E2A] text-[#9F7A60] dark:text-[#E8D8CD] border border-[#E5D7D0] dark:border-[#4A3B32]"
+              >
+                <span>+ {addon.name}</span>
+                {addon.price > 0 && <span className="opacity-75">(₹{addon.price})</span>}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <p className="text-xs text-taupe dark:text-stone-400 mt-1.5">
           ₹{item.price} × {item.quantity} = <strong className="text-espresso dark:text-stone-100">₹{item.price * item.quantity}</strong>
         </p>
       </div>

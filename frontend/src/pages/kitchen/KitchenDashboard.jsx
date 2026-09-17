@@ -274,7 +274,14 @@ const KitchenDashboard = () => {
                       </div>
                       <ul className="order-card-kanban-items">
                         {order.items.map((item, idx) => (
-                          <li key={idx}>{item.name} x {item.quantity}</li>
+                          <li key={idx}>
+                            <div>{item.name} x {item.quantity}</div>
+                            {Array.isArray(item.addons) && item.addons.length > 0 && (
+                              <div className="text-[11px] text-[#9F7A60] dark:text-[#E8D8CD] pl-2 font-semibold">
+                                ↳ + {item.addons.map((a) => a.name).join(', ')}
+                              </div>
+                            )}
+                          </li>
                         ))}
                       </ul>
                       <button

@@ -42,4 +42,7 @@ const menuItemSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// High performance index for fast menu listings and filtering
+menuItemSchema.index({ isAvailable: 1, category: 1, name: 1 });
+
 module.exports = mongoose.model('MenuItem', menuItemSchema);

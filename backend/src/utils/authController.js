@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -56,8 +57,8 @@ const sendOtp = async (req, res, next) => {
       });
     }
 
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // Cryptographically secure 6-digit OTP
+    const otp = crypto.randomInt(100000, 1000000).toString();
 
     // Store in MongoDB with auto-expiry
     await Otp.findOneAndUpdate(
@@ -79,7 +80,7 @@ const sendOtp = async (req, res, next) => {
       isNewUser: !existingUser,
     };
 
-    if (isDev) {
+    if (isDev && process.env.EXPOSE_DEV_OTP === 'true') {
       responsePayload.otp = otp;
     }
 
@@ -253,8 +254,8 @@ const forgotPassword = async (req, res, next) => {
       return res.status(404).json({ message: 'No account found with this email address' });
     }
 
-    // Generate 6-digit reset code
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate cryptographically secure 6-digit reset code
+    const otp = crypto.randomInt(100000, 1000000).toString();
 
     // Store in Otp collection with auto-expiry
     await Otp.findOneAndUpdate(

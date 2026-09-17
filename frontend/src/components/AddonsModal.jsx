@@ -29,7 +29,7 @@ export const shouldShowAddons = (item, allItems) => {
   return getRelevantAddons(item, allItems).length > 0;
 };
 
-const AddonsModal = ({ baseItem, allItems, onClose }) => {
+const AddonsModal = ({ baseItem, allItems, onClose, onAdded }) => {
   const { addToCart } = useCart();
   const [selected, setSelected] = useState([]);
 
@@ -47,10 +47,19 @@ const AddonsModal = ({ baseItem, allItems, onClose }) => {
   const addonsTotal = selected.reduce((sum, a) => sum + a.price, 0);
 
   const handleConfirm = () => {
-    addToCart({ menuItem: baseItem._id, name: baseItem.name, price: basePrice });
-    selected.forEach((addon) => {
-      addToCart({ menuItem: addon._id, name: `${addon.name} (Add-on)`, price: addon.price });
+    addToCart({
+      menuItem: baseItem._id,
+      name: baseItem.name,
+      basePrice: basePrice,
+      price: basePrice + addonsTotal,
+      imageUrl: baseItem.imageUrl,
+      addons: selected.map((a) => ({
+        _id: a._id,
+        name: a.name,
+        price: a.price,
+      })),
     });
+    if (onAdded) onAdded();
     onClose();
   };
 

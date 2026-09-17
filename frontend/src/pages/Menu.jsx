@@ -22,12 +22,34 @@ const Menu = () => {
   const sectionRefs = useRef({});
 
   useEffect(() => {
+    // 1. Instant Cache-First Display: Load cached menu from localStorage if available
+    try {
+      const cached = localStorage.getItem('laroche_menu_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setItems(parsed);
+          setLoading(false);
+        }
+      }
+    } catch {
+      // Ignore cache parse error and fallback to network
+    }
+
+    // 2. Background Revalidation: Fetch fresh data from API
     const fetchMenu = async () => {
       try {
         const response = await api.get('/menu');
         setItems(response.data);
+        localStorage.setItem('laroche_menu_cache', JSON.stringify(response.data));
       } catch (err) {
-        setError('Could not load the menu. Please check connection and retry.');
+        // Only display error UI if there's no cached data already rendering
+        setItems((current) => {
+          if (!current || current.length === 0) {
+            setError('Could not load the menu. Please check connection and retry.');
+          }
+          return current;
+        });
       } finally {
         setLoading(false);
       }

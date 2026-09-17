@@ -78,6 +78,7 @@ const IntroVideo = ({ onFinish }) => {
         ref={videoRef}
         className="intro-video pointer-events-none select-none"
         src="/intro.mp4"
+        preload="metadata"
         autoPlay
         muted
         loop

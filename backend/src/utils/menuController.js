@@ -4,7 +4,11 @@ const MenuItem = require('../models/MenuItem');
 // Public — anyone (even logged out) can view the menu
 const getMenu = async (req, res, next) => {
   try {
-    const items = await MenuItem.find({ isAvailable: true }).sort({ category: 1, name: 1 });
+    // Cache for 60 seconds with stale-while-revalidate for instant subsequent loads
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+    const items = await MenuItem.find({ isAvailable: true })
+      .sort({ category: 1, name: 1 })
+      .lean();
     res.status(200).json(items);
   } catch (error) {
     next(error);
@@ -79,6 +83,7 @@ const deleteMenuItem = async (req, res, next) => {
 // Public — dynamically returns the most popular items based on the last 30 orders
 const getPopularItems = async (req, res, next) => {
   try {
+    res.setHeader('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
     const Order = require('../models/Order');
 
     // Fetch the last 30 orders submitted to the kitchen (excluding cancelled)

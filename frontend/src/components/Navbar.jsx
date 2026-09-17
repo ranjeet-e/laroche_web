@@ -137,6 +137,7 @@ const Navbar = () => {
 
                 <Link
                   to="/cart"
+                  data-cart-target
                   className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all ${
                     location.pathname === '/cart'
                       ? 'bg-terracotta text-white shadow-glow-terracotta'
@@ -219,6 +220,8 @@ const Navbar = () => {
             {!isKitchen && (
               <Link
                 to="/cart"
+                data-cart-target
+                data-mobile-cart
                 className="relative p-2 rounded-full bg-white dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 text-espresso dark:text-stone-200 shadow-warm-sm"
                 aria-label="Cart"
               >

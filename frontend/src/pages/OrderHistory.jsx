@@ -100,7 +100,14 @@ const OrderHistory = () => {
               </div>
 
               <p className="text-sm text-taupe dark:text-stone-300 line-clamp-2 mb-4 leading-relaxed">
-                {order.items.map((i) => `${i.quantity}x ${i.name}`).join(', ')}
+                {order.items
+                  .map((i) => {
+                    const addonText = Array.isArray(i.addons) && i.addons.length > 0
+                      ? ` (+ ${i.addons.map((a) => a.name).join(', ')})`
+                      : '';
+                    return `${i.quantity}x ${i.name}${addonText}`;
+                  })
+                  .join(', ')}
               </p>
 
               <div className="flex items-center justify-between pt-3 border-t border-stone-100 dark:border-stone-800 text-xs sm:text-sm">

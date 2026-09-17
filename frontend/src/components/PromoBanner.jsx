@@ -29,7 +29,7 @@ const DEFAULT_BANNERS = [
     subtitle: 'Crafted with premium Arabica beans, frothed milk, and signature syrups.',
     bg: 'bg-gradient-to-r from-[#2A1E1C] via-[#3D2C2A] to-[#1A1615]',
     icon: <Coffee className="w-10 h-10 sm:w-12 sm:h-12 text-honey" />,
-    badgeColor: 'bg-honey text-espresso',
+    badgeColor: 'bg-[#F5EBE6] text-[#231F20]',
   },
 ];
 

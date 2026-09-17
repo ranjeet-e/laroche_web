@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import './CustomizeModal.css';
 
-const CustomizeModal = ({ item, onClose }) => {
+const CustomizeModal = ({ item, onClose, onAdded }) => {
   const { addToCart } = useCart();
   const [selectedVariant, setSelectedVariant] = useState(item.variants[0]);
 
@@ -11,7 +11,9 @@ const CustomizeModal = ({ item, onClose }) => {
       menuItem: item._id,
       name: `${item.name} - ${selectedVariant.label}`,
       price: selectedVariant.price,
+      imageUrl: item.imageUrl,
     });
+    if (onAdded) onAdded();
     onClose();
   };
 

@@ -20,6 +20,13 @@ const orderItemSchema = new mongoose.Schema(
       required: true,
       min: 1,
     },
+    addons: [
+      {
+        _id: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem' },
+        name: { type: String, required: true },
+        price: { type: Number, required: true, min: 0 },
+      },
+    ],
   },
   { _id: false }
 );
@@ -55,5 +62,9 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Fast student order history lookups and kitchen active order queues
+orderSchema.index({ student: 1, createdAt: -1 });
+orderSchema.index({ status: 1, createdAt: 1 });
 
 module.exports = mongoose.model('Order', orderSchema);

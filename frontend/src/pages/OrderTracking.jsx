@@ -250,29 +250,36 @@ const OrderTracking = () => {
             </h4>
             <div className="space-y-2.5">
               {order.items.map((item, idx) => (
-                <div key={idx} className="flex justify-between text-xs sm:text-sm text-taupe">
-                  <span>{item.name} × <strong className="text-espresso">{item.quantity}</strong></span>
-                  <span className="font-semibold text-espresso">₹{item.price * item.quantity}</span>
+                <div key={idx} className="flex justify-between items-start text-xs sm:text-sm text-taupe dark:text-[#C5B4A8]">
+                  <div>
+                    <div>{item.name} × <strong className="text-espresso dark:text-white">{item.quantity}</strong></div>
+                    {Array.isArray(item.addons) && item.addons.length > 0 && (
+                      <div className="text-[11px] text-[#9F7A60] dark:text-[#E8D8CD] font-medium mt-0.5">
+                        + {item.addons.map((a) => a.name).join(', ')}
+                      </div>
+                    )}
+                  </div>
+                  <span className="font-semibold text-espresso dark:text-white">₹{item.price * item.quantity}</span>
                 </div>
               ))}
             </div>
 
-            <div className="mt-4 pt-4 border-t border-stone-100 flex justify-between items-center text-base sm:text-lg font-extrabold text-espresso">
+            <div className="mt-4 pt-4 border-t border-stone-100 dark:border-[#4A3B32] flex justify-between items-center text-base sm:text-lg font-extrabold text-espresso dark:text-white">
               <span>Total Amount</span>
               <span className="text-terracotta">₹{order.totalAmount}</span>
             </div>
           </div>
 
           {/* Counter Pickup Callout (No QR) */}
-          <div className="mt-6 p-4 rounded-2xl bg-stone-50 dark:bg-stone-800/80 border border-stone-200/80 dark:border-stone-700 text-center">
-            <span className="text-xs font-bold text-taupe uppercase tracking-wider block mb-1">
+          <div className="mt-6 p-4 rounded-2xl bg-stone-50 dark:bg-[#362E2A] border border-stone-200/80 dark:border-[#4A3B32] text-center">
+            <span className="text-xs font-bold text-taupe dark:text-[#C5B4A8] uppercase tracking-wider block mb-1">
               Counter Pickup Pass
             </span>
             <div className="text-2xl font-black text-terracotta font-mono">
               #{order._id.slice(-6).toUpperCase()}
             </div>
-            <p className="text-xs text-taupe mt-1">
-              Tell this Order ID at the counter when your status turns <strong>Ready for Pickup</strong>.
+            <p className="text-xs text-taupe dark:text-[#C5B4A8] mt-1">
+              Tell this Order ID at the counter when your status turns <strong className="text-espresso dark:text-white">Ready for Pickup</strong>.
             </p>
           </div>
 

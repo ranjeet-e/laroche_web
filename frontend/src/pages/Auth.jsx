@@ -349,8 +349,8 @@ const Auth = ({ initialMode = 'login' }) => {
   const searchParamStr = searchParams.toString() ? `?${searchParams.toString()}` : '';
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-oat">
-      <div className="w-full max-w-md bg-white rounded-3xl border border-stone-200/80 shadow-warm-xl p-6 sm:p-8 relative overflow-hidden">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-oat dark:bg-[#1A1718]">
+      <div className="w-full max-w-md bg-white dark:bg-[#2B2421] rounded-3xl border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-xl p-6 sm:p-8 relative overflow-hidden">
         
         {/* Brand Logo Header */}
         <div className="text-center mb-6">
@@ -361,7 +361,7 @@ const Auth = ({ initialMode = 'login' }) => {
               className="h-12 w-auto mx-auto object-contain transition-transform duration-300"
             />
           </Link>
-          <h2 className="text-2xl sm:text-3xl font-bold text-espresso tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-bold text-espresso dark:text-white tracking-tight">
             {mode === 'signup'
               ? 'Create Customer Account'
               : mode === 'forgot'
@@ -372,7 +372,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 : 'Reset Password'
               : 'Sign In'}
           </h2>
-          <p className="text-xs sm:text-sm text-taupe mt-1">
+          <p className="text-xs sm:text-sm text-taupe dark:text-[#C5B4A8] mt-1">
             {mode === 'signup'
               ? 'Join La Roche Cafe for quick ordering & instant counter pickup'
               : mode === 'forgot'
@@ -713,7 +713,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   <Mail className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
                   <input
                     type="email"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#362E2A] text-espresso dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#362E2A] focus:ring-2 focus:ring-terracotta/10 transition-all"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="Enter your registered email"
@@ -735,7 +735,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 <button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-taupe hover:text-espresso transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-taupe dark:text-[#C5B4A8] hover:text-espresso dark:hover:text-white transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Back to Sign In</span>
@@ -745,8 +745,8 @@ const Auth = ({ initialMode = 'login' }) => {
           ) : forgotStep === 'enter_otp' ? (
             /* STEP 2: Dedicated OTP Verification Screen */
             <form onSubmit={handleVerifyResetOtp} className="space-y-4">
-              <div className="flex items-center justify-between text-xs text-taupe mb-1">
-                <span>Sent to <strong>{forgotEmail}</strong></span>
+              <div className="flex items-center justify-between text-xs text-taupe dark:text-[#C5B4A8] mb-1">
+                <span>Sent to <strong className="text-espresso dark:text-white">{forgotEmail}</strong></span>
                 <button
                   type="button"
                   onClick={() => {
@@ -760,11 +760,11 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-taupe mb-1.5">Verification Code</label>
+                <label className="block text-xs font-bold text-taupe dark:text-[#C5B4A8] mb-1.5">Verification Code</label>
                 <input
                   type="text"
                   inputMode="numeric"
-                  className="w-full px-4 py-3 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                  className="w-full px-4 py-3 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#362E2A] text-espresso dark:text-white text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#362E2A] focus:ring-2 focus:ring-terracotta/10 transition-all"
                   placeholder="••••••"
                   value={forgotOtp}
                   maxLength={6}
@@ -777,7 +777,7 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div className="flex items-center justify-between px-1 text-xs">
-                <span className="text-taupe">Didn't receive email code?</span>
+                <span className="text-taupe dark:text-[#C5B4A8]">Didn't receive email code?</span>
                 <button
                   type="button"
                   disabled={forgotCountdown > 0 || loading}
@@ -801,7 +801,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 <button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-taupe hover:text-espresso transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-taupe dark:text-[#C5B4A8] hover:text-espresso dark:hover:text-white transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Back to Sign In</span>
@@ -811,20 +811,20 @@ const Auth = ({ initialMode = 'login' }) => {
           ) : (
             /* STEP 3: Dedicated Create New Password Screen */
             <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
-              <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 mb-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span>Code verified for <strong>{forgotEmail}</strong></span>
+              <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs flex items-center gap-2 mb-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                <span>Code verified for <strong className="text-emerald-900 dark:text-emerald-100">{forgotEmail}</strong></span>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-taupe mb-1.5">New Password</label>
+                <label className="block text-xs font-bold text-taupe dark:text-[#C5B4A8] mb-1.5">New Password</label>
                 <div className="relative flex items-center">
                   <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
                   <input
                     type={showNewPassword ? 'text' : 'password'}
                     name="new_password_field"
                     autoComplete="new-password"
-                    className="w-full h-11 pl-10 pr-10 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-10 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#362E2A] text-espresso dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#362E2A] focus:ring-2 focus:ring-terracotta/10 transition-all"
                     value={forgotNewPassword}
                     onChange={(e) => {
                       setForgotNewPassword(e.target.value);
@@ -835,7 +835,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3.5 text-taupe hover:text-espresso focus:outline-none"
+                    className="absolute right-3.5 text-taupe hover:text-espresso dark:hover:text-white focus:outline-none"
                     aria-label={showNewPassword ? 'Hide password' : 'Show password'}
                   >
                     {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -845,14 +845,14 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-taupe mb-1.5">Confirm New Password</label>
+                <label className="block text-xs font-bold text-taupe dark:text-[#C5B4A8] mb-1.5">Confirm New Password</label>
                 <div className="relative flex items-center">
                   <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
                   <input
                     type={showNewPassword ? 'text' : 'password'}
                     name="confirm_password_field"
                     autoComplete="new-password"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 bg-stone-50/50 text-espresso placeholder:text-stone-400 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#362E2A] text-espresso dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#362E2A] focus:ring-2 focus:ring-terracotta/10 transition-all"
                     value={forgotConfirmPassword}
                     onChange={(e) => {
                       setForgotConfirmPassword(e.target.value);

@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Sparkles, Plus, Minus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles, Plus, Minus, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { triggerFlyToCart } from '../utils/flyToCart';
 import CustomizeModal from './CustomizeModal';
 import AddonsModal, { shouldShowAddons } from './AddonsModal';
 import api from '../services/api';
@@ -8,12 +9,28 @@ import './FeaturedCarousel.css';
 
 const FeaturedCarousel = ({ allItems = [] }) => {
   const trackRef = useRef(null);
+  const imgRefs = useRef({});
   const [popularItems, setPopularItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeModalItem, setActiveModalItem] = useState(null);
   const [modalType, setModalType] = useState(null); // 'variant' | 'addons'
+  const [addedItemIds, setAddedItemIds] = useState({});
 
   const { addToCart, decreaseQuantity, getItemQuantity } = useCart();
+
+  const triggerAddedFeedback = (itemId) => {
+    if (imgRefs.current[itemId]) {
+      triggerFlyToCart(imgRefs.current[itemId]);
+    }
+    setAddedItemIds((prev) => ({ ...prev, [itemId]: true }));
+    setTimeout(() => {
+      setAddedItemIds((prev) => {
+        const next = { ...prev };
+        delete next[itemId];
+        return next;
+      });
+    }, 1500);
+  };
 
   useEffect(() => {
     const fetchPopular = async () => {
@@ -63,7 +80,9 @@ const FeaturedCarousel = ({ allItems = [] }) => {
         menuItem: item._id,
         name: displayName,
         price: price,
+        imageUrl: item.imageUrl,
       });
+      triggerAddedFeedback(item._id);
     }
   };
 
@@ -132,6 +151,9 @@ const FeaturedCarousel = ({ allItems = [] }) => {
               {/* Card Image Wrap (Aspect 4/3) */}
               <div className="relative w-full aspect-[4/3] bg-stone-100 dark:bg-stone-800 overflow-hidden">
                 <img
+                  ref={(el) => {
+                    if (el && item._id) imgRefs.current[item._id] = el;
+                  }}
                   src={item.imageUrl || '/placeholder-food.png'}
                   alt={item.name}
                   loading="lazy"
@@ -176,33 +198,45 @@ const FeaturedCarousel = ({ allItems = [] }) => {
 
                   {/* Add CTA / Stepper */}
                   <div>
-                    {qty === 0 ? (
+                    {addedItemIds[item._id] ? (
+                      /* Active / Added State: Soft success green with spring animation */
+                      <button
+                        type="button"
+                        disabled
+                        className="animate-spring-pop inline-flex items-center justify-center gap-1 px-3.5 py-1.5 rounded-full bg-[#2E7D32] text-white text-xs font-extrabold shadow-sm transition-all uppercase tracking-wide cursor-default"
+                      >
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        <span>ADDED</span>
+                      </button>
+                    ) : qty === 0 ? (
+                      /* Default State: Pill with warm terracotta/brown background (#8D5B4C) */
                       <button
                         type="button"
                         onClick={() => handleAdd(item)}
-                        className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white text-xs font-bold shadow-sm hover:shadow-warm-md active:scale-95 transition-all duration-200"
+                        className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#8D5B4C] hover:bg-[#784C3E] text-white text-xs font-extrabold shadow-sm hover:shadow-warm-sm active:scale-95 transition-all duration-200 uppercase tracking-wide"
                       >
-                        <Plus className="w-3.5 h-3.5" />
+                        <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                         <span>ADD</span>
                       </button>
                     ) : (
-                      <div className="inline-flex items-center bg-espresso dark:bg-stone-800 text-white rounded-full p-1 shadow-sm border border-transparent dark:border-stone-700">
+                      /* Stepper State: Brown theme matching quantity adjuster */
+                      <div className="inline-flex items-center bg-[#8D5B4C] text-white rounded-full p-1 shadow-sm transition-all duration-200">
                         <button
                           type="button"
                           onClick={() => decreaseQuantity(item._id, displayName)}
-                          className="w-6 h-6 rounded-full hover:bg-white/20 flex items-center justify-center transition-colors"
+                          className="w-6 h-6 rounded-full hover:bg-black/20 flex items-center justify-center transition-colors"
                           aria-label="Decrease quantity"
                         >
-                          <Minus className="w-3 h-3" />
+                          <Minus className="w-3 h-3 stroke-[2.5]" />
                         </button>
-                        <span className="px-2 font-bold text-xs">{qty}</span>
+                        <span className="px-2 font-extrabold text-xs text-white">{qty}</span>
                         <button
                           type="button"
                           onClick={() => handleAdd(item)}
-                          className="w-6 h-6 rounded-full hover:bg-white/20 flex items-center justify-center transition-colors"
+                          className="w-6 h-6 rounded-full hover:bg-black/20 flex items-center justify-center transition-colors"
                           aria-label="Increase quantity"
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className="w-3 h-3 stroke-[2.5]" />
                         </button>
                       </div>
                     )}
@@ -218,6 +252,7 @@ const FeaturedCarousel = ({ allItems = [] }) => {
       {modalType === 'variant' && activeModalItem && (
         <CustomizeModal
           item={activeModalItem}
+          onAdded={() => triggerAddedFeedback(activeModalItem._id)}
           onClose={() => {
             setActiveModalItem(null);
             setModalType(null);
@@ -228,6 +263,7 @@ const FeaturedCarousel = ({ allItems = [] }) => {
         <AddonsModal
           baseItem={activeModalItem}
           allItems={allItems}
+          onAdded={() => triggerAddedFeedback(activeModalItem._id)}
           onClose={() => {
             setActiveModalItem(null);
             setModalType(null);

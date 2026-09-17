@@ -67,7 +67,7 @@ const Cart = () => {
           {/* Cart Items List */}
           <div className="md:col-span-7 space-y-3">
             {cartItems.map((item) => (
-              <CartItem key={`${item.menuItem}-${item.name}`} item={item} />
+              <CartItem key={item.key || `${item.menuItem}-${item.name}`} item={item} />
             ))}
           </div>
 

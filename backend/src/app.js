@@ -16,19 +16,52 @@ const app = express();
 // Trust reverse proxy (Render, Vercel, Cloudflare, Nginx) for accurate IP rate limiting
 app.set('trust proxy', 1);
 
+// Security headers middleware
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '0');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  if (process.env.NODE_ENV === 'production') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+  next();
+});
+
 // Middleware
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000',
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: true,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, server-to-server) or matching allowed origins
+      if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+        callback(null, true);
+      } else {
+        callback(new Error('CORS blocked: Origin not allowed'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   })
 );
 app.options('*', cors());
-app.use(express.json());
+app.use(express.json({ limit: '50kb' }));
 
-// Global Rate Limiting for all API endpoints
+// Health check endpoints (placed before global rate limiter so keep-alive pings don't consume rate limit quota)
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() });
+});
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() });
+});
+
+// Global Rate Limiting for all other API endpoints
 app.use('/api', globalLimiter);
 
 // Routes
@@ -39,7 +72,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/kitchen', kitchenRoutes);
 app.use('/api/upload', uploadRoutes);
 
-// Health check
+// Root endpoint
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'La Roche Cafe API is running' });
 });

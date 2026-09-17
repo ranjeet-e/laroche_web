@@ -1,14 +1,22 @@
-@keyframes slideUp {
-  from {
+@keyframes cartSlideUp {
+  0% {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px) scale(0.96);
   }
-  to {
+  70% {
+    transform: translateY(-2px) scale(1.01);
+  }
+  100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-.animate-slide-up {
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.animate-cart-float-in {
+  animation: cartSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+.shadow-cart-pill {
+  box-shadow: 0 20px 35px -8px rgba(34, 28, 25, 0.45), 0 8px 16px -6px rgba(0, 0, 0, 0.3);
+}
+
