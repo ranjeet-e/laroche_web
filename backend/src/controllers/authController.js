@@ -1,10 +1,13 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
 const Otp = require('../models/Otp');
 const { isValidStudentEmail } = require('../utils/emailValidator');
 const { sendOtpEmail } = require('../utils/emailService');
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const getJwtSecret = () => {
   const secret = process.env.JWT_SECRET;
@@ -355,11 +358,73 @@ const verifyResetOtp = async (req, res, next) => {
   }
 };
 
+// @route POST /api/auth/google
+const googleLogin = async (req, res, next) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ message: 'Google credential token is required' });
+    }
+
+    let payload;
+    try {
+      const ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID || undefined,
+      });
+      payload = ticket.getPayload();
+    } catch (err) {
+      console.error('Google token verification failed:', err.message);
+      return res.status(401).json({ message: 'Invalid or expired Google authentication token' });
+    }
+
+    if (!payload || !payload.email) {
+      return res.status(400).json({ message: 'Google account does not have a verified email address' });
+    }
+
+    const email = payload.email.toLowerCase().trim();
+    const name = payload.name || payload.given_name || email.split('@')[0];
+    const picture = payload.picture || '';
+
+    // Find or create student user
+    let user = await User.findOne({ email });
+    let isNewUser = false;
+
+    if (!user) {
+      isNewUser = true;
+      // Strict Security: All Google OAuth registrations default strictly to role: 'student'
+      user = await User.create({
+        name,
+        email,
+        role: 'student',
+      });
+    }
+
+    const token = generateToken(user);
+
+    res.status(200).json({
+      token,
+      isNewUser,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone || '',
+        role: user.role,
+        picture,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   sendOtp,
   verifyOtp,
   signup,
   login,
+  googleLogin,
   forgotPassword,
   verifyResetOtp,
   resetPassword,

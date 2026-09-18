@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link, useSearchParams } from 'react-router-dom';
 import { Smartphone, Mail, Lock, User as UserIcon, ArrowRight, ArrowLeft, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 import {
   sendOtp as sendOtpService,
   verifyOtp as verifyOtpService,
   login as loginService,
   signup as signupService,
+  googleLogin as googleLoginService,
   forgotPassword as forgotPasswordService,
   verifyResetOtp as verifyResetOtpService,
   resetPassword as resetPasswordService,
@@ -118,6 +120,29 @@ const Auth = ({ initialMode = 'login' }) => {
     } else {
       navigate('/checkout');
     }
+  };
+
+  // ---------------- GOOGLE OAUTH FLOW ----------------
+  const handleGoogleSuccess = async (credentialResponse) => {
+    if (!credentialResponse?.credential) {
+      setServerError('Google sign-in did not return a valid credential.');
+      return;
+    }
+    setServerError('');
+    setSuccessMessage('');
+    setLoading(true);
+    try {
+      const data = await googleLoginService({ credential: credentialResponse.credential });
+      handlePostAuthRedirect(data);
+    } catch (err) {
+      setServerError(err.response?.data?.message || 'Google authentication failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setServerError('Google Sign-In was cancelled or encountered an error.');
   };
 
   // ---------------- PHONE SIGN IN FLOW ----------------
@@ -402,6 +427,28 @@ const Auth = ({ initialMode = 'login' }) => {
            ========================================================================= */}
         {mode === 'login' && (
           <div>
+            {/* Google Fast Sign-In */}
+            <div className="w-full flex flex-col items-center justify-center mb-5">
+              <div className="w-full flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  theme={isDark ? "filled_black" : "outline"}
+                  shape="pill"
+                  size="large"
+                  text="signin_with"
+                />
+              </div>
+            </div>
+
+            <div className="relative flex items-center justify-center mb-5">
+              <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
+              <span className="bg-white dark:bg-[#2B2421] px-3 text-[11px] font-bold text-taupe dark:text-[#C5B4A8] uppercase tracking-wider">
+                or sign in with
+              </span>
+              <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
+            </div>
+
             {/* 2 Sign In Methods Sub-Toggle */}
             <div className="flex bg-[#F5EBE6] dark:bg-[#362E2A] p-1 rounded-full mb-6 border border-[#E5D7D0] dark:border-[#4A3B32]">
               <button
@@ -613,6 +660,28 @@ const Auth = ({ initialMode = 'login' }) => {
            ========================================================================= */}
         {mode === 'signup' && (
           <div>
+            {/* Google Fast Sign-Up */}
+            <div className="w-full flex flex-col items-center justify-center mb-5">
+              <div className="w-full flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  theme={isDark ? "filled_black" : "outline"}
+                  shape="pill"
+                  size="large"
+                  text="signup_with"
+                />
+              </div>
+            </div>
+
+            <div className="relative flex items-center justify-center mb-5">
+              <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
+              <span className="bg-white dark:bg-[#2B2421] px-3 text-[11px] font-bold text-taupe dark:text-[#C5B4A8] uppercase tracking-wider">
+                or register with details
+              </span>
+              <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
+            </div>
+
             <form onSubmit={handleSignupSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Full Name</label>

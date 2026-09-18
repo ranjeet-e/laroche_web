@@ -5,6 +5,7 @@ const {
   verifyOtp,
   signup,
   login,
+  googleLogin,
   forgotPassword,
   verifyResetOtp,
   resetPassword,
@@ -16,6 +17,7 @@ router.post('/send-otp', authLimiter, sendOtp);
 router.post('/verify-otp', authLimiter, verifyOtp);
 router.post('/signup', authLimiter, signup);
 router.post('/login', authLimiter, login);
+router.post('/google', authLimiter, googleLogin);
 router.post('/forgot-password', authLimiter, forgotPassword);
 router.post('/verify-reset-otp', authLimiter, verifyResetOtp);
 router.post('/reset-password', authLimiter, resetPassword);
