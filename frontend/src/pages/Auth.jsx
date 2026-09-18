@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link, useSearchParams } from 'react-router-dom';
-import { Smartphone, Mail, Lock, User as UserIcon, ArrowRight, ArrowLeft, ShieldCheck, KeyRound, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
-import { GoogleLogin } from '@react-oauth/google';
+import { Smartphone, Mail, Lock, User as UserIcon, ArrowRight, ArrowLeft, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import { useGoogleLogin } from '@react-oauth/google';
 import {
   sendOtp as sendOtpService,
   verifyOtp as verifyOtpService,
@@ -18,9 +18,30 @@ import {
   isValidPhoneNumber,
   isValidOtp,
   validateLoginForm,
-  validateSignupForm,
 } from '../utils/validators';
 import './Auth.css';
+
+// Custom Google 'G' SVG Logo
+const GoogleIcon = () => (
+  <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
+    <path
+      fill="#4285F4"
+      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
+    />
+    <path
+      fill="#34A853"
+      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.36 24 12 24z"
+    />
+    <path
+      fill="#FBBC05"
+      d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z"
+    />
+    <path
+      fill="#EA4335"
+      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+    />
+  </svg>
+);
 
 const Auth = ({ initialMode = 'login' }) => {
   const [searchParams] = useSearchParams();
@@ -122,27 +143,51 @@ const Auth = ({ initialMode = 'login' }) => {
     }
   };
 
-  // ---------------- GOOGLE OAUTH FLOW ----------------
-  const handleGoogleSuccess = async (credentialResponse) => {
-    if (!credentialResponse?.credential) {
-      setServerError('Google sign-in did not return a valid credential.');
-      return;
-    }
+  // Check if Google Client ID is configured
+  const rawClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+  const isGoogleConfigured = Boolean(
+    rawClientId &&
+    !rawClientId.includes('dummy') &&
+    !rawClientId.includes('your_google') &&
+    !rawClientId.includes('pending')
+  );
+
+  // Safely initialize useGoogleLogin hook
+  let triggerGoogleLogin = null;
+  try {
+    triggerGoogleLogin = useGoogleLogin({
+      onSuccess: async (tokenResponse) => {
+        setServerError('');
+        setSuccessMessage('');
+        setLoading(true);
+        try {
+          const data = await googleLoginService({ accessToken: tokenResponse.access_token });
+          handlePostAuthRedirect(data);
+        } catch (err) {
+          setServerError(err.response?.data?.message || 'Google authentication failed. Please try again.');
+        } finally {
+          setLoading(false);
+        }
+      },
+      onError: (errorResponse) => {
+        console.warn('Google login dismissed or failed:', errorResponse);
+        setServerError('Google Sign-In was cancelled or encountered an error.');
+      },
+    });
+  } catch (err) {
+    triggerGoogleLogin = null;
+  }
+
+  const handleGoogleButtonClick = () => {
     setServerError('');
     setSuccessMessage('');
-    setLoading(true);
-    try {
-      const data = await googleLoginService({ credential: credentialResponse.credential });
-      handlePostAuthRedirect(data);
-    } catch (err) {
-      setServerError(err.response?.data?.message || 'Google authentication failed. Please try again.');
-    } finally {
-      setLoading(false);
+    if (!isGoogleConfigured || !triggerGoogleLogin) {
+      setServerError(
+        'Google Sign-In is ready! Set VITE_GOOGLE_CLIENT_ID in your environment variables to connect live Google accounts. In the meantime, please sign in with Mobile OTP or Email below.'
+      );
+      return;
     }
-  };
-
-  const handleGoogleError = () => {
-    setServerError('Google Sign-In was cancelled or encountered an error.');
+    triggerGoogleLogin();
   };
 
   // ---------------- PHONE SIGN IN FLOW ----------------
@@ -166,7 +211,6 @@ const Auth = ({ initialMode = 'login' }) => {
       setCountdown(30);
       setSuccessMessage(`Verification code sent to +91 ${cleanPhone}`);
     } catch (err) {
-      // 1st time customer detection -> redirect to create account page!
       if (err.response?.status === 404 || err.response?.data?.notFound) {
         const redirectParam = searchParams.get('redirect') ? `&redirect=${encodeURIComponent(searchParams.get('redirect'))}` : '';
         navigate(`/signup?phone=${cleanPhone}&notice=not_found${redirectParam}`);
@@ -374,8 +418,8 @@ const Auth = ({ initialMode = 'login' }) => {
   const searchParamStr = searchParams.toString() ? `?${searchParams.toString()}` : '';
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-oat dark:bg-[#1A1718]">
-      <div className="w-full max-w-md bg-white dark:bg-[#2B2421] rounded-3xl border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-xl p-6 sm:p-8 relative overflow-hidden">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#F5EBE6] dark:bg-[#1A1718] transition-colors duration-300">
+      <div className="w-full max-w-md bg-white dark:bg-[#2B2421] rounded-3xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-xl p-6 sm:p-8 relative overflow-hidden transition-colors duration-300">
         
         {/* Brand Logo Header */}
         <div className="text-center mb-6">
@@ -386,7 +430,7 @@ const Auth = ({ initialMode = 'login' }) => {
               className="h-12 w-auto mx-auto object-contain transition-transform duration-300"
             />
           </Link>
-          <h2 className="text-2xl sm:text-3xl font-bold text-espresso dark:text-white tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#231F20] dark:text-white tracking-tight">
             {mode === 'signup'
               ? 'Create Customer Account'
               : mode === 'forgot'
@@ -397,7 +441,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 : 'Reset Password'
               : 'Sign In'}
           </h2>
-          <p className="text-xs sm:text-sm text-taupe dark:text-[#C5B4A8] mt-1">
+          <p className="text-xs sm:text-sm text-[#6B5B52] dark:text-[#C5B4A8] mt-1.5">
             {mode === 'signup'
               ? 'Join La Roche Cafe for quick ordering & instant counter pickup'
               : mode === 'forgot'
@@ -406,18 +450,18 @@ const Auth = ({ initialMode = 'login' }) => {
                 : forgotStep === 'enter_new_password'
                 ? 'Set a new password for your account'
                 : 'Enter your email to receive a password reset code'
-              : ' '}
+              : 'Sign in to order your favorite coffee & fresh bites'}
           </p>
         </div>
 
         {/* Server Feedback Alerts */}
         {serverError && (
-          <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium mb-5">
+          <div className="p-3.5 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 text-xs font-medium mb-5 leading-relaxed">
             {serverError}
           </div>
         )}
         {successMessage && (
-          <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium mb-5">
+          <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-medium mb-5">
             {successMessage}
           </div>
         )}
@@ -427,23 +471,21 @@ const Auth = ({ initialMode = 'login' }) => {
            ========================================================================= */}
         {mode === 'login' && (
           <div>
-            {/* Google Fast Sign-In */}
-            <div className="w-full flex flex-col items-center justify-center mb-5">
-              <div className="w-full flex justify-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={handleGoogleError}
-                  theme={isDark ? "filled_black" : "outline"}
-                  shape="pill"
-                  size="large"
-                  text="signin_with"
-                />
-              </div>
-            </div>
+            {/* Bespoke Google Fast Sign-In */}
+            <button
+              type="button"
+              onClick={handleGoogleButtonClick}
+              disabled={loading}
+              className="w-full py-3 px-4 rounded-full border border-[#E5D7D0] dark:border-[#4A3B32] bg-white hover:bg-[#FAF5F2] dark:bg-[#362E2A] dark:hover:bg-[#433934] text-[#231F20] dark:text-white font-bold text-xs sm:text-sm shadow-warm-sm hover:shadow-warm-md transition-all flex items-center justify-center gap-3 active:scale-[0.99] disabled:opacity-50"
+            >
+              <GoogleIcon />
+              <span>Continue with Google</span>
+            </button>
 
-            <div className="relative flex items-center justify-center mb-5">
+            {/* Divider */}
+            <div className="relative flex items-center justify-center my-5">
               <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
-              <span className="bg-white dark:bg-[#2B2421] px-3 text-[11px] font-bold text-taupe dark:text-[#C5B4A8] uppercase tracking-wider">
+              <span className="bg-white dark:bg-[#2B2421] px-3 text-[11px] font-bold text-[#6B5B52] dark:text-[#C5B4A8] uppercase tracking-wider">
                 or sign in with
               </span>
               <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
@@ -498,7 +540,7 @@ const Auth = ({ initialMode = 'login' }) => {
                       </span>
                       <input
                         type="tel"
-                        className="w-full px-3.5 py-3 bg-transparent text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-sm font-semibold focus:outline-none"
+                        className="w-full px-3.5 py-3 bg-transparent text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-sm font-semibold focus:outline-none"
                         placeholder="Enter 10-digit mobile"
                         value={phone}
                         maxLength={10}
@@ -583,11 +625,11 @@ const Auth = ({ initialMode = 'login' }) => {
                 <div>
                   <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Email Address</label>
                   <div className="relative flex items-center">
-                    <Mail className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                    <Mail className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
                     <input
                       type="email"
                       name="email"
-                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                       placeholder="Enter your email"
@@ -617,11 +659,11 @@ const Auth = ({ initialMode = 'login' }) => {
                     </button>
                   </div>
                   <div className="relative flex items-center">
-                    <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                    <Lock className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
                     <input
                       type="password"
                       name="password"
-                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                       value={loginData.password}
                       onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                       placeholder="Enter your password"
@@ -660,23 +702,21 @@ const Auth = ({ initialMode = 'login' }) => {
            ========================================================================= */}
         {mode === 'signup' && (
           <div>
-            {/* Google Fast Sign-Up */}
-            <div className="w-full flex flex-col items-center justify-center mb-5">
-              <div className="w-full flex justify-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={handleGoogleError}
-                  theme={isDark ? "filled_black" : "outline"}
-                  shape="pill"
-                  size="large"
-                  text="signup_with"
-                />
-              </div>
-            </div>
+            {/* Bespoke Google Fast Sign-Up */}
+            <button
+              type="button"
+              onClick={handleGoogleButtonClick}
+              disabled={loading}
+              className="w-full py-3 px-4 rounded-full border border-[#E5D7D0] dark:border-[#4A3B32] bg-white hover:bg-[#FAF5F2] dark:bg-[#362E2A] dark:hover:bg-[#433934] text-[#231F20] dark:text-white font-bold text-xs sm:text-sm shadow-warm-sm hover:shadow-warm-md transition-all flex items-center justify-center gap-3 active:scale-[0.99] disabled:opacity-50"
+            >
+              <GoogleIcon />
+              <span>Sign up with Google</span>
+            </button>
 
-            <div className="relative flex items-center justify-center mb-5">
+            {/* Divider */}
+            <div className="relative flex items-center justify-center my-5">
               <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
-              <span className="bg-white dark:bg-[#2B2421] px-3 text-[11px] font-bold text-taupe dark:text-[#C5B4A8] uppercase tracking-wider">
+              <span className="bg-white dark:bg-[#2B2421] px-3 text-[11px] font-bold text-[#6B5B52] dark:text-[#C5B4A8] uppercase tracking-wider">
                 or register with details
               </span>
               <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
@@ -686,10 +726,10 @@ const Auth = ({ initialMode = 'login' }) => {
               <div>
                 <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Full Name</label>
                 <div className="relative flex items-center">
-                  <UserIcon className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                  <UserIcon className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
                   <input
                     type="text"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={signupData.name}
                     onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
                     placeholder="Enter your name"
@@ -706,7 +746,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   </span>
                   <input
                     type="tel"
-                    className="w-full px-3.5 py-3 bg-transparent text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-sm font-semibold focus:outline-none"
+                    className="w-full px-3.5 py-3 bg-transparent text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-sm font-semibold focus:outline-none"
                     placeholder="10-digit mobile"
                     value={signupData.phone}
                     maxLength={10}
@@ -719,10 +759,10 @@ const Auth = ({ initialMode = 'login' }) => {
               <div>
                 <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Email Address</label>
                 <div className="relative flex items-center">
-                  <Mail className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                  <Mail className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
                   <input
                     type="email"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={signupData.email}
                     onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
                     placeholder="yourname@gmail.com"
@@ -734,10 +774,10 @@ const Auth = ({ initialMode = 'login' }) => {
               <div>
                 <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Create Password</label>
                 <div className="relative flex items-center">
-                  <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                  <Lock className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
                   <input
                     type="password"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={signupData.password}
                     onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                     placeholder="At least 6 characters"
@@ -777,12 +817,12 @@ const Auth = ({ initialMode = 'login' }) => {
             /* STEP 1: Enter Email */
             <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-taupe mb-1.5">Registered Email Address</label>
+                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Registered Email Address</label>
                 <div className="relative flex items-center">
-                  <Mail className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                  <Mail className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
                   <input
                     type="email"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#362E2A] text-espresso dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#362E2A] focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="Enter your registered email"
@@ -794,7 +834,7 @@ const Auth = ({ initialMode = 'login' }) => {
               <button
                 type="submit"
                 disabled={loading || !forgotEmail}
-                className="w-full py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <span>{loading ? 'Sending code...' : 'Send Verification Code'}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -804,7 +844,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 <button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-taupe dark:text-[#C5B4A8] hover:text-espresso dark:hover:text-white transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Back to Sign In</span>
@@ -814,26 +854,26 @@ const Auth = ({ initialMode = 'login' }) => {
           ) : forgotStep === 'enter_otp' ? (
             /* STEP 2: Dedicated OTP Verification Screen */
             <form onSubmit={handleVerifyResetOtp} className="space-y-4">
-              <div className="flex items-center justify-between text-xs text-taupe dark:text-[#C5B4A8] mb-1">
-                <span>Sent to <strong className="text-espresso dark:text-white">{forgotEmail}</strong></span>
+              <div className="flex items-center justify-between text-xs text-[#6B5B52] dark:text-[#D6C7BD] mb-1">
+                <span>Sent to <strong className="text-[#231F20] dark:text-white">{forgotEmail}</strong></span>
                 <button
                   type="button"
                   onClick={() => {
                     setForgotStep('enter_email');
                     setForgotOtp('');
                   }}
-                  className="text-terracotta font-bold hover:underline"
+                  className="text-[#9F7A60] font-bold hover:underline"
                 >
                   Change
                 </button>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-taupe dark:text-[#C5B4A8] mb-1.5">Verification Code</label>
+                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Verification Code</label>
                 <input
                   type="text"
                   inputMode="numeric"
-                  className="w-full px-4 py-3 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#362E2A] text-espresso dark:text-white text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#362E2A] focus:ring-2 focus:ring-terracotta/10 transition-all"
+                  className="w-full px-4 py-3 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                   placeholder="••••••"
                   value={forgotOtp}
                   maxLength={6}
@@ -846,12 +886,12 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div className="flex items-center justify-between px-1 text-xs">
-                <span className="text-taupe dark:text-[#C5B4A8]">Didn't receive email code?</span>
+                <span className="text-[#6B5B52] dark:text-[#D6C7BD]">Didn't receive email code?</span>
                 <button
                   type="button"
                   disabled={forgotCountdown > 0 || loading}
                   onClick={handleForgotPasswordSubmit}
-                  className="font-bold text-terracotta hover:underline disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="font-bold text-[#9F7A60] dark:text-[#E8D8CD] hover:underline disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {forgotCountdown > 0 ? `Resend in ${forgotCountdown}s` : 'Resend Code'}
                 </button>
@@ -860,7 +900,7 @@ const Auth = ({ initialMode = 'login' }) => {
               <button
                 type="submit"
                 disabled={loading || forgotOtp.length !== 6}
-                className="w-full py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                className="w-full py-3.5 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
               >
                 <span>{loading ? 'Verifying...' : 'Verify Code & Proceed'}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -870,7 +910,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 <button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-taupe dark:text-[#C5B4A8] hover:text-espresso dark:hover:text-white transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Back to Sign In</span>
@@ -886,14 +926,14 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-taupe dark:text-[#C5B4A8] mb-1.5">New Password</label>
+                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">New Password</label>
                 <div className="relative flex items-center">
-                  <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                  <Lock className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
                   <input
                     type={showNewPassword ? 'text' : 'password'}
                     name="new_password_field"
                     autoComplete="new-password"
-                    className="w-full h-11 pl-10 pr-10 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#362E2A] text-espresso dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#362E2A] focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-10 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={forgotNewPassword}
                     onChange={(e) => {
                       setForgotNewPassword(e.target.value);
@@ -904,7 +944,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3.5 text-taupe hover:text-espresso dark:hover:text-white focus:outline-none"
+                    className="absolute right-3.5 text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white focus:outline-none"
                     aria-label={showNewPassword ? 'Hide password' : 'Show password'}
                   >
                     {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -914,14 +954,14 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-taupe dark:text-[#C5B4A8] mb-1.5">Confirm New Password</label>
+                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Confirm New Password</label>
                 <div className="relative flex items-center">
-                  <Lock className="w-4 h-4 text-taupe absolute left-3.5 pointer-events-none" />
+                  <Lock className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
                   <input
                     type={showNewPassword ? 'text' : 'password'}
                     name="confirm_password_field"
                     autoComplete="new-password"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#362E2A] text-espresso dark:text-white placeholder:text-stone-400 dark:placeholder:text-[#9F8E84] text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#362E2A] focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={forgotConfirmPassword}
                     onChange={(e) => {
                       setForgotConfirmPassword(e.target.value);
@@ -936,7 +976,7 @@ const Auth = ({ initialMode = 'login' }) => {
               <button
                 type="submit"
                 disabled={loading || forgotNewPassword.length < 6}
-                className="w-full py-3.5 rounded-full bg-espresso hover:bg-espresso-light text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                className="w-full py-3.5 rounded-full bg-[#231F20] dark:bg-[#9F7A60] hover:bg-[#362E2A] dark:hover:bg-[#87644C] text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
               >
                 <span>{loading ? 'Saving New Password...' : 'Save Password & Sign In'}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -946,7 +986,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 <button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-taupe hover:text-espresso transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Back to Sign In</span>
@@ -962,4 +1002,3 @@ const Auth = ({ initialMode = 'login' }) => {
 };
 
 export default Auth;
-

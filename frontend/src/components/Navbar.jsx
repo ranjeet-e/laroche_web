@@ -53,8 +53,8 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Pinned Frosted Glass Navigation Bar (Beige Top Container in Both Light & Dark Mode) */}
-      <nav className="sticky top-0 z-40 w-full h-[72px] bg-[#E8D8C3]/95 dark:bg-[#2B1812]/95 backdrop-blur-md border-b border-[#D4C0A8]/80 dark:border-[#4A2A1F]/80 px-4 sm:px-6 transition-colors duration-300">
+      {/* Pinned Frosted Glass Navigation Bar */}
+      <nav className="sticky top-0 z-40 w-full h-[72px] bg-[#F5EBE6]/95 dark:bg-[#1A1718]/95 backdrop-blur-md border-b border-[#E5D7D0] dark:border-[#4A3B32] px-4 sm:px-6 transition-colors duration-300">
         <div className="max-w-7xl h-full mx-auto flex items-center justify-between gap-4">
 
           {/* Brand Logo & Live Counter */}
@@ -68,12 +68,12 @@ const Navbar = () => {
             </Link>
 
             {/* Live Counter Badge */}
-            <div className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF9F2]/90 dark:bg-[#3A2118]/95 border border-[#D4C0A8]/70 dark:border-[#5A3528] text-[#3A2118] dark:text-[#F5E6D3] text-xs font-semibold shadow-warm-sm">
+            <div className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-[#2B2421] border border-[#E5D7D0] dark:border-[#4A3B32] text-[#231F20] dark:text-[#F5EBE6] text-xs font-semibold shadow-warm-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <Clock className="w-3 h-3 text-taupe dark:text-[#756057] ml-0.5" />
+              <Clock className="w-3 h-3 text-[#6B5B52] dark:text-[#C5B4A8] ml-0.5" />
               <span>Wait: <strong>~8 mins</strong></span>
             </div>
           </div>
@@ -82,10 +82,10 @@ const Navbar = () => {
           {!isKitchen && !isCms && (
             <div className="flex-1 max-w-md relative">
               <div className="relative flex items-center">
-                <Search className="w-4 h-4 text-taupe dark:text-[#756057] absolute left-3.5 pointer-events-none" />
+                <Search className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
                 <input
                   type="text"
-                  className="w-full h-10 pl-10 pr-9 rounded-full bg-white dark:bg-[#FAF6F0] border border-stone-200/80 dark:border-[#C8B7A5] text-espresso dark:text-[#3D1417] placeholder:text-taupe-light dark:placeholder:text-[#8C7A70] text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:ring-2 focus:ring-terracotta/10 shadow-warm-sm transition-all duration-200"
+                  className="w-full h-10 pl-10 pr-9 rounded-full bg-white dark:bg-[#2B2421] border border-[#E5D7D0] dark:border-[#4A3B32] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 shadow-warm-sm transition-all duration-200"
                   placeholder="Search toasties, pizzas, frappes, coffee..."
                   value={searchValue}
                   onChange={handleSearchChange}
@@ -94,7 +94,7 @@ const Navbar = () => {
                   <button
                     type="button"
                     onClick={clearSearch}
-                    className="absolute right-3 text-taupe hover:text-espresso dark:text-[#756057] dark:hover:text-[#3D1417] p-0.5 rounded-full hover:bg-stone-100 dark:hover:bg-stone-200/60 transition-colors"
+                    className="absolute right-3 text-[#6B5B52] hover:text-[#231F20] dark:text-[#C5B4A8] dark:hover:text-white p-0.5 rounded-full hover:bg-[#F5EBE6] dark:hover:bg-[#362E2A] transition-colors"
                     aria-label="Clear search"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -110,14 +110,14 @@ const Navbar = () => {
               <>
                 <Link
                   to="/cms/dashboard"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-espresso text-honey-light border border-honey/20 text-sm font-bold shadow-warm-sm"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#231F20] dark:bg-[#9F7A60] text-white text-sm font-bold shadow-warm-sm"
                 >
-                  <LayoutDashboard className="w-4 h-4 text-honey" />
+                  <LayoutDashboard className="w-4 h-4" />
                   <span>CMS Portal</span>
                 </Link>
                 <Link
                   to="/menu"
-                  className="px-3.5 py-2 rounded-full text-sm font-bold text-taupe dark:text-[#5C453C] hover:text-espresso dark:hover:text-[#3D1417] hover:bg-white/60 dark:hover:bg-white/50"
+                  className="px-3.5 py-2 rounded-full text-sm font-bold text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white hover:bg-white/60 dark:hover:bg-[#2B2421]"
                 >
                   Customer Menu
                 </Link>
@@ -126,14 +126,14 @@ const Navbar = () => {
               <>
                 <Link
                   to="/kitchen/dashboard"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-terracotta text-white text-sm font-bold shadow-glow-terracotta"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white text-sm font-bold shadow-glow-terracotta"
                 >
                   <ChefHat className="w-4 h-4" />
                   <span>Kitchen Dashboard</span>
                 </Link>
                 <Link
                   to="/menu"
-                  className="px-3.5 py-2 rounded-full text-sm font-bold text-taupe dark:text-stone-300 hover:text-espresso dark:hover:text-white hover:bg-white/60 dark:hover:bg-stone-800/60"
+                  className="px-3.5 py-2 rounded-full text-sm font-bold text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white hover:bg-white/60 dark:hover:bg-[#2B2421]"
                 >
                   Customer Menu
                 </Link>
@@ -143,8 +143,8 @@ const Navbar = () => {
                 <Link
                   to="/menu"
                   className={`px-3.5 py-2 rounded-full text-sm font-bold transition-all ${location.pathname === '/menu'
-                    ? 'bg-espresso text-white shadow-warm-sm'
-                    : 'text-taupe dark:text-[#5C453C] hover:text-espresso dark:hover:text-[#3D1417] hover:bg-white/60 dark:hover:bg-white/50'
+                    ? 'bg-[#231F20] dark:bg-[#9F7A60] text-white shadow-warm-sm'
+                    : 'text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white hover:bg-white/60 dark:hover:bg-[#2B2421]'
                     }`}
                 >
                   Menu
@@ -154,8 +154,8 @@ const Navbar = () => {
                   <Link
                     to="/orders"
                     className={`px-3.5 py-2 rounded-full text-sm font-bold transition-all ${location.pathname.startsWith('/orders')
-                      ? 'bg-espresso text-white shadow-warm-sm'
-                      : 'text-taupe dark:text-[#5C453C] hover:text-espresso dark:hover:text-[#3D1417] hover:bg-white/60 dark:hover:bg-white/50'
+                      ? 'bg-[#231F20] dark:bg-[#9F7A60] text-white shadow-warm-sm'
+                      : 'text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white hover:bg-white/60 dark:hover:bg-[#2B2421]'
                       }`}
                   >
                     My Orders
@@ -165,14 +165,14 @@ const Navbar = () => {
                 <Link
                   to="/cart"
                   className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all ${location.pathname === '/cart'
-                    ? 'bg-terracotta text-white shadow-glow-terracotta'
-                    : 'bg-white dark:bg-[#FAF6F0] border border-stone-200/80 dark:border-[#C8B7A5] text-espresso dark:text-[#3D1417] shadow-warm-sm hover:border-terracotta hover:text-terracotta'
+                    ? 'bg-[#9F7A60] text-white shadow-glow-terracotta'
+                    : 'bg-white dark:bg-[#2B2421] border border-[#E5D7D0] dark:border-[#4A3B32] text-[#231F20] dark:text-[#F5EBE6] shadow-warm-sm hover:border-[#9F7A60] hover:text-[#9F7A60]'
                     }`}
                 >
                   <ShoppingBag className="w-4 h-4" />
                   <span>Cart</span>
                   {totalItems > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-terracotta text-white text-xs flex items-center justify-center font-extrabold shadow-sm">
+                    <span className="w-5 h-5 rounded-full bg-[#9F7A60] text-white text-xs flex items-center justify-center font-extrabold shadow-sm">
                       {totalItems}
                     </span>
                   )}
@@ -184,7 +184,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2.5 rounded-full border border-[#D4C0A8]/80 dark:border-[#5A3528] bg-[#FFF9F2]/90 dark:bg-[#3A2118] text-[#3A2118] dark:text-[#F5E6D3] shadow-warm-sm hover:scale-105 active:scale-95 transition-all"
+              className="p-2.5 rounded-full border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#2B2421] text-[#231F20] dark:text-[#F5EBE6] shadow-warm-sm hover:scale-105 active:scale-95 transition-all"
               title={isDark ? 'Switch to Warm Light Mode' : 'Switch to Dark Mode'}
               aria-label="Toggle dark mode"
             >
@@ -193,13 +193,13 @@ const Navbar = () => {
 
             {/* Profile / Auth Button */}
             {user ? (
-              <div className="flex items-center gap-2 pl-2 border-l border-stone-200 dark:border-[#C8B7A5]">
+              <div className="flex items-center gap-2 pl-2 border-l border-[#E5D7D0] dark:border-[#4A3B32]">
                 <Link
                   to={isCms ? '/cms/dashboard' : isKitchen ? '/kitchen/dashboard' : '/orders'}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-[#FAF6F0] border border-stone-200/80 dark:border-[#C8B7A5] shadow-warm-sm text-xs font-bold text-espresso dark:text-[#3D1417] hover:border-terracotta transition-colors"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-[#2B2421] border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm text-xs font-bold text-[#231F20] dark:text-white hover:border-[#9F7A60] transition-colors"
                   title={user.email || user.phone || 'My Account'}
                 >
-                  <div className="w-6 h-6 rounded-full bg-terracotta/10 text-terracotta flex items-center justify-center font-extrabold">
+                  <div className="w-6 h-6 rounded-full bg-[#9F7A60]/15 text-[#9F7A60] dark:text-[#E8D8CD] flex items-center justify-center font-extrabold text-[11px]">
                     {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
                   </div>
                   <span>{user.name?.split(' ')[0] || user.phone?.slice(-4) || 'User'}</span>
@@ -207,7 +207,7 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={confirmLogout}
-                  className="p-2 rounded-full text-taupe hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-100 transition-colors"
+                  className="p-2 rounded-full text-[#6B5B52] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                   title="Sign out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -216,7 +216,7 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/login"
-                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-espresso hover:bg-espresso-light text-white text-sm font-bold shadow-warm-sm transition-all"
+                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white text-sm font-bold shadow-warm-sm transition-all"
               >
                 <User className="w-4 h-4" />
                 <span>Sign In</span>
@@ -230,7 +230,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-full border border-stone-200/80 dark:border-stone-700 bg-white/80 dark:bg-stone-800 text-espresso dark:text-amber-300 shadow-warm-sm transition-all"
+              className="p-2 rounded-full border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#2B2421] text-[#231F20] dark:text-[#F5EBE6] shadow-warm-sm transition-all"
               title="Toggle theme"
               aria-label="Toggle theme"
             >
@@ -240,12 +240,12 @@ const Navbar = () => {
             {!isKitchen && !isCms && (
               <Link
                 to="/cart"
-                className="relative p-2.5 rounded-full bg-white dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 text-espresso dark:text-stone-200 shadow-warm-sm"
+                className="relative p-2.5 rounded-full bg-white dark:bg-[#2B2421] border border-[#E5D7D0] dark:border-[#4A3B32] text-[#231F20] dark:text-[#F5EBE6] shadow-warm-sm"
                 aria-label="Cart"
               >
                 <ShoppingBag className="w-4 h-4" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-terracotta text-white text-[10px] flex items-center justify-center font-extrabold shadow-sm">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#9F7A60] text-white text-[10px] flex items-center justify-center font-extrabold shadow-sm">
                     {totalItems}
                   </span>
                 )}
@@ -256,7 +256,7 @@ const Navbar = () => {
               <div className="flex items-center gap-1.5">
                 <Link
                   to={isCms ? '/cms/dashboard' : isKitchen ? '/kitchen/dashboard' : '/orders'}
-                  className="w-8 h-8 rounded-full bg-terracotta/10 text-terracotta flex items-center justify-center font-bold text-xs border border-terracotta/20 shadow-warm-sm active:scale-95 transition-transform"
+                  className="w-8 h-8 rounded-full bg-[#9F7A60]/15 text-[#9F7A60] dark:text-[#E8D8CD] flex items-center justify-center font-bold text-xs border border-[#9F7A60]/30 shadow-warm-sm active:scale-95 transition-transform"
                   title="My Account"
                 >
                   {user.name ? user.name.charAt(0).toUpperCase() : '👤'}
@@ -264,17 +264,17 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={confirmLogout}
-                  className="p-2 rounded-full text-stone-600 dark:text-stone-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 border border-stone-200/80 dark:border-stone-700 bg-white dark:bg-stone-800 shadow-warm-sm active:scale-95 transition-all"
+                  className="p-2 rounded-full text-[#6B5B52] dark:text-[#C5B4A8] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#2B2421] shadow-warm-sm active:scale-95 transition-all"
                   title="Sign out"
                   aria-label="Sign out"
                 >
-                  <LogOut className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300 hover:text-red-600" />
+                  <LogOut className="w-3.5 h-3.5" />
                 </button>
               </div>
             ) : (
               <Link
                 to="/login"
-                className="px-3 py-1.5 rounded-full bg-espresso dark:bg-stone-100 text-white dark:text-stone-900 text-xs font-bold"
+                className="px-3 py-1.5 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white text-xs font-bold"
               >
                 Sign In
               </Link>
@@ -286,10 +286,10 @@ const Navbar = () => {
 
       {/* Mobile App Bottom Floating Bar Navigation */}
       {!isKitchen && !isCms && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-[#351B13]/95 backdrop-blur-lg border-t border-stone-200/70 dark:border-[#522517] px-6 py-2 pb-[calc(8px+var(--safe-bottom))] flex items-center justify-around shadow-warm-lg transition-colors">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-[#1A1718]/95 backdrop-blur-lg border-t border-[#E5D7D0] dark:border-[#4A3B32] px-6 py-2 pb-[calc(8px+var(--safe-bottom))] flex items-center justify-around shadow-warm-lg transition-colors">
           <Link
             to="/menu"
-            className={`flex flex-col items-center gap-0.5 text-[11px] font-bold ${location.pathname === '/menu' ? 'text-terracotta' : 'text-taupe dark:text-[#EAD0C5]'
+            className={`flex flex-col items-center gap-0.5 text-[11px] font-bold ${location.pathname === '/menu' ? 'text-[#9F7A60]' : 'text-[#6B5B52] dark:text-[#C5B4A8]'
               }`}
           >
             <UtensilsCrossed className="w-5 h-5" />
@@ -298,7 +298,7 @@ const Navbar = () => {
 
           <Link
             to="/orders"
-            className={`flex flex-col items-center gap-0.5 text-[11px] font-bold ${location.pathname.startsWith('/orders') ? 'text-terracotta' : 'text-taupe dark:text-[#EAD0C5]'
+            className={`flex flex-col items-center gap-0.5 text-[11px] font-bold ${location.pathname.startsWith('/orders') ? 'text-[#9F7A60]' : 'text-[#6B5B52] dark:text-[#C5B4A8]'
               }`}
           >
             <Clock className="w-5 h-5" />
@@ -307,13 +307,13 @@ const Navbar = () => {
 
           <Link
             to="/cart"
-            className={`relative flex flex-col items-center gap-0.5 text-[11px] font-bold ${location.pathname === '/cart' ? 'text-terracotta' : 'text-taupe dark:text-[#EAD0C5]'
+            className={`relative flex flex-col items-center gap-0.5 text-[11px] font-bold ${location.pathname === '/cart' ? 'text-[#9F7A60]' : 'text-[#6B5B52] dark:text-[#C5B4A8]'
               }`}
           >
             <div className="relative">
               <ShoppingBag className="w-5 h-5" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-terracotta text-white text-[9px] flex items-center justify-center font-extrabold">
+                <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-[#9F7A60] text-white text-[9px] flex items-center justify-center font-extrabold">
                   {totalItems}
                 </span>
               )}
@@ -325,7 +325,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={confirmLogout}
-              className="flex flex-col items-center gap-0.5 text-[11px] font-bold text-taupe dark:text-[#EAD0C5] hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              className="flex flex-col items-center gap-0.5 text-[11px] font-bold text-[#6B5B52] dark:text-[#C5B4A8] hover:text-red-600 dark:hover:text-red-400 transition-colors"
             >
               <LogOut className="w-5 h-5" />
               <span>Logout</span>
@@ -333,7 +333,7 @@ const Navbar = () => {
           ) : (
             <Link
               to="/login"
-              className={`flex flex-col items-center gap-0.5 text-[11px] font-bold ${location.pathname === '/login' ? 'text-terracotta' : 'text-taupe dark:text-[#EAD0C5]'
+              className={`flex flex-col items-center gap-0.5 text-[11px] font-bold ${location.pathname === '/login' ? 'text-[#9F7A60]' : 'text-[#6B5B52] dark:text-[#C5B4A8]'
                 }`}
             >
               <User className="w-5 h-5" />
@@ -350,30 +350,30 @@ const Navbar = () => {
           onClick={() => setShowLogoutModal(false)}
         >
           <div
-            className="bg-white dark:bg-[#662713] rounded-3xl max-w-sm w-full p-6 text-center shadow-warm-xl border border-stone-200/80 dark:border-[#8F3E20] transform transition-all animate-scaleUp"
+            className="bg-white dark:bg-[#2B2421] rounded-3xl max-w-sm w-full p-6 text-center shadow-warm-xl border border-[#E5D7D0] dark:border-[#4A3B32] transform transition-all animate-scaleUp"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-terracotta flex items-center justify-center border border-amber-200/60 dark:border-amber-900/40 shadow-warm-sm">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#F5EBE6] dark:bg-[#362E2A] text-[#9F7A60] flex items-center justify-center border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm">
               <LogOut className="w-7 h-7 stroke-[2.2]" />
             </div>
-            <h3 className="text-xl font-bold text-espresso dark:text-stone-100 mb-2">
+            <h3 className="text-xl font-bold text-[#231F20] dark:text-white mb-2">
               Log Out?
             </h3>
-            <p className="text-xs sm:text-sm text-taupe dark:text-stone-400 mb-6 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#6B5B52] dark:text-[#C5B4A8] mb-6 leading-relaxed">
               Are you sure you want to log out from <strong>La Roche Cafe</strong>? You will need to verify your number or email when signing back in.
             </p>
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => setShowLogoutModal(false)}
-                className="flex-1 py-3 rounded-full border border-stone-200 dark:border-stone-700 text-espresso dark:text-stone-200 font-bold text-xs sm:text-sm hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+                className="flex-1 py-3 rounded-full border border-[#E5D7D0] dark:border-[#4A3B32] text-[#231F20] dark:text-[#E8D8CD] font-bold text-xs sm:text-sm hover:bg-[#F5EBE6] dark:hover:bg-[#362E2A] transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex-1 py-3 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-xs sm:text-sm shadow-glow-terracotta transition-all"
+                className="flex-1 py-3 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-xs sm:text-sm shadow-glow-terracotta transition-all"
               >
                 Log Out
               </button>

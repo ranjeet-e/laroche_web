@@ -361,30 +361,52 @@ const verifyResetOtp = async (req, res, next) => {
 // @route POST /api/auth/google
 const googleLogin = async (req, res, next) => {
   try {
-    const { credential } = req.body;
-    if (!credential) {
-      return res.status(400).json({ message: 'Google credential token is required' });
+    const { credential, accessToken } = req.body;
+    if (!credential && !accessToken) {
+      return res.status(400).json({ message: 'Google credential or access token is required' });
     }
 
-    let payload;
-    try {
-      const ticket = await googleClient.verifyIdToken({
-        idToken: credential,
-        audience: process.env.GOOGLE_CLIENT_ID || undefined,
-      });
-      payload = ticket.getPayload();
-    } catch (err) {
-      console.error('Google token verification failed:', err.message);
-      return res.status(401).json({ message: 'Invalid or expired Google authentication token' });
-    }
+    let email = '';
+    let name = '';
+    let picture = '';
 
-    if (!payload || !payload.email) {
-      return res.status(400).json({ message: 'Google account does not have a verified email address' });
+    if (credential) {
+      try {
+        const ticket = await googleClient.verifyIdToken({
+          idToken: credential,
+          audience: process.env.GOOGLE_CLIENT_ID || undefined,
+        });
+        const payload = ticket.getPayload();
+        if (!payload || !payload.email) {
+          return res.status(400).json({ message: 'Google account does not have a verified email address' });
+        }
+        email = payload.email.toLowerCase().trim();
+        name = payload.name || payload.given_name || email.split('@')[0];
+        picture = payload.picture || '';
+      } catch (err) {
+        console.error('Google ID token verification failed:', err.message);
+        return res.status(401).json({ message: 'Invalid or expired Google authentication token' });
+      }
+    } else if (accessToken) {
+      try {
+        const googleRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        if (!googleRes.ok) {
+          return res.status(401).json({ message: 'Invalid or expired Google access token' });
+        }
+        const data = await googleRes.json();
+        if (!data.email) {
+          return res.status(400).json({ message: 'Google account does not have a verified email address' });
+        }
+        email = data.email.toLowerCase().trim();
+        name = data.name || data.given_name || email.split('@')[0];
+        picture = data.picture || '';
+      } catch (err) {
+        console.error('Google userinfo fetch failed:', err.message);
+        return res.status(401).json({ message: 'Failed to verify Google access token' });
+      }
     }
-
-    const email = payload.email.toLowerCase().trim();
-    const name = payload.name || payload.given_name || email.split('@')[0];
-    const picture = payload.picture || '';
 
     // Find or create student user
     let user = await User.findOne({ email });
