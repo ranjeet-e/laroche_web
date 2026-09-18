@@ -16,10 +16,6 @@ import OrderHistory from './pages/OrderHistory';
 import OrderTracking from './pages/OrderTracking';
 import KitchenDashboard from './pages/kitchen/KitchenDashboard';
 import KitchenLogin from './pages/kitchen/KitchenLogin';
-import CmsLogin from './pages/cms/CmsLogin';
-import CmsDashboard from './pages/cms/CmsDashboard';
-
-import { theme } from './theme.ts';
 
 // Decides where "/" should redirect to based on auth state
 const RootRedirect = () => {
@@ -27,14 +23,13 @@ const RootRedirect = () => {
 
   if (loading) return <div className="route-loading">Loading...</div>;
 
-  if (user?.role === 'kitchen') return <Navigate to="/kitchen/dashboard" replace />;
-  if (user?.role === 'cms' || user?.role === 'admin') return <Navigate to="/cms/dashboard" replace />;
+  if (user?.role === 'kitchen' || user?.role === 'cms' || user?.role === 'admin') {
+    return <Navigate to="/kitchen/dashboard" replace />;
+  }
   return <Navigate to="/menu" replace />;
 };
 
 const AppRoutes = () => {
-  const { user } = useAuth();
-
   return (
     <>
       <Navbar />
@@ -43,8 +38,10 @@ const AppRoutes = () => {
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Auth initialMode="login" />} />
         <Route path="/signup" element={<Auth initialMode="signup" />} />
+        
+        {/* Staff & Kitchen / CMS Login */}
         <Route path="/kitchen/login" element={<KitchenLogin />} />
-        <Route path="/cms/login" element={<CmsLogin />} />
+        <Route path="/cms/login" element={<KitchenLogin />} />
 
         {/* Student-only routes */}
         <Route path="/menu" element={<Menu />} />
@@ -75,22 +72,21 @@ const AppRoutes = () => {
           }
         />
 
-        {/* Kitchen-only route */}
+        {/* Staff / Kitchen / CMS Dashboard */}
         <Route
           path="/kitchen/dashboard"
           element={
-            <ProtectedRoute allowedRoles={['kitchen']}>
+            <ProtectedRoute allowedRoles={['kitchen', 'cms', 'admin']}>
               <KitchenDashboard />
             </ProtectedRoute>
           }
         />
 
-        {/* CMS-only route */}
         <Route
           path="/cms/dashboard"
           element={
-            <ProtectedRoute allowedRoles={['cms', 'admin']}>
-              <CmsDashboard />
+            <ProtectedRoute allowedRoles={['kitchen', 'cms', 'admin']}>
+              <KitchenDashboard />
             </ProtectedRoute>
           }
         />

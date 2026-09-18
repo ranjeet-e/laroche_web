@@ -78,6 +78,17 @@ const FoodCard = ({ item, allItems = [] }) => {
             decoding="async"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             onError={(e) => {
+              if (e.target.dataset.triedExt !== 'true') {
+                e.target.dataset.triedExt = 'true';
+                if (e.target.src.endsWith('.png')) {
+                  e.target.src = e.target.src.replace('.png', '.jpg');
+                  return;
+                }
+                if (e.target.src.endsWith('.jpg')) {
+                  e.target.src = e.target.src.replace('.jpg', '.png');
+                  return;
+                }
+              }
               e.target.onerror = null;
               e.target.src = '/placeholder-food.png';
             }}

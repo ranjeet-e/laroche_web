@@ -646,6 +646,21 @@ const KitchenDashboard = () => {
                         src={resolveAssetUrl(item.imageUrl)}
                         alt={item.name}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          if (e.target.dataset.triedExt !== 'true') {
+                            e.target.dataset.triedExt = 'true';
+                            if (e.target.src.endsWith('.png')) {
+                              e.target.src = e.target.src.replace('.png', '.jpg');
+                              return;
+                            }
+                            if (e.target.src.endsWith('.jpg')) {
+                              e.target.src = e.target.src.replace('.jpg', '.png');
+                              return;
+                            }
+                          }
+                          e.target.onerror = null;
+                          e.target.src = '/placeholder-food.png';
+                        }}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-stone-400">

@@ -80,9 +80,15 @@ export const resolveAssetUrl = (path) => {
   ) {
     return path;
   }
-  const backendBase = getBackendBaseUrl();
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `${backendBase}${cleanPath}`;
+  // Backend uploads (/uploads/...) are fetched from the Render backend
+  if (path.startsWith('/uploads') || path.startsWith('uploads')) {
+    const backendBase = getBackendBaseUrl();
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    return `${backendBase}${cleanPath}`;
+  }
+  // Frontend public assets (/menu-items/..., /category-icons/..., /placeholder-food.png)
+  // are served directly from the frontend host / CDN
+  return path.startsWith('/') ? path : `/${path}`;
 };
 
 export default api;

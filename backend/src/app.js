@@ -15,8 +15,9 @@ const { globalLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 
-// Serve in-house static uploads
+// Serve in-house static uploads & menu items fallback
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/menu-items', express.static(path.join(__dirname, '../../frontend/public/menu-items')));
 
 // Trust reverse proxy (Render, Vercel, Cloudflare, Nginx) for accurate IP rate limiting
 app.set('trust proxy', 1);
