@@ -69,9 +69,16 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
-        serif: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+        sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+        body: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['"Fraunces"', 'Georgia', 'serif'],
+        serif: ['"Fraunces"', 'Georgia', 'serif'],
+        price: ['"Fraunces"', 'Georgia', 'serif'],
+      },
+      fontSize: {
+        'hero': ['clamp(2.6rem, 5vw + 1rem, 4.4rem)', { lineHeight: '1.12', letterSpacing: '-0.02em' }],
+        'section-head': ['clamp(1.9rem, 3vw + 0.5rem, 2.6rem)', { lineHeight: '1.2', letterSpacing: '-0.015em' }],
+        'card-title': ['clamp(1.08rem, 1.2vw + 0.5rem, 1.5rem)', { lineHeight: '1.3', letterSpacing: '-0.01em' }],
       },
       boxShadow: {
         'warm-sm': '0 2px 8px rgba(35, 31, 32, 0.04)',

@@ -74,13 +74,13 @@ const HeroSection = ({ onExploreClick }) => {
         </div>
 
         {/* Cinematic Headline */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white tracking-tight leading-[1.12] mb-6 drop-shadow-md">
+        <h1 className="text-hero font-serif font-medium text-white tracking-tight leading-[1.12] mb-6 drop-shadow-md">
           Crafted for the Hustle. <br />
-          <span className="italic font-normal text-honey-light">Brewed for the Break.</span>
+          <span className="font-serif italic font-normal text-honey-light">Brewed for the Break.</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="max-w-2xl text-stone-200 text-sm sm:text-base md:text-lg font-light leading-relaxed mb-8 drop-shadow">
+        <p className="max-w-2xl text-stone-200 text-sm sm:text-base md:text-lg font-normal leading-relaxed mb-8 drop-shadow font-sans">
           Artisanal sourdough toasties, specialty single-origin coffees, stone-baked flatbreads & Belgian waffles — preordered in seconds, ready for counter pickup.
         </p>
 

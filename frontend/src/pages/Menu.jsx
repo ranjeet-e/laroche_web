@@ -228,10 +228,10 @@ const Menu = () => {
                   {/* Category Header */}
                   <div className="flex items-end justify-between pb-3 mb-6 border-b border-stone-200/70">
                     <div>
-                      <h2 className="text-2xl sm:text-3xl font-serif font-bold text-espresso tracking-tight">
+                      <h2 className="text-section-head font-serif font-medium text-espresso tracking-tight">
                         {cat}
                       </h2>
-                      <span className="text-xs font-semibold text-taupe">
+                      <span className="text-xs font-medium text-taupe font-sans">
                         {catItems.length} freshly crafted item{catItems.length > 1 ? 's' : ''}
                       </span>
                     </div>

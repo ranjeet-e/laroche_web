@@ -121,10 +121,10 @@ const PromoBanner = () => {
               <Sparkles className="w-3.5 h-3.5" />
               <span>{current.tag}</span>
             </span>
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold tracking-tight text-white leading-snug">
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-medium tracking-tight text-white leading-snug">
               {current.title}
             </h3>
-            <p className="text-stone-300 text-xs sm:text-sm mt-2 leading-relaxed">
+            <p className="text-stone-300 text-xs sm:text-sm mt-2 leading-relaxed font-sans font-normal">
               {current.subtitle}
             </p>
           </div>

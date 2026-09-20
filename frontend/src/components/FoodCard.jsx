@@ -109,16 +109,16 @@ const FoodCard = ({ item, allItems = [] }) => {
         </div>
 
         {/* Card Details */}
-        <div className="p-2.5 sm:p-4 flex-1 flex flex-col justify-between">
+        <div className="p-2.5 sm:p-4 flex-1 flex flex-col justify-between font-sans">
           <div>
-            <span className="text-[10px] sm:text-[11px] font-semibold text-taupe dark:text-stone-400 uppercase tracking-wider line-clamp-1">
+            <span className="text-[10px] sm:text-[11px] font-medium text-taupe dark:text-stone-400 uppercase tracking-wider line-clamp-1">
               {item.category}
             </span>
-            <h3 className="font-bold text-espresso dark:text-stone-100 text-xs sm:text-base leading-snug group-hover:text-terracotta transition-colors mt-0.5 line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]" title={item.name}>
+            <h3 className="font-serif font-medium text-espresso dark:text-stone-100 text-sm sm:text-[1.125rem] leading-snug group-hover:text-terracotta transition-colors mt-0.5 line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]" title={item.name}>
               {item.name}
             </h3>
             {item.description && (
-              <p className="hidden sm:block text-xs text-taupe-light dark:text-stone-400 mt-1 line-clamp-2 leading-relaxed">
+              <p className="hidden sm:block text-xs font-normal text-taupe-light dark:text-stone-400 mt-1 line-clamp-2 leading-relaxed">
                 {item.description}
               </p>
             )}
@@ -127,7 +127,7 @@ const FoodCard = ({ item, allItems = [] }) => {
           {/* Footer Price & Action */}
           <div className="flex items-center justify-between gap-1 mt-2.5 sm:mt-4 pt-2 sm:pt-3 border-t border-stone-100 dark:border-stone-800">
             <div>
-              <p className="font-extrabold text-espresso dark:text-stone-100 text-xs sm:text-base whitespace-nowrap">
+              <p className="font-price font-medium text-espresso dark:text-stone-100 text-sm sm:text-base whitespace-nowrap">
                 {hasMultipleVariants ? `₹${displayPrice}+` : `₹${displayPrice}`}
               </p>
             </div>

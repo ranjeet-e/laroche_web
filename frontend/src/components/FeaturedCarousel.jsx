@@ -97,10 +97,10 @@ const FeaturedCarousel = ({ allItems = [] }) => {
             <Sparkles className="w-3.5 h-3.5 fill-terracotta" />
             <span>Trending on Campus</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-espresso dark:text-white tracking-tight">
+          <h2 className="text-section-head font-serif font-medium text-espresso dark:text-white tracking-tight">
             Popular Right Now
           </h2>
-          <p className="text-taupe dark:text-stone-400 text-xs sm:text-sm mt-1">
+          <p className="text-taupe dark:text-stone-400 text-xs sm:text-sm font-normal mt-1 font-sans">
             Real-time signature favorites ranked from the last 30 kitchen orders.
           </p>
         </div>
@@ -189,20 +189,20 @@ const FeaturedCarousel = ({ allItems = [] }) => {
               </div>
 
               {/* Card Details */}
-              <div className="p-4 flex-1 flex flex-col justify-between">
+              <div className="p-4 flex-1 flex flex-col justify-between font-sans">
                 <div>
-                  <span className="text-[11px] font-semibold text-taupe dark:text-stone-400 tracking-wide uppercase">
+                  <span className="text-[11px] font-medium text-taupe dark:text-stone-400 tracking-wide uppercase">
                     {item.category}
                   </span>
-                  <h3 className="font-bold text-espresso dark:text-stone-100 text-base line-clamp-1 group-hover:text-terracotta transition-colors mt-0.5" title={item.name}>
+                  <h3 className="font-serif font-medium text-espresso dark:text-stone-100 text-base line-clamp-1 group-hover:text-terracotta transition-colors mt-0.5" title={item.name}>
                     {item.name}
                   </h3>
                 </div>
 
                 <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-100 dark:border-stone-800">
                   <div>
-                    <span className="text-xs text-taupe dark:text-stone-400">Price</span>
-                    <p className="font-extrabold text-espresso dark:text-stone-100 text-base">
+                    <span className="text-xs font-normal text-taupe dark:text-stone-400">Price</span>
+                    <p className="font-price font-medium text-espresso dark:text-stone-100 text-base">
                       {hasMultipleVariants ? `From ₹${displayPrice}` : `₹${displayPrice}`}
                     </p>
                   </div>

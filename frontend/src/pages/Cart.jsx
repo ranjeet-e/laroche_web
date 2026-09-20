@@ -53,10 +53,10 @@ const Cart = () => {
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Menu</span>
           </button>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-espresso dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-serif font-medium text-espresso dark:text-white tracking-tight">
             Order Review ({cartItems.reduce((s, i) => s + i.quantity, 0)} items)
           </h1>
-          <p className="text-xs sm:text-sm text-taupe dark:text-stone-400 mt-1">
+          <p className="text-xs sm:text-sm text-taupe dark:text-stone-400 mt-1 font-sans font-normal">
             Freshly prepared artisanal food ready for counter pickup.
           </p>
         </div>
@@ -72,27 +72,27 @@ const Cart = () => {
           </div>
 
           {/* Bill Summary Receipt */}
-          <div className="md:col-span-5 bg-white dark:bg-[#2B2421] rounded-3xl border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-lg p-6 sticky top-28">
-            <h3 className="font-serif font-bold text-espresso dark:text-white text-lg pb-3 mb-4 border-b border-stone-100 dark:border-stone-800">
+          <div className="md:col-span-5 bg-white dark:bg-[#2B2421] rounded-3xl border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-lg p-6 sticky top-28 font-sans">
+            <h3 className="font-serif font-medium text-espresso dark:text-white text-lg pb-3 mb-4 border-b border-stone-100 dark:border-stone-800">
               Bill Summary
             </h3>
 
             <div className="space-y-3 text-xs sm:text-sm">
               <div className="flex justify-between text-taupe dark:text-stone-400">
                 <span>Item Total</span>
-                <span className="font-semibold text-espresso dark:text-stone-100">₹{totalAmount}</span>
+                <span className="font-medium text-espresso dark:text-stone-100 font-price">₹{totalAmount}</span>
               </div>
               <div className="flex justify-between text-taupe dark:text-stone-400">
                 <span>Eco Packaging Fee</span>
-                <span className="font-semibold text-espresso dark:text-stone-100">₹{packagingCharge}</span>
+                <span className="font-medium text-espresso dark:text-stone-100 font-price">₹{packagingCharge}</span>
               </div>
               <div className="flex justify-between text-taupe dark:text-stone-400">
                 <span>Govt Taxes (GST 5%)</span>
-                <span className="font-semibold text-espresso dark:text-stone-100">₹{gst}</span>
+                <span className="font-medium text-espresso dark:text-stone-100 font-price">₹{gst}</span>
               </div>
-              <div className="pt-3 border-t border-stone-200/80 dark:border-stone-800 flex justify-between items-center font-extrabold text-espresso dark:text-white text-base sm:text-lg">
+              <div className="pt-3 border-t border-stone-200/80 dark:border-stone-800 flex justify-between items-center font-medium text-espresso dark:text-white text-base sm:text-lg">
                 <span>Total to Pay</span>
-                <span className="text-terracotta">₹{grandTotal}</span>
+                <span className="text-terracotta font-price text-xl">₹{grandTotal}</span>
               </div>
             </div>
 
