@@ -20,20 +20,20 @@
   width: 100%;
   max-width: 460px;
   background-color: #FFFFFF;
-  color: #231F20;
+  color: #2A2A22;
   border-radius: 24px 24px 0 0;
   padding: 24px 20px calc(24px + var(--safe-bottom, 0px)) 20px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
   animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
   max-height: 85vh;
   overflow-y: auto;
-  border-top: 1px solid #E5D7D0;
+  border-top: 1px solid #DDD4C0;
 }
 
 .dark .modal-sheet {
-  background-color: #2B2421 !important;
+  background-color: #23231C !important;
   color: #FFFFFF !important;
-  border: 1px solid #4A3B32 !important;
+  border: 1px solid #3D3D30 !important;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
 }
 
@@ -53,7 +53,7 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 800;
-  color: #231F20;
+  color: #2A2A22;
 }
 
 .dark .modal-header h3 {
@@ -61,7 +61,7 @@
 }
 
 .modal-close {
-  background: #F5EBE6;
+  background: #F2EDE2;
   border: none;
   width: 34px;
   height: 34px;
@@ -69,7 +69,7 @@
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  color: #4A3B32;
+  color: #5A5748;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,24 +77,24 @@
 }
 
 .dark .modal-close {
-  background-color: #362E2A !important;
+  background-color: #2F2F26 !important;
   color: #FFFFFF !important;
 }
 
 .modal-close:hover {
-  background-color: #9F7A60;
+  background-color: #A6472B;
   color: #FFFFFF;
 }
 
 .modal-subtitle {
-  color: #6B5B52;
+  color: #5A5748;
   font-size: 0.875rem;
   font-weight: 500;
   margin: 0 0 20px 0;
 }
 
 .dark .modal-subtitle {
-  color: #D6C7BD !important;
+  color: #C4BFB2 !important;
 }
 
 .variant-list {
@@ -109,38 +109,38 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 16px;
-  border: 1.5px solid #E5D7D0;
+  border: 1.5px solid #DDD4C0;
   border-radius: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
   background-color: #FFFFFF;
-  color: #231F20;
+  color: #2A2A22;
 }
 
 .dark .variant-row {
-  background-color: #362E2A !important;
-  border-color: #4A3B32 !important;
+  background-color: #2F2F26 !important;
+  border-color: #3D3D30 !important;
   color: #FFFFFF !important;
 }
 
 .variant-row:hover {
-  border-color: #9F7A60;
-  background-color: #FAF5F2;
+  border-color: #A6472B;
+  background-color: #FAF7F2;
 }
 
 .dark .variant-row:hover {
-  border-color: #9F7A60 !important;
-  background-color: #3D342F !important;
+  border-color: #A6472B !important;
+  background-color: #3D3D30 !important;
 }
 
 .variant-row:has(input:checked) {
-  border-color: #9F7A60 !important;
-  background-color: #F7EFE9;
+  border-color: #A6472B !important;
+  background-color: #E9E0CC;
 }
 
 .dark .variant-row:has(input:checked) {
-  border-color: #9F7A60 !important;
-  background-color: #45372F !important;
+  border-color: #A6472B !important;
+  background-color: #3D3D30 !important;
 }
 
 .variant-radio-group {
@@ -149,7 +149,7 @@
   gap: 12px;
   font-weight: 600;
   font-size: 0.95rem;
-  color: #231F20;
+  color: #2A2A22;
 }
 
 .dark .variant-radio-group {
@@ -158,7 +158,7 @@
 
 .variant-radio-group input[type="radio"],
 .variant-radio-group input[type="checkbox"] {
-  accent-color: #9F7A60;
+  accent-color: #A6472B;
   width: 18px;
   height: 18px;
   cursor: pointer;
@@ -167,16 +167,16 @@
 .variant-price {
   font-weight: 800;
   font-size: 0.95rem;
-  color: #9F7A60;
+  color: #A6472B;
 }
 
 .dark .variant-price {
-  color: #E8D8CD !important;
+  color: #E9E0CC !important;
 }
 
 .modal-add-btn {
   width: 100%;
-  background: #9F7A60 !important;
+  background: #A6472B !important;
   color: #FFFFFF !important;
   border: none;
   padding: 16px 20px;
@@ -184,7 +184,7 @@
   font-weight: 800;
   font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(159, 122, 96, 0.35);
+  box-shadow: 0 6px 20px rgba(166, 71, 43, 0.35);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -193,9 +193,9 @@
 }
 
 .modal-add-btn:hover {
-  background: #87644C !important;
+  background: #7E351F !important;
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(159, 122, 96, 0.45);
+  box-shadow: 0 10px 24px rgba(166, 71, 43, 0.45);
 }
 
 .modal-add-btn:active {

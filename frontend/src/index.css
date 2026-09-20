@@ -4,29 +4,40 @@
 
 /* --- Custom Cafe Bespoke Theme System --- */
 :root {
-  --bg-oat: #F5EBE6;              /* Sandy Beige / Pale Cream */
-  --surface: #FFFFFF;             /* Pure White Surface */
+  /* Core Color Tokens */
+  --cream: #F2EDE2;              /* Primary background — warm, not stark white */
+  --cream-2: #E9E0CC;            /* Secondary surface — cards, process block, form fields */
+  --ink: #2A2A22;                /* Primary text, dark surfaces (nav-dark card, buttons) */
+  --ink-soft: #5A5748;           /* Secondary/body text — softer than pure ink */
+  --rust: #A6472B;               /* Primary accent — CTAs, eyebrow icon, price accents */
+  --rust-deep: #7E351F;          /* Hover state for rust, hero gradient depth */
+  --sage: #78826B;               /* Secondary accent — used sparingly in illustrations */
+  --wheat: #C9A66B;              /* Tertiary accent — dish-card art, the "dot" icon in hero */
+
+  /* Semantic Mappings */
+  --bg-oat: #F2EDE2;
+  --surface: #FFFFFF;
   --surface-card: #FFFFFF;
-  --surface-elevated: #FAF5F2;
-  --espresso: #231F20;            /* Espresso / Near Black */
-  --copper: #4A3B32;              /* Burnt Copper / Dark Chocolate */
-  --caramel: #9F7A60;             /* Warm Taupe / Caramel */
-  --terracotta: #9F7A60;
-  --border-light: #E5D7D0;        /* Subtle Pale Cream Border */
-  --border-subtle: #EFE6E1;
-  --border: #E5D7D0;
-  --glass-bg: rgba(245, 235, 230, 0.92);
-  --glass-border: rgba(229, 215, 208, 0.85);
-  --text-primary: #231F20;
-  --text-secondary: #6B5B52;
-  --taupe: #6B5B52;
-  --on-surface: #231F20;
-  --on-surface-secondary: #6B5B52;
-  --on-surface-tertiary: #8F7E75;
-  --brand-primary: #9F7A60;
-  --brand-gradient: linear-gradient(135deg, #9F7A60 0%, #87644C 100%);
-  --shadow-card: 0 4px 16px rgba(35, 31, 32, 0.06);
-  --shadow-hover: 0 8px 24px rgba(35, 31, 32, 0.12);
+  --surface-elevated: #E9E0CC;
+  --espresso: #2A2A22;
+  --copper: #7E351F;
+  --caramel: #A6472B;
+  --terracotta: #A6472B;
+  --border-light: #DDD4C0;
+  --border-subtle: #E9E0CC;
+  --border: #DDD4C0;
+  --glass-bg: rgba(242, 237, 226, 0.94);
+  --glass-border: rgba(221, 212, 192, 0.85);
+  --text-primary: #2A2A22;
+  --text-secondary: #5A5748;
+  --taupe: #5A5748;
+  --on-surface: #2A2A22;
+  --on-surface-secondary: #5A5748;
+  --on-surface-tertiary: #78826B;
+  --brand-primary: #A6472B;
+  --brand-gradient: linear-gradient(135deg, #A6472B 0%, #7E351F 100%);
+  --shadow-card: 0 4px 16px rgba(42, 42, 34, 0.06);
+  --shadow-hover: 0 8px 24px rgba(42, 42, 34, 0.12);
   --radius-lg: 1.25rem;
   --radius-md: 0.875rem;
   --radius-pill: 9999px;
@@ -36,29 +47,29 @@
 }
 
 .dark {
-  --bg-oat: #1A1718;              /* Deep Espresso */
-  --surface: #2B2421;             /* Dark Chocolate Card */
-  --surface-card: #2B2421;
-  --surface-elevated: #362E2A;    /* Elevated Burnt Chocolate */
-  --espresso: #F5EBE6;            /* Light Cream Text */
-  --copper: #4A3B32;              /* Burnt Copper Border / Accent */
-  --caramel: #9F7A60;             /* Warm Caramel Button / Accent */
-  --terracotta: #B48D71;
-  --border-light: #4A3B32;        /* Burnt Copper Border */
-  --border-subtle: #3A2E26;
-  --border: #4A3B32;
-  --glass-bg: rgba(26, 23, 24, 0.94);
-  --glass-border: rgba(74, 59, 50, 0.85);
-  --text-primary: #F5EBE6;
-  --text-secondary: #C5B4A8;
-  --taupe: #C5B4A8;
+  --bg-oat: #1A1A14;              /* Deep Ink Night */
+  --surface: #23231C;             /* Dark Ink Card */
+  --surface-card: #23231C;
+  --surface-elevated: #2F2F26;    /* Elevated Ink Surface */
+  --espresso: #F2EDE2;            /* Light Cream Text */
+  --copper: #C9A66B;              /* Wheat Accent */
+  --caramel: #A6472B;             /* Warm Rust */
+  --terracotta: #C97257;
+  --border-light: #3D3D30;
+  --border-subtle: #333328;
+  --border: #3D3D30;
+  --glass-bg: rgba(26, 26, 20, 0.95);
+  --glass-border: rgba(61, 61, 48, 0.85);
+  --text-primary: #F2EDE2;
+  --text-secondary: #C4BFB2;
+  --taupe: #C4BFB2;
   --on-surface: #FFFFFF;
-  --on-surface-secondary: #D6C7BD;
-  --on-surface-tertiary: #A89B91;
-  --brand-primary: #9F7A60;
-  --brand-gradient: linear-gradient(135deg, #9F7A60 0%, #B48D71 100%);
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.45);
-  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.6);
+  --on-surface-secondary: #DDD8CB;
+  --on-surface-tertiary: #A8A396;
+  --brand-primary: #A6472B;
+  --brand-gradient: linear-gradient(135deg, #A6472B 0%, #C97257 100%);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.55);
+  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.7);
 }
 
 *, *::before, *::after {
@@ -246,35 +257,38 @@ video::-webkit-media-controls-volume-slider {
 
 .dark p,
 .dark label {
-  color: #F5EBE6;
+  color: #F2EDE2;
 }
 
-.dark .text-espresso {
+.dark .text-espresso,
+.dark .text-ink {
   color: #FFFFFF;
 }
 
-.dark .text-taupe {
-  color: #D6C7BD;
+.dark .text-taupe,
+.dark .text-ink-soft {
+  color: #C4BFB2;
 }
 
 .dark .text-taupe-light {
-  color: #B4A49A;
+  color: #A8A396;
 }
 
-.dark .bg-oat {
-  background-color: #1A1718;
+.dark .bg-oat,
+.dark .bg-cream {
+  background-color: #1A1A14;
 }
 
 .dark input,
 .dark textarea,
 .dark select {
-  background-color: #362E2A;
+  background-color: #2F2F26;
   color: #FFFFFF;
-  border-color: #4A3B32;
+  border-color: #3D3D30;
 }
 
 .dark input::placeholder {
-  color: #9F8E84;
+  color: #8D897A;
 }
 
 @keyframes cartBouncePop {

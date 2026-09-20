@@ -142,14 +142,14 @@ const OrderTracking = () => {
 
         {/* Browser Notification Permission Banner */}
         {isNotificationSupported() && notificationPermission !== 'granted' && (
-          <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-[#F5EBE6] dark:bg-[#362E2A] border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-[#F2EDE2] dark:bg-[#2F2F26] border border-[#DDD4C0] dark:border-[#3D3D30] shadow-warm-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#9F7A60] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+              <div className="w-9 h-9 rounded-full bg-[#A6472B] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
                 <BellRing className="w-5 h-5 animate-bounce" />
               </div>
               <div>
-                <h4 className="font-bold text-[#231F20] dark:text-white text-sm">Allow Order Alerts</h4>
-                <p className="text-xs text-[#6B5B52] dark:text-[#C5B4A8] mt-0.5">
+                <h4 className="font-bold text-[#2A2A22] dark:text-white text-sm">Allow Order Alerts</h4>
+                <p className="text-xs text-[#5A5748] dark:text-[#C4BFB2] mt-0.5 font-sans">
                   Get instant notifications the moment your order is ready for pickup!
                 </p>
               </div>
@@ -157,7 +157,7 @@ const OrderTracking = () => {
             <button
               type="button"
               onClick={handleEnableNotifications}
-              className="px-5 py-2 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-xs shadow-sm transition-all flex-shrink-0 whitespace-nowrap self-start sm:self-auto"
+              className="px-5 py-2 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white font-bold text-xs shadow-sm transition-all flex-shrink-0 whitespace-nowrap self-start sm:self-auto"
             >
               Allow Notifications
             </button>
@@ -165,27 +165,27 @@ const OrderTracking = () => {
         )}
 
         {/* Main Tracking Card */}
-        <div className="bg-white dark:bg-[#2B2421] rounded-3xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-xl p-6 sm:p-8">
+        <div className="bg-white dark:bg-[#23231C] rounded-3xl border border-[#DDD4C0] dark:border-[#3D3D30] shadow-warm-xl p-6 sm:p-8">
           
           {/* Card Header */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-[#E5D7D0] dark:border-[#4A3B32]">
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-[#DDD4C0] dark:border-[#3D3D30]">
             <div>
-              <span className="text-xs font-bold text-[#6B5B52] dark:text-[#C5B4A8] uppercase tracking-wider block">
+              <span className="text-xs font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider block">
                 Live Status Tracker
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#231F20] dark:text-white mt-0.5">
+              <h2 className="text-2xl sm:text-3xl font-serif font-medium text-[#2A2A22] dark:text-white mt-0.5">
                 Order #{order.orderNumber ? order.orderNumber : order._id.slice(-4).toUpperCase()}
               </h2>
-              <span className="text-xs text-[#8F7E75] dark:text-[#A89B91] mt-1 inline-flex items-center gap-1">
+              <span className="text-xs text-[#78826B] dark:text-[#A8A396] mt-1 inline-flex items-center gap-1 font-sans">
                 <Clock className="w-3.5 h-3.5" />
                 Placed at {new Date(order.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
 
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#9F7A60]/15 text-[#9F7A60] dark:text-[#E8D8CD] border border-[#9F7A60]/30 text-xs font-black uppercase tracking-wider shadow-sm">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#A6472B]/15 text-[#A6472B] dark:text-[#E9E0CC] border border-[#A6472B]/30 text-xs font-black uppercase tracking-wider shadow-sm font-sans">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9F7A60] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#9F7A60]"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#A6472B] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#A6472B]"></span>
               </span>
               <span>{order.status}</span>
             </div>
@@ -203,7 +203,7 @@ const OrderTracking = () => {
                   {idx < STATUS_STEPS.length - 1 && (
                     <div
                       className={`absolute left-4 top-8 bottom-0 w-0.5 -mb-6 transition-colors duration-500 ${
-                        currentStepIndex > idx ? 'bg-[#9F7A60]' : 'bg-stone-200 dark:bg-[#4A3B32]'
+                        currentStepIndex > idx ? 'bg-[#A6472B]' : 'bg-stone-200 dark:bg-[#3D3D30]'
                       }`}
                     />
                   )}
@@ -212,10 +212,10 @@ const OrderTracking = () => {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 z-10 transition-all duration-300 ${
                       isCompleted
-                        ? 'bg-[#9F7A60] text-white shadow-glow-terracotta'
+                        ? 'bg-[#A6472B] text-white shadow-glow-terracotta'
                         : isCurrent
-                        ? 'bg-[#231F20] dark:bg-[#9F7A60] text-white ring-4 ring-[#9F7A60]/20'
-                        : 'bg-stone-100 dark:bg-[#362E2A] text-stone-400 dark:text-[#9F8E84] border border-stone-200 dark:border-[#4A3B32]'
+                        ? 'bg-[#2A2A22] dark:bg-[#A6472B] text-white ring-4 ring-[#A6472B]/20'
+                        : 'bg-[#F2EDE2] dark:bg-[#2F2F26] text-[#5A5748] dark:text-[#8D897A] border border-[#DDD4C0] dark:border-[#3D3D30]'
                     }`}
                   >
                     {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}

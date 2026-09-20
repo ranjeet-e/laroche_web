@@ -32,7 +32,7 @@ const CartItem = ({ item }) => {
             {item.addons.map((addon, i) => (
               <span
                 key={addon._id || i}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#F5EFEB] dark:bg-[#362E2A] text-[#9F7A60] dark:text-[#E8D8CD] border border-[#E5D7D0] dark:border-[#4A3B32]"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#E9E0CC] dark:bg-[#2F2F26] text-[#A6472B] dark:text-[#E9E0CC] border border-[#DDD4C0] dark:border-[#3D3D30]"
               >
                 <span>+ {addon.name}</span>
                 {addon.price > 0 && <span className="opacity-75 font-price">(₹{addon.price})</span>}

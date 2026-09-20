@@ -145,18 +145,18 @@ const FoodCard = ({ item, allItems = [] }) => {
                   <span>ADDED</span>
                 </button>
               ) : quantity === 0 ? (
-                /* Default State: Pill with warm terracotta/brown background (#8D5B4C) */
+                /* Default State: Pill with Rust background (#A6472B) */
                 <button
                   type="button"
                   onClick={handleAddClick}
-                  className="inline-flex items-center justify-center gap-1 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#8D5B4C] hover:bg-[#784C3E] text-white text-[11px] sm:text-xs font-extrabold shadow-sm active:scale-95 transition-all duration-200 uppercase tracking-wide cursor-pointer hover:shadow-warm-sm"
+                  className="inline-flex items-center justify-center gap-1 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white text-[11px] sm:text-xs font-bold shadow-sm active:scale-95 transition-all duration-200 uppercase tracking-wide cursor-pointer hover:shadow-warm-sm"
                 >
                   <Plus className="w-3 h-3 stroke-[2.5]" />
                   <span>ADD</span>
                 </button>
               ) : (
-                /* Stepper State: Brown theme matching quantity adjuster */
-                <div className="inline-flex items-center bg-[#8D5B4C] text-white rounded-full p-0.5 sm:p-1 shadow-sm transition-all duration-200">
+                /* Stepper State: Rust theme matching quantity adjuster */
+                <div className="inline-flex items-center bg-[#A6472B] text-white rounded-full p-0.5 sm:p-1 shadow-sm transition-all duration-200">
                   <button
                     type="button"
                     onClick={handleDecrease}
@@ -165,7 +165,7 @@ const FoodCard = ({ item, allItems = [] }) => {
                   >
                     <Minus className="w-3 h-3 stroke-[2.5]" />
                   </button>
-                  <span className="px-1.5 sm:px-2 font-extrabold text-[11px] sm:text-xs text-white">{quantity}</span>
+                  <span className="px-1.5 sm:px-2 font-bold text-[11px] sm:text-xs text-white">{quantity}</span>
                   <button
                     type="button"
                     onClick={handleAddClick}

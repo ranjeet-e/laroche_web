@@ -418,8 +418,8 @@ const Auth = ({ initialMode = 'login' }) => {
   const searchParamStr = searchParams.toString() ? `?${searchParams.toString()}` : '';
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#F5EBE6] dark:bg-[#1A1718] transition-colors duration-300">
-      <div className="w-full max-w-md bg-white dark:bg-[#2B2421] rounded-3xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-xl p-6 sm:p-8 relative overflow-hidden transition-colors duration-300">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#F2EDE2] dark:bg-[#1A1A14] transition-colors duration-300">
+      <div className="w-full max-w-md bg-white dark:bg-[#23231C] rounded-3xl border border-[#DDD4C0] dark:border-[#3D3D30] shadow-warm-xl p-6 sm:p-8 relative overflow-hidden transition-colors duration-300">
         
         {/* Brand Logo Header */}
         <div className="text-center mb-6">
@@ -430,7 +430,7 @@ const Auth = ({ initialMode = 'login' }) => {
               className="h-12 w-auto mx-auto object-contain transition-transform duration-300"
             />
           </Link>
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#231F20] dark:text-white tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-serif font-medium text-[#2A2A22] dark:text-white tracking-tight">
             {mode === 'signup'
               ? 'Create Customer Account'
               : mode === 'forgot'
@@ -441,7 +441,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 : 'Reset Password'
               : 'Sign In'}
           </h2>
-          <p className="text-xs sm:text-sm text-[#6B5B52] dark:text-[#C5B4A8] mt-1.5">
+          <p className="text-xs sm:text-sm text-[#5A5748] dark:text-[#C4BFB2] mt-1.5 font-sans">
             {mode === 'signup'
               ? 'Join La Roche Cafe for quick ordering & instant counter pickup'
               : mode === 'forgot'
@@ -476,7 +476,7 @@ const Auth = ({ initialMode = 'login' }) => {
               type="button"
               onClick={handleGoogleButtonClick}
               disabled={loading}
-              className="w-full py-3 px-4 rounded-full border border-[#E5D7D0] dark:border-[#4A3B32] bg-white hover:bg-[#FAF5F2] dark:bg-[#362E2A] dark:hover:bg-[#433934] text-[#231F20] dark:text-white font-bold text-xs sm:text-sm shadow-warm-sm hover:shadow-warm-md transition-all flex items-center justify-center gap-3 active:scale-[0.99] disabled:opacity-50"
+              className="w-full py-3 px-4 rounded-full border border-[#DDD4C0] dark:border-[#3D3D30] bg-white hover:bg-[#FAF7F2] dark:bg-[#2F2F26] dark:hover:bg-[#3D3D30] text-[#2A2A22] dark:text-white font-bold text-xs sm:text-sm shadow-warm-sm hover:shadow-warm-md transition-all flex items-center justify-center gap-3 active:scale-[0.99] disabled:opacity-50"
             >
               <GoogleIcon />
               <span>Continue with Google</span>
@@ -484,15 +484,15 @@ const Auth = ({ initialMode = 'login' }) => {
 
             {/* Divider */}
             <div className="relative flex items-center justify-center my-5">
-              <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
-              <span className="bg-white dark:bg-[#2B2421] px-3 text-[11px] font-bold text-[#6B5B52] dark:text-[#C5B4A8] uppercase tracking-wider">
+              <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
+              <span className="bg-white dark:bg-[#23231C] px-3 text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider">
                 or sign in with
               </span>
-              <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
+              <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
             </div>
 
             {/* 2 Sign In Methods Sub-Toggle */}
-            <div className="flex bg-[#F5EBE6] dark:bg-[#362E2A] p-1 rounded-full mb-6 border border-[#E5D7D0] dark:border-[#4A3B32]">
+            <div className="flex bg-[#F2EDE2] dark:bg-[#2F2F26] p-1 rounded-full mb-6 border border-[#DDD4C0] dark:border-[#3D3D30]">
               <button
                 type="button"
                 onClick={() => {
@@ -502,8 +502,8 @@ const Auth = ({ initialMode = 'login' }) => {
                 }}
                 className={`flex-1 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                   loginMethod === 'phone'
-                    ? 'bg-[#9F7A60] text-white shadow-warm-sm'
-                    : 'text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white'
+                    ? 'bg-[#A6472B] text-white shadow-warm-sm'
+                    : 'text-[#5A5748] dark:text-[#C4BFB2] hover:text-[#2A2A22] dark:hover:text-white'
                 }`}
               >
                 <Smartphone className="w-3.5 h-3.5" />
@@ -519,8 +519,8 @@ const Auth = ({ initialMode = 'login' }) => {
                 }}
                 className={`flex-1 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                   loginMethod === 'email'
-                    ? 'bg-[#9F7A60] text-white shadow-warm-sm'
-                    : 'text-[#6B5B52] dark:text-[#C5B4A8] hover:text-[#231F20] dark:hover:text-white'
+                    ? 'bg-[#A6472B] text-white shadow-warm-sm'
+                    : 'text-[#5A5748] dark:text-[#C4BFB2] hover:text-[#2A2A22] dark:hover:text-white'
                 }`}
               >
                 <Mail className="w-3.5 h-3.5" />
@@ -533,14 +533,14 @@ const Auth = ({ initialMode = 'login' }) => {
               phoneStep === 'enter_phone' ? (
                 <form onSubmit={handleSendLoginOtp} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Mobile Number</label>
-                    <div className="flex items-center rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] overflow-hidden focus-within:border-[#9F7A60] focus-within:ring-2 focus-within:ring-[#9F7A60]/20 transition-all">
-                      <span className="px-3.5 py-3 bg-[#FAF5F2] dark:bg-[#2B2421] text-[#231F20] dark:text-white text-xs font-bold border-r border-[#E5D7D0] dark:border-[#4A3B32]">
+                    <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Mobile Number</label>
+                    <div className="flex items-center rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] overflow-hidden focus-within:border-[#A6472B] focus-within:ring-2 focus-within:ring-[#A6472B]/20 transition-all">
+                      <span className="px-3.5 py-3 bg-[#FAF7F2] dark:bg-[#23231C] text-[#2A2A22] dark:text-white text-xs font-bold border-r border-[#DDD4C0] dark:border-[#3D3D30]">
                         🇮🇳 +91
                       </span>
                       <input
                         type="tel"
-                        className="w-full px-3.5 py-3 bg-transparent text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-sm font-semibold focus:outline-none"
+                        className="w-full px-3.5 py-3 bg-transparent text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-sm font-semibold focus:outline-none"
                         placeholder="Enter 10-digit mobile"
                         value={phone}
                         maxLength={10}
@@ -556,7 +556,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   <button
                     type="submit"
                     disabled={loading || phone.length !== 10}
-                    className="w-full py-3.5 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+                    className="w-full py-3.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
                   >
                     <span>{loading ? 'Sending code...' : 'Sign In via OTP'}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -564,27 +564,27 @@ const Auth = ({ initialMode = 'login' }) => {
                 </form>
               ) : (
                 <form onSubmit={handleVerifyLoginOtp} className="space-y-4">
-                  <div className="flex items-center justify-between text-xs text-[#6B5B52] dark:text-[#D6C7BD] mb-1">
-                    <span>Sent to <strong className="text-[#231F20] dark:text-white">+91 {phone}</strong></span>
+                  <div className="flex items-center justify-between text-xs text-[#5A5748] dark:text-[#DDD8CB] mb-1">
+                    <span>Sent to <strong className="text-[#2A2A22] dark:text-white">+91 {phone}</strong></span>
                     <button
                       type="button"
                       onClick={() => {
                         setPhoneStep('enter_phone');
                         setOtp('');
                       }}
-                      className="text-[#9F7A60] font-bold hover:underline"
+                      className="text-[#A6472B] font-bold hover:underline"
                     >
                       Change
                     </button>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Verification Code</label>
+                    <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Verification Code</label>
                     <input
                       ref={otpInputRef}
                       type="text"
                       inputMode="numeric"
-                      className="w-full px-4 py-3 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                      className="w-full px-4 py-3 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                       placeholder="••••••"
                       value={otp}
                       maxLength={6}
@@ -597,12 +597,12 @@ const Auth = ({ initialMode = 'login' }) => {
                   </div>
 
                   <div className="flex items-center justify-between px-1 text-xs">
-                    <span className="text-[#6B5B52] dark:text-[#D6C7BD]">Didn't receive code?</span>
+                    <span className="text-[#5A5748] dark:text-[#DDD8CB]">Didn't receive code?</span>
                     <button
                       type="button"
                       disabled={countdown > 0 || loading}
                       onClick={handleSendLoginOtp}
-                      className="font-bold text-[#9F7A60] dark:text-[#E8D8CD] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="font-bold text-[#A6472B] dark:text-[#E9E0CC] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {countdown > 0 ? `Resend in ${countdown}s` : 'Resend Code'}
                     </button>
@@ -611,7 +611,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   <button
                     type="submit"
                     disabled={loading || otp.length !== 6}
-                    className="w-full py-3.5 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? 'Verifying...' : 'Verify & Proceed'}
                   </button>
@@ -623,13 +623,13 @@ const Auth = ({ initialMode = 'login' }) => {
             {loginMethod === 'email' && (
               <form onSubmit={handleEmailLoginSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Email Address</label>
+                  <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Email Address</label>
                   <div className="relative flex items-center">
-                    <Mail className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
+                    <Mail className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
                     <input
                       type="email"
                       name="email"
-                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                       placeholder="Enter your email"
@@ -641,7 +641,7 @@ const Auth = ({ initialMode = 'login' }) => {
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD]">Password</label>
+                    <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB]">Password</label>
                     <button
                       type="button"
                       onClick={() => {
@@ -653,17 +653,17 @@ const Auth = ({ initialMode = 'login' }) => {
                         setForgotOtp('');
                         setForgotNewPassword('');
                       }}
-                      className="text-xs font-bold text-[#9F7A60] hover:underline"
+                      className="text-xs font-bold text-[#A6472B] hover:underline"
                     >
                       Forgot Password?
                     </button>
                   </div>
                   <div className="relative flex items-center">
-                    <Lock className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
+                    <Lock className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
                     <input
                       type="password"
                       name="password"
-                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                       value={loginData.password}
                       onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                       placeholder="Enter your password"
@@ -676,7 +676,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 mt-2"
+                  className="w-full py-3.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 mt-2"
                 >
                   {loading ? 'Authenticating...' : 'Sign In'}
                 </button>
@@ -684,11 +684,11 @@ const Auth = ({ initialMode = 'login' }) => {
             )}
 
             {/* Prominent Link to Create Account */}
-            <div className="mt-8 pt-5 border-t border-[#E5D7D0] dark:border-[#4A3B32] text-center">
-              <p className="text-xs text-[#6B5B52] dark:text-[#D6C7BD] mb-2">New User?</p>
+            <div className="mt-8 pt-5 border-t border-[#DDD4C0] dark:border-[#3D3D30] text-center">
+              <p className="text-xs text-[#5A5748] dark:text-[#DDD8CB] mb-2">New User?</p>
               <Link
                 to={`/signup${searchParamStr}`}
-                className="inline-flex items-center justify-center gap-1.5 w-full py-3 rounded-full border-2 border-[#9F7A60] text-[#9F7A60] dark:text-[#E8D8CD] hover:bg-[#9F7A60]/10 font-bold text-xs sm:text-sm transition-all"
+                className="inline-flex items-center justify-center gap-1.5 w-full py-3 rounded-full border-2 border-[#A6472B] text-[#A6472B] dark:text-[#E9E0CC] hover:bg-[#A6472B]/10 font-bold text-xs sm:text-sm transition-all"
               >
                 <UserIcon className="w-4 h-4" />
                 <span>Create an Account</span>
@@ -707,7 +707,7 @@ const Auth = ({ initialMode = 'login' }) => {
               type="button"
               onClick={handleGoogleButtonClick}
               disabled={loading}
-              className="w-full py-3 px-4 rounded-full border border-[#E5D7D0] dark:border-[#4A3B32] bg-white hover:bg-[#FAF5F2] dark:bg-[#362E2A] dark:hover:bg-[#433934] text-[#231F20] dark:text-white font-bold text-xs sm:text-sm shadow-warm-sm hover:shadow-warm-md transition-all flex items-center justify-center gap-3 active:scale-[0.99] disabled:opacity-50"
+              className="w-full py-3 px-4 rounded-full border border-[#DDD4C0] dark:border-[#3D3D30] bg-white hover:bg-[#FAF7F2] dark:bg-[#2F2F26] dark:hover:bg-[#3D3D30] text-[#2A2A22] dark:text-white font-bold text-xs sm:text-sm shadow-warm-sm hover:shadow-warm-md transition-all flex items-center justify-center gap-3 active:scale-[0.99] disabled:opacity-50"
             >
               <GoogleIcon />
               <span>Sign up with Google</span>
@@ -715,21 +715,21 @@ const Auth = ({ initialMode = 'login' }) => {
 
             {/* Divider */}
             <div className="relative flex items-center justify-center my-5">
-              <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
-              <span className="bg-white dark:bg-[#2B2421] px-3 text-[11px] font-bold text-[#6B5B52] dark:text-[#C5B4A8] uppercase tracking-wider">
+              <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
+              <span className="bg-white dark:bg-[#23231C] px-3 text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider">
                 or register with details
               </span>
-              <div className="border-t border-[#E5D7D0] dark:border-[#4A3B32] w-full"></div>
+              <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
             </div>
 
             <form onSubmit={handleSignupSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Full Name</label>
+                <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Full Name</label>
                 <div className="relative flex items-center">
-                  <UserIcon className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
+                  <UserIcon className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
                   <input
                     type="text"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                     value={signupData.name}
                     onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
                     placeholder="Enter your name"
@@ -739,14 +739,14 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Phone Number</label>
-                <div className="flex items-center rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] overflow-hidden focus-within:border-[#9F7A60] focus-within:ring-2 focus-within:ring-[#9F7A60]/20 transition-all">
-                  <span className="px-3.5 py-3 bg-[#FAF5F2] dark:bg-[#2B2421] text-[#231F20] dark:text-white text-xs font-bold border-r border-[#E5D7D0] dark:border-[#4A3B32]">
+                <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Phone Number</label>
+                <div className="flex items-center rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] overflow-hidden focus-within:border-[#A6472B] focus-within:ring-2 focus-within:ring-[#A6472B]/20 transition-all">
+                  <span className="px-3.5 py-3 bg-[#FAF7F2] dark:bg-[#23231C] text-[#2A2A22] dark:text-white text-xs font-bold border-r border-[#DDD4C0] dark:border-[#3D3D30]">
                     🇮🇳 +91
                   </span>
                   <input
                     type="tel"
-                    className="w-full px-3.5 py-3 bg-transparent text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-sm font-semibold focus:outline-none"
+                    className="w-full px-3.5 py-3 bg-transparent text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-sm font-semibold focus:outline-none"
                     placeholder="10-digit mobile"
                     value={signupData.phone}
                     maxLength={10}
@@ -757,12 +757,12 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Email Address</label>
+                <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Email Address</label>
                 <div className="relative flex items-center">
-                  <Mail className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
+                  <Mail className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
                   <input
                     type="email"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                     value={signupData.email}
                     onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
                     placeholder="yourname@gmail.com"
@@ -772,12 +772,12 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#6B5B52] dark:text-[#D6C7BD] mb-1.5">Create Password</label>
+                <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Create Password</label>
                 <div className="relative flex items-center">
-                  <Lock className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
+                  <Lock className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
                   <input
                     type="password"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                     value={signupData.password}
                     onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                     placeholder="At least 6 characters"
@@ -789,18 +789,18 @@ const Auth = ({ initialMode = 'login' }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-full bg-[#9F7A60] hover:bg-[#87644C] text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 mt-2 flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 mt-2 flex items-center justify-center gap-2"
               >
                 <span>{loading ? 'Creating Account...' : 'Sign Up & Continue'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
 
-            <div className="mt-8 pt-5 border-t border-[#E5D7D0] dark:border-[#4A3B32] text-center">
-              <p className="text-xs text-[#6B5B52] dark:text-[#D6C7BD] mb-2">Already have an account?</p>
+            <div className="mt-8 pt-5 border-t border-[#DDD4C0] dark:border-[#3D3D30] text-center">
+              <p className="text-xs text-[#5A5748] dark:text-[#DDD8CB] mb-2">Already have an account?</p>
               <Link
                 to={`/login${searchParamStr}`}
-                className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-[#9F7A60] dark:text-[#E8D8CD] hover:underline transition-colors"
+                className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-[#A6472B] dark:text-[#E9E0CC] hover:underline transition-colors"
               >
                 <span>Sign In Here</span>
                 <ArrowRight className="w-3.5 h-3.5" />

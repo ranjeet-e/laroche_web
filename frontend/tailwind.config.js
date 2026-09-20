@@ -8,64 +8,90 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Cafe Core Palette
+        // Core Palette Tokens
+        cream: {
+          DEFAULT: '#F2EDE2', // Primary background — warm, not stark white
+          2: '#E9E0CC',       // Secondary surface — cards, process block, form fields
+          surface: '#F2EDE2',
+          card: '#E9E0CC',
+          light: '#FAF7F2',
+          border: '#DDD4C0',
+        },
+        ink: {
+          DEFAULT: '#2A2A22', // Primary text, dark surfaces (nav-dark card, buttons)
+          soft: '#5A5748',    // Secondary/body text — softer than pure ink
+          dark: '#1C1C16',
+          card: '#23231C',
+          elevated: '#2F2F26',
+        },
+        rust: {
+          DEFAULT: '#A6472B', // Primary accent — CTAs, eyebrow icon, price accents
+          deep: '#7E351F',    // Hover state for rust, hero gradient depth
+          hover: '#7E351F',
+          light: '#F7ECE8',
+          subtle: '#FAF0ED',
+        },
+        sage: {
+          DEFAULT: '#78826B', // Secondary accent — used sparingly in illustrations
+          light: '#EFF2EC',
+          dark: '#555D4B',
+        },
+        wheat: {
+          DEFAULT: '#C9A66B', // Tertiary accent — dish-card art, the "dot" icon in hero
+          light: '#F7F0E4',
+          dark: '#A48248',
+        },
+
+        // Semantic Compatibility Aliases
         espresso: {
-          DEFAULT: '#231F20', // Espresso / Near Black
-          pure: '#231F20',
-          dark: '#1A1718',    // Deep dark background
-          card: '#2B2421',    // Dark mode card
-          elevated: '#362E2A',
-          light: '#3C3430',
+          DEFAULT: '#2A2A22',
+          pure: '#2A2A22',
+          dark: '#1C1C16',
+          card: '#23231C',
+          elevated: '#2F2F26',
+          light: '#3B3B30',
         },
         copper: {
-          DEFAULT: '#4A3B32', // Burnt Copper / Dark Chocolate
-          dark: '#3A2E26',
-          border: '#4A3B32',
-          light: '#5E4B40',
+          DEFAULT: '#7E351F',
+          dark: '#2A2A22',
+          border: '#DDD4C0',
+          light: '#A6472B',
         },
         caramel: {
-          DEFAULT: '#9F7A60', // Warm Taupe / Caramel
-          hover: '#87644C',
-          active: '#74533C',
-          light: '#E8D8CD',
-          subtle: '#F4ECE6',
+          DEFAULT: '#A6472B',
+          hover: '#7E351F',
+          active: '#5E2615',
+          light: '#E9E0CC',
+          subtle: '#F2EDE2',
         },
-        cream: {
-          DEFAULT: '#F5EBE6', // Sandy Beige / Pale Cream
-          surface: '#FFFFFF',
-          card: '#FFFFFF',
-          border: '#E5D7D0',
-          darkBorder: '#4A3B32',
-        },
-        // Semantic Compatibility Aliases
         oat: {
-          DEFAULT: '#F5EBE6',
-          light: '#FAF5F2',
-          dark: '#EDE0D8',
-          surface: '#FFFFFF',
-          night: '#1A1718',
+          DEFAULT: '#F2EDE2',
+          light: '#FAF7F2',
+          dark: '#E9E0CC',
+          surface: '#F2EDE2',
+          night: '#1A1A14',
         },
         terracotta: {
-          DEFAULT: '#9F7A60',
-          hover: '#87644C',
-          light: '#F5EBE6',
-          dark: '#B48D71',
+          DEFAULT: '#A6472B',
+          hover: '#7E351F',
+          light: '#F2EDE2',
+          dark: '#C97257',
         },
         taupe: {
-          DEFAULT: '#6B5B52',
-          light: '#8F7E75',
-          muted: '#B0A198',
-          dark: '#C5B4A8',
+          DEFAULT: '#5A5748',
+          light: '#78826B',
+          muted: '#8D897A',
+          dark: '#C4BFB2',
         },
         honey: {
-          DEFAULT: '#9F7A60',
-          light: '#F5EBE6',
-          dark: '#87644C',
+          DEFAULT: '#C9A66B',
+          light: '#F7F0E4',
+          dark: '#A6472B',
         },
         matcha: {
-          DEFAULT: '#3E6B48',
-          light: '#EAF3EC',
-          dark: '#2A4E33',
+          DEFAULT: '#78826B',
+          light: '#EFF2EC',
+          dark: '#555D4B',
         },
       },
       fontFamily: {

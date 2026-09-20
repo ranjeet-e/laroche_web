@@ -220,18 +220,18 @@ const FeaturedCarousel = ({ allItems = [] }) => {
                         <span>ADDED</span>
                       </button>
                     ) : qty === 0 ? (
-                      /* Default State: Pill with warm terracotta/brown background (#8D5B4C) */
+                      /* Default State: Pill with Rust background (#A6472B) */
                       <button
                         type="button"
                         onClick={() => handleAdd(item)}
-                        className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#8D5B4C] hover:bg-[#784C3E] text-white text-xs font-extrabold shadow-sm hover:shadow-warm-sm active:scale-95 transition-all duration-200 uppercase tracking-wide"
+                        className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white text-xs font-bold shadow-sm hover:shadow-warm-sm active:scale-95 transition-all duration-200 uppercase tracking-wide"
                       >
                         <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                         <span>ADD</span>
                       </button>
                     ) : (
-                      /* Stepper State: Brown theme matching quantity adjuster */
-                      <div className="inline-flex items-center bg-[#8D5B4C] text-white rounded-full p-1 shadow-sm transition-all duration-200">
+                      /* Stepper State: Rust theme matching quantity adjuster */
+                      <div className="inline-flex items-center bg-[#A6472B] text-white rounded-full p-1 shadow-sm transition-all duration-200">
                         <button
                           type="button"
                           onClick={() => decreaseQuantity(item._id, displayName)}
@@ -240,7 +240,7 @@ const FeaturedCarousel = ({ allItems = [] }) => {
                         >
                           <Minus className="w-3 h-3 stroke-[2.5]" />
                         </button>
-                        <span className="px-2 font-extrabold text-xs text-white">{qty}</span>
+                        <span className="px-2 font-bold text-xs text-white">{qty}</span>
                         <button
                           type="button"
                           onClick={() => handleAdd(item)}
