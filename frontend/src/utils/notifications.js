@@ -5,44 +5,102 @@
 
 import { playOrderBellSound } from './audioAlerts';
 
+export const isIOSDevice = () => {
+  if (typeof window === 'undefined') return false;
+  const ua = window.navigator.userAgent.toLowerCase();
+  return /iphone|ipad|ipod/.test(ua) && !window.MSStream;
+};
+
+export const isStandalonePWA = () => {
+  if (typeof window === 'undefined') return false;
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true ||
+    document.referrer.includes('android-app://')
+  );
+};
+
 export const isNotificationSupported = () => {
-  return typeof window !== 'undefined' && ('Notification' in window || 'serviceWorker' in navigator);
+  if (typeof window === 'undefined') return false;
+  return 'Notification' in window;
 };
 
 export const getNotificationPermission = () => {
-  if (typeof window === 'undefined' || !('Notification' in window)) return 'unsupported';
+  if (!isNotificationSupported()) {
+    return isIOSDevice() ? 'ios_unsupported' : 'unsupported';
+  }
   return Notification.permission; // 'default' | 'granted' | 'denied'
 };
 
 export const requestNotificationPermission = async () => {
-  if (typeof window === 'undefined' || !('Notification' in window)) {
-    return false;
+  if (typeof window === 'undefined') {
+    return { success: false, permission: 'unsupported' };
+  }
+
+  // iOS Safari requires PWA installation for Web Push
+  if (isIOSDevice() && !isStandalonePWA()) {
+    return {
+      success: false,
+      permission: 'ios_requires_install',
+      message: 'On iPhone, notifications require adding the app to your Home Screen first.',
+    };
+  }
+
+  if (!isNotificationSupported()) {
+    return {
+      success: false,
+      permission: 'unsupported',
+      message: 'Your current browser does not support web notifications.',
+    };
   }
 
   try {
-    const permission = await Notification.requestPermission();
+    // Cross-browser compatibility for Promise-based and Callback-based requestPermission
+    let permission;
+    try {
+      permission = await Notification.requestPermission();
+    } catch (e) {
+      permission = await new Promise((resolve) => {
+        Notification.requestPermission(resolve);
+      });
+    }
+
     if (permission === 'granted') {
-      // Send a welcome test alert
-      await sendBrowserNotification('🔔 Order Alerts Enabled!', {
-        body: 'You will receive real-time updates when your meal is preparing and ready for counter pickup.',
+      try {
+        playOrderBellSound();
+      } catch (e) {}
+
+      // Send a welcome alert
+      await sendBrowserNotification('🔔 Order Alerts Active!', {
+        body: 'You will receive real-time notifications when your meal is preparing and ready at the counter.',
         tag: 'laroche-welcome',
       });
-      return true;
+
+      return { success: true, permission: 'granted' };
     }
-    return false;
+
+    if (permission === 'denied') {
+      return {
+        success: false,
+        permission: 'denied',
+        message: 'Notifications are blocked in your browser settings. Please click the 🔒 icon in your browser address bar to enable notifications.',
+      };
+    }
+
+    return { success: false, permission: permission || 'default' };
   } catch (err) {
     console.warn('Error requesting notification permission:', err);
-    return false;
+    return { success: false, permission: 'error', error: err.message };
   }
 };
 
 export const sendBrowserNotification = async (title, options = {}) => {
-  // Always trigger sound alert
+  // Always trigger acoustic audio alert
   try {
     playOrderBellSound();
   } catch (e) {}
 
-  if (typeof window === 'undefined' || !('Notification' in window) || Notification.permission !== 'granted') {
+  if (!isNotificationSupported() || Notification.permission !== 'granted') {
     return false;
   }
 
