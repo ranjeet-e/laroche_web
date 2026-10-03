@@ -8,12 +8,16 @@ import { useState, useEffect } from 'react';
 import IntroVideo from './components/IntroVideo';
 import SiteLock from './components/SiteLock';
 import AddToHomeScreen from './components/AddToHomeScreen';
+import CookieConsent from './components/CookieConsent';
 import Auth from './pages/Auth';
 import Menu from './pages/Menu';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import OrderHistory from './pages/OrderHistory';
 import OrderTracking from './pages/OrderTracking';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
+import NotFound from './pages/NotFound';
 import KitchenDashboard from './pages/kitchen/KitchenDashboard';
 import KitchenLogin from './pages/kitchen/KitchenLogin';
 
@@ -34,6 +38,7 @@ const AppRoutes = () => {
     <>
       <Navbar />
       <AddToHomeScreen />
+      <CookieConsent />
       <Routes>
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Auth initialMode="login" />} />
@@ -43,9 +48,11 @@ const AppRoutes = () => {
         <Route path="/kitchen/login" element={<KitchenLogin />} />
         <Route path="/cms/login" element={<KitchenLogin />} />
 
-        {/* Student-only routes */}
+        {/* Public & Student routes */}
         <Route path="/menu" element={<Menu />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsConditions />} />
 
         <Route
           path="/checkout"
@@ -66,7 +73,7 @@ const AppRoutes = () => {
         <Route
           path="/orders/:id"
           element={
-            <ProtectedRoute allowedRoles={['student']}>
+            <ProtectedRoute allowedRoles={['student', 'kitchen', 'cms', 'admin']}>
               <OrderTracking />
             </ProtectedRoute>
           }
@@ -91,8 +98,8 @@ const AppRoutes = () => {
           }
         />
 
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Custom 404 Catch-all */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

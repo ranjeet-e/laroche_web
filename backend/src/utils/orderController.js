@@ -1,16 +1,10 @@
 const Order = require('../models/Order');
 const MenuItem = require('../models/MenuItem');
-const { isOrderingAllowed } = require('./cafeSchedule');
 
 // @route POST /api/orders
 // Student-only — place a new order (before payment)
 const placeOrder = async (req, res, next) => {
   try {
-    const scheduleCheck = isOrderingAllowed();
-    if (!scheduleCheck.allowed) {
-      return res.status(400).json({ message: scheduleCheck.message });
-    }
-
     const { items } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {

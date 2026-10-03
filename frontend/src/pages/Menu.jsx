@@ -7,7 +7,6 @@ import HeroSection from '../components/HeroSection';
 import CategoryRail from '../components/CategoryRail';
 import FeaturedCarousel from '../components/FeaturedCarousel';
 import PromoBanner from '../components/PromoBanner';
-import CafeScheduleBanner from '../components/CafeScheduleBanner';
 import FloatingOrderBar from '../components/FloatingOrderBar';
 import './Menu.css';
 

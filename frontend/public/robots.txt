@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /menu
+Allow: /privacy-policy
+Allow: /terms-and-conditions
+Disallow: /kitchen/
+Disallow: /cms/
+Disallow: /orders/
+Disallow: /checkout
+Disallow: /api/
+
+Sitemap: https://larochecafe.com/sitemap.xml

@@ -35,27 +35,50 @@ app.use((req, res, next) => {
 });
 
 // Middleware
+const configuredOrigins = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((u) => u.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  ...configuredOrigins,
   'http://localhost:5173',
   'http://localhost:3000',
-].filter(Boolean);
+  'http://localhost:5000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5000',
+];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (curl, mobile), matching CLIENT_URL, localhost, or any *.vercel.app deployment
+      // 1. Allow non-browser requests (Postman, curl, server-to-server)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // 2. Allow if wildcard or development
       if (
-        !origin ||
+        process.env.CLIENT_URL === '*' ||
+        process.env.NODE_ENV !== 'production' ||
         allowedOrigins.includes(origin) ||
         origin.endsWith('.vercel.app') ||
         origin.includes('vercel.app') ||
-        process.env.NODE_ENV !== 'production'
+        origin.includes('localhost') ||
+        origin.includes('127.0.0.1')
       ) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS blocked for origin: ${origin}`));
+        return callback(null, true);
       }
+
+      // 3. Allow dynamic matching for configured origins (ignoring trailing slash)
+      const cleanOrigin = origin.replace(/\/$/, '');
+      const isAllowed = allowedOrigins.some((ao) => ao.replace(/\/$/, '') === cleanOrigin);
+      if (isAllowed) {
+        return callback(null, true);
+      }
+
+      callback(new Error(`CORS blocked for origin: ${origin}`));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

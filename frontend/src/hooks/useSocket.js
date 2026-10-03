@@ -7,7 +7,7 @@ const getSocketUrl = () => {
   if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
     return envUrl.replace(/\/api\/?$/, '');
   }
-  if (import.meta.env.PROD) {
+  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
     return 'https://laroche-web.onrender.com';
   }
   return undefined;

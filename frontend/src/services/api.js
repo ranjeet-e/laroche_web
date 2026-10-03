@@ -6,10 +6,11 @@ export const getApiBaseUrl = () => {
     const cleanUrl = envUrl.trim().replace(/\/$/, '');
     return cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
   }
-  // Automatic fallback to active Render production backend
-  if (import.meta.env.PROD) {
+  // Vercel cloud deployment fallback
+  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
     return 'https://laroche-web.onrender.com/api';
   }
+  // Default to relative /api for college server (Nginx / Express reverse proxy or local)
   return '/api';
 };
 
@@ -18,10 +19,10 @@ export const getBackendBaseUrl = () => {
   if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
     return envUrl.trim().replace(/\/api\/?$/, '').replace(/\/$/, '');
   }
-  if (import.meta.env.PROD) {
+  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
     return 'https://laroche-web.onrender.com';
   }
-  return '';
+  return typeof window !== 'undefined' ? window.location.origin : '';
 };
 
 const api = axios.create({

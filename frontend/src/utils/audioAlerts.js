@@ -1,6 +1,6 @@
 /**
  * Audio Alert Utility for La Roche Cafe
- * Uses Web Audio API to synthesize a crystal-clear service bell chime
+ * Uses Web Audio API to synthesize crystal-clear alerts & counter chimes
  * (Zero network dependencies, instant 0ms latency, works offline)
  */
 
@@ -79,15 +79,55 @@ export const playOrderBellSound = async () => {
     };
 
     // First Ding (Melodic Bell Note)
-    playHarmonic(880, now, 1.2, 0.7);       // A5
-    playHarmonic(1760, now, 0.9, 0.4);      // A6 overtone
-    playHarmonic(2640, now, 0.6, 0.2);      // Shimmer
+    playHarmonic(880, now, 1.2, 0.7); // A5
+    playHarmonic(1760, now, 0.9, 0.4); // A6 overtone
+    playHarmonic(2640, now, 0.6, 0.2); // Shimmer
 
     // Second Ring (High resonant counter chime)
     playHarmonic(1174.66, now + 0.18, 1.6, 0.85); // D6
     playHarmonic(2349.32, now + 0.18, 1.2, 0.45); // D7
-    playHarmonic(3520.0, now + 0.19, 0.8, 0.2);   // Sparkle
+    playHarmonic(3520.0, now + 0.19, 0.8, 0.2); // Sparkle
   } catch (err) {
     console.warn('Could not play order bell alert:', err);
+  }
+};
+
+/**
+ * Plays a distinct 30-second reminder ping for orders waiting in the "New" column
+ */
+export const playReminderPingSound = async () => {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    if (ctx.state === 'suspended') {
+      await ctx.resume().catch(() => {});
+    }
+
+    const now = ctx.currentTime;
+
+    const playTone = (freq, start, duration, volume = 0.5) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, start);
+
+      gain.gain.setValueAtTime(0.001, start);
+      gain.gain.linearRampToValueAtTime(volume, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(start);
+      osc.stop(start + duration);
+    };
+
+    // Double attention ping: E6 -> G#6
+    playTone(1318.51, now, 0.25, 0.6);
+    playTone(1661.22, now + 0.15, 0.4, 0.7);
+  } catch (err) {
+    console.warn('Could not play reminder ping:', err);
   }
 };

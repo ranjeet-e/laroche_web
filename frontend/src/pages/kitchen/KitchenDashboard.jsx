@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { getActiveKitchenOrders, updateOrderStatus } from '../../services/orderService';
 import { useSocket } from '../../hooks/useSocket';
-import { playOrderBellSound, unlockAudio } from '../../utils/audioAlerts';
+import { playOrderBellSound, playReminderPingSound, unlockAudio } from '../../utils/audioAlerts';
 import { uploadImage } from '../../services/uploadService';
 import api, { resolveAssetUrl } from '../../services/api';
 import './KitchenDashboard.css';
@@ -187,6 +187,24 @@ const KitchenDashboard = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  // 30-Second Ping Reminder: Alerts kitchen staff if any order is not yet shifted from "New" (paid) column
+  useEffect(() => {
+    const hasUnshiftedNewOrders = orders.some((o) => o.status === 'paid');
+    if (!hasUnshiftedNewOrders) return;
+
+    const pingInterval = setInterval(() => {
+      const stillHasNew = orders.some((o) => o.status === 'paid');
+      if (stillHasNew) {
+        playReminderPingSound();
+        try {
+          if (navigator.vibrate) navigator.vibrate([150, 100, 150]);
+        } catch (e) {}
+      }
+    }, 30000);
+
+    return () => clearInterval(pingInterval);
+  }, [orders]);
 
   // Real-time WebSocket: automatically play counter service bell sound on new orders
   useSocket({

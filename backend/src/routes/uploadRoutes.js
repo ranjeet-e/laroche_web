@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
+const { uploadLimiter } = require('../middleware/rateLimiter');
 const { upload, uploadToCloudinary, cloudinary } = require('../config/cloudinary');
 
 // @route POST /api/upload/image
@@ -10,6 +11,7 @@ router.post(
   '/image',
   authMiddleware,
   roleMiddleware('kitchen', 'cms', 'admin'),
+  uploadLimiter,
   upload.single('image'),
   async (req, res, next) => {
     try {
