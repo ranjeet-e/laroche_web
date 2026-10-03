@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar.jsx';
+import Footer from './components/Footer.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useState, useEffect } from 'react';
 import IntroVideo from './components/IntroVideo';
@@ -35,73 +36,76 @@ const RootRedirect = () => {
 
 const AppRoutes = () => {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
       <AddToHomeScreen />
       <CookieConsent />
-      <Routes>
-        <Route path="/" element={<RootRedirect />} />
-        <Route path="/login" element={<Auth initialMode="login" />} />
-        <Route path="/signup" element={<Auth initialMode="signup" />} />
-        
-        {/* Staff & Kitchen / CMS Login */}
-        <Route path="/kitchen/login" element={<KitchenLogin />} />
-        <Route path="/cms/login" element={<KitchenLogin />} />
+      <div className="flex-1">
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="/login" element={<Auth initialMode="login" />} />
+          <Route path="/signup" element={<Auth initialMode="signup" />} />
+          
+          {/* Staff & Kitchen / CMS Login */}
+          <Route path="/kitchen/login" element={<KitchenLogin />} />
+          <Route path="/cms/login" element={<KitchenLogin />} />
 
-        {/* Public & Student routes */}
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms-and-conditions" element={<TermsConditions />} />
+          {/* Public & Student routes */}
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-and-conditions" element={<TermsConditions />} />
 
-        <Route
-          path="/checkout"
-          element={
-            <ProtectedRoute allowedRoles={['student']}>
-              <Checkout />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/orders"
-          element={
-            <ProtectedRoute allowedRoles={['student']}>
-              <OrderHistory />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/orders/:id"
-          element={
-            <ProtectedRoute allowedRoles={['student', 'kitchen', 'cms', 'admin']}>
-              <OrderTracking />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <Checkout />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <OrderHistory />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/orders/:id"
+            element={
+              <ProtectedRoute allowedRoles={['student', 'kitchen', 'cms', 'admin']}>
+                <OrderTracking />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Staff / Kitchen / CMS Dashboard */}
-        <Route
-          path="/kitchen/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={['kitchen', 'cms', 'admin']}>
-              <KitchenDashboard />
-            </ProtectedRoute>
-          }
-        />
+          {/* Staff / Kitchen / CMS Dashboard */}
+          <Route
+            path="/kitchen/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['kitchen', 'cms', 'admin']}>
+                <KitchenDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/cms/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={['kitchen', 'cms', 'admin']}>
-              <KitchenDashboard />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/cms/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['kitchen', 'cms', 'admin']}>
+                <KitchenDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Custom 404 Catch-all */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </>
+          {/* Custom 404 Catch-all */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+      <Footer />
+    </div>
   );
 };
 

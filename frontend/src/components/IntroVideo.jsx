@@ -94,11 +94,13 @@ const IntroVideo = ({ onFinish }) => {
       {/* Cinematic Dark & Warm Vignette Overlay */}
       <div className="intro-backdrop-vignette" />
 
-      {/* Centered Brand Title in Signature Typography */}
+      {/* Centered Brand Logo (Replacing simple typography) */}
       <div className="intro-center-content">
-        <h1 className="intro-brand-name">
-          La Roche Cafe
-        </h1>
+        <img
+          src="/logo.png"
+          alt="La Roche Cafe"
+          className="intro-brand-logo"
+        />
       </div>
 
       {/* Creative Bottom Scroll Indicator */}

@@ -29,12 +29,12 @@
 .intro-backdrop-vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.7) 100%),
-              linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.15) 50%, rgba(0, 0, 0, 0.65) 100%);
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.7) 100%),
+              linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.65) 100%);
   pointer-events: none;
 }
 
-/* Centered Brand Layout (Matching Zomato Style exact position) */
+/* Centered Brand Layout */
 .intro-center-content {
   position: absolute;
   inset: 0;
@@ -46,6 +46,17 @@
   text-align: center;
   pointer-events: none;
   z-index: 10;
+}
+
+.intro-brand-logo {
+  max-width: min(85vw, 420px);
+  max-height: 220px;
+  width: auto;
+  height: auto;
+  object-contain: contain;
+  filter: drop-shadow(0 10px 35px rgba(0, 0, 0, 0.95))
+          drop-shadow(0 4px 15px rgba(0, 0, 0, 0.8));
+  animation: introBrandFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .intro-brand-name {
@@ -65,7 +76,7 @@
 @keyframes introBrandFadeIn {
   from {
     opacity: 0;
-    transform: scale(0.94) translateY(12px);
+    transform: scale(0.92) translateY(16px);
   }
   to {
     opacity: 1;
