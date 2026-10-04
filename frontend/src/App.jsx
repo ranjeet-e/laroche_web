@@ -10,6 +10,7 @@ import IntroVideo from './components/IntroVideo';
 import SiteLock from './components/SiteLock';
 import AddToHomeScreen from './components/AddToHomeScreen';
 import CookieConsent from './components/CookieConsent';
+import LegalConsentGate from './components/LegalConsentGate';
 import Auth from './pages/Auth';
 import Menu from './pages/Menu';
 import Cart from './pages/Cart';
@@ -39,6 +40,7 @@ const AppRoutes = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <AddToHomeScreen />
+      <LegalConsentGate />
       <CookieConsent />
       <div className="flex-1">
         <Routes>

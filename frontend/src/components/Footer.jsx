@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Phone, Mail, MapPin, Clock, ShieldCheck, Heart, ExternalLink, Lock } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, ShieldCheck, Lock } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 const Footer = () => {
@@ -30,12 +30,8 @@ const Footer = () => {
               />
             </Link>
             <p className="text-xs sm:text-sm text-[#B8A79B] leading-relaxed font-sans">
-              Artisanal campus preorder & express counter pickup. Skip the queue and enjoy freshly prepared sourdough toasties, gourmet brews, and artisanal bites.
+              Artisanal campus preorder & express counter pickup. Enjoy freshly prepared sourdough toasties, gourmet brews, and artisanal bites.
             </p>
-            <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold bg-emerald-950/50 border border-emerald-800/60 rounded-full px-3 py-1 w-fit">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Live Kitchen Active</span>
-            </div>
           </div>
 
           {/* 2. Quick Links */}
@@ -72,16 +68,16 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* 3. Owner & Contact Information */}
+          {/* 3. Cafe Support & Contact Information */}
           <div>
             <h3 className="text-sm font-serif font-bold text-white uppercase tracking-wider mb-4">
-              Cafe Support & Owner
+              Cafe Support
             </h3>
             <ul className="space-y-3 text-xs sm:text-sm text-[#B8A79B]">
               <li className="flex items-start gap-2.5">
                 <Phone className="w-4 h-4 text-terracotta flex-shrink-0 mt-0.5" />
                 <div>
-                  <span className="block text-white font-semibold">Direct Cafe Hotline / Owner:</span>
+                  <span className="block text-white font-semibold">Direct Cafe Hotline:</span>
                   <a
                     href="tel:+919876543210"
                     className="hover:text-terracotta transition-colors font-mono font-bold text-stone-200"
@@ -129,23 +125,13 @@ const Footer = () => {
 
               <div className="pt-2 border-t border-[#3D312A]/80">
                 <div className="flex items-center gap-2 text-xs text-[#C5B4A8]">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <ShieldCheck className="w-4 h-4 text-[#E07A5F]" />
                   <span>256-Bit SSL Encrypted Checkout</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[#C5B4A8] mt-1.5">
-                  <Lock className="w-3.5 h-3.5 text-amber-400" />
+                  <Lock className="w-3.5 h-3.5 text-[#E07A5F]" />
                   <span>100% RBI-Compliant Payments</span>
                 </div>
-              </div>
-
-              <div className="pt-1">
-                <Link
-                  to="/kitchen/login"
-                  className="inline-flex items-center gap-1.5 text-[11px] text-stone-400 hover:text-stone-200 underline transition-colors"
-                >
-                  <span>Staff / Kitchen Login Portal</span>
-                  <ExternalLink className="w-3 h-3" />
-                </Link>
               </div>
             </div>
           </div>
