@@ -273,12 +273,12 @@ const Menu = () => {
                   {/* Horizontal Scroll Track for Menu Items under this Category */}
                   <div
                     ref={(el) => (horizontalRailRefs.current[cat] = el)}
-                    className="flex items-stretch gap-2.5 sm:gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+                    className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-3 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
                   >
                     {catItems.map((item) => (
                       <div
                         key={item._id}
-                        className="w-[150px] sm:w-[175px] md:w-[195px] snap-start flex-shrink-0 flex flex-col"
+                        className="w-[190px] sm:w-[220px] md:w-[245px] snap-start flex-shrink-0 flex flex-col"
                       >
                         <FoodCard item={item} allItems={items} />
                       </div>
