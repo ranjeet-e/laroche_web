@@ -107,7 +107,7 @@ const Menu = () => {
           }
         });
       },
-      { rootMargin: '-130px 0px -55% 0px', threshold: 0.1 }
+      { rootMargin: '-180px 0px -50% 0px', threshold: 0.1 }
     );
 
     Object.values(sectionRefs.current).forEach((el) => {
@@ -121,7 +121,7 @@ const Menu = () => {
     setActiveCategory(catKey);
     const target = sectionRefs.current[catKey];
     if (target) {
-      const navOffset = 130;
+      const navOffset = 180;
       const elementPosition = target.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - navOffset;
 

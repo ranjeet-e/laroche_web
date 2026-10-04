@@ -2,22 +2,22 @@ import { useRef, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './CategoryRail.css';
 
-// Clean Category metadata with real image assets
+// Category metadata with authentic dish image assets
 const categoryMeta = {
   'Sandwiches': {
     label: 'Sandwiches',
     image: '/menu-items/2_3_veg_sandwich_grill.png',
   },
   'Flatbread Pizza': {
-    label: 'Woodfired Pizza',
+    label: 'Pizza',
     image: '/category-icons/pizza.png',
   },
   'Pasta': {
-    label: 'Artisanal Pasta',
+    label: 'Pasta',
     image: '/category-icons/pasta.png',
   },
   'Maggie': {
-    label: 'Maggi Bowls',
+    label: 'Maggi',
     image: '/category-icons/maggi.png',
   },
   'Quick Bites & Café Snacks': {
@@ -25,7 +25,7 @@ const categoryMeta = {
     image: '/category-icons/fries.png',
   },
   'Chat Counter': {
-    label: 'Chaat Corner',
+    label: 'Chat Counter',
     image: '/category-icons/chat_corner.png',
   },
   'Cold Beverages': {
@@ -37,11 +37,11 @@ const categoryMeta = {
     image: '/category-icons/hot_breverages.png',
   },
   'Waffles': {
-    label: 'Belgian Waffles',
+    label: 'Waffles',
     image: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=400&auto=format&fit=crop&q=80',
   },
   'Mocktails & Coolers': {
-    label: 'Coolers & Mocktails',
+    label: 'Coolers',
     image: '/category-icons/mocktails.png',
   },
 };
@@ -60,14 +60,14 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
   const checkScrollability = () => {
     if (railRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = railRef.current;
-      setCanScrollLeft(scrollLeft > 10);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+      setCanScrollLeft(scrollLeft > 15);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 15);
     }
   };
 
   const handleScroll = (direction) => {
     if (railRef.current) {
-      railRef.current.scrollBy({ left: direction * 220, behavior: 'smooth' });
+      railRef.current.scrollBy({ left: direction * 240, behavior: 'smooth' });
     }
   };
 
@@ -84,7 +84,7 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
     }
   }, [categories]);
 
-  // Center the active category in the rail horizontally as the user scrolls
+  // Center active category in the rail horizontally as user scrolls the screen
   useEffect(() => {
     if (railRef.current && activeCategory) {
       const container = railRef.current;
@@ -94,14 +94,14 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
           activeEl.offsetLeft - container.clientWidth / 2 + activeEl.clientWidth / 2;
         container.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
       }
-      setTimeout(checkScrollability, 300);
+      setTimeout(checkScrollability, 350);
     }
   }, [activeCategory]);
 
   return (
     <div
       id="category-rail-section"
-      className="sticky top-[62px] sm:top-[72px] z-30 w-full bg-[#F2EDE2]/95 dark:bg-[#1A1A14]/95 backdrop-blur-md border-b border-[#DDD4C0] dark:border-[#3D3D30] py-2.5 sm:py-3 shadow-warm-sm transition-all"
+      className="sticky top-[calc(62px+max(env(safe-area-inset-top,0px),10px))] sm:top-[72px] z-30 w-full bg-[#F2EDE2]/95 dark:bg-[#1A1A14]/95 backdrop-blur-md border-b border-[#DDD4C0] dark:border-[#3D3D30] py-2 sm:py-3 shadow-warm-sm transition-all"
     >
       <div className="max-w-7xl mx-auto px-2 sm:px-6 relative flex items-center">
         {/* Floating Left Scroll Arrow */}
@@ -109,17 +109,17 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
           <button
             type="button"
             onClick={() => handleScroll(-1)}
-            className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-20 hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-white/95 dark:bg-[#2B2421]/95 border border-stone-200 dark:border-stone-700 shadow-warm-md text-espresso dark:text-white hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            className="absolute left-1 sm:left-3 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/95 dark:bg-[#2B2421]/95 backdrop-blur-md border border-stone-200/90 dark:border-stone-700 shadow-warm-md text-espresso dark:text-[#F5EBE6] hover:bg-white hover:scale-110 active:scale-95 transition-all cursor-pointer"
             aria-label="Scroll categories left"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4 text-espresso dark:text-stone-100" />
           </button>
         )}
 
-        {/* Horizontal Category Ribbon Track */}
+        {/* Horizontal Circular Category Track */}
         <div
           ref={railRef}
-          className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar scroll-smooth px-2 py-0.5 flex-1"
+          className="flex items-start gap-2.5 sm:gap-5 md:gap-6 overflow-x-auto no-scrollbar scroll-smooth py-1 px-2 sm:px-3 flex-1"
         >
           {allCategoryPills.map((pill) => {
             const isActive = activeCategory === pill.key;
@@ -129,18 +129,20 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
                 type="button"
                 data-category-pill={pill.key}
                 onClick={() => onSelectCategory(pill.key)}
-                className={`group flex items-center gap-2 sm:gap-2.5 px-3.5 py-2 rounded-2xl flex-shrink-0 cursor-pointer focus:outline-none transition-all duration-200 border ${
-                  isActive
-                    ? 'bg-[#A6472B] text-white border-[#A6472B] shadow-warm-md scale-[1.02]'
-                    : 'bg-white dark:bg-[#23231C] text-[#2A2A22] dark:text-[#E8D8CD] border-[#DDD4C0] dark:border-[#3D3D30] hover:border-[#A6472B]/50 hover:bg-[#FAF7F2] dark:hover:bg-[#2F2F26]'
-                }`}
+                className="group flex flex-col items-center flex-shrink-0 cursor-pointer focus:outline-none transition-transform duration-200 active:scale-95 w-16 sm:w-20 md:w-24"
               >
-                {/* Category Thumbnail Image */}
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl overflow-hidden bg-[#E9E0CC] dark:bg-[#3D3D30] flex-shrink-0 shadow-inner">
+                {/* Circular Dish Image */}
+                <div
+                  className={`w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full overflow-hidden bg-white dark:bg-[#2B2421] shadow-warm-sm transition-all duration-200 p-0.5 ${
+                    isActive
+                      ? 'ring-2.5 sm:ring-3 ring-[#A6472B] ring-offset-2 ring-offset-[#F2EDE2] dark:ring-offset-[#1A1A14] scale-105 shadow-warm-md'
+                      : 'border-2 border-stone-200/80 dark:border-stone-700/80 group-hover:border-[#A6472B]/60 group-hover:scale-105'
+                  }`}
+                >
                   <img
                     src={pill.image}
                     alt={pill.label}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = '/category-icons/pizza.png';
@@ -149,7 +151,13 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
                 </div>
 
                 {/* Category Label */}
-                <span className="text-xs sm:text-sm font-bold whitespace-nowrap font-sans">
+                <span
+                  className={`mt-1.5 text-[11px] sm:text-xs md:text-sm font-bold tracking-tight text-center leading-tight transition-colors line-clamp-1 ${
+                    isActive
+                      ? 'text-[#A6472B] font-extrabold'
+                      : 'text-[#2A2A22] dark:text-stone-200 group-hover:text-[#A6472B]'
+                  }`}
+                >
                   {pill.label}
                 </span>
               </button>
@@ -162,10 +170,10 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
           <button
             type="button"
             onClick={() => handleScroll(1)}
-            className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-20 hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-white/95 dark:bg-[#2B2421]/95 border border-stone-200 dark:border-stone-700 shadow-warm-md text-espresso dark:text-white hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            className="absolute right-1 sm:right-3 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/95 dark:bg-[#2B2421]/95 backdrop-blur-md border border-stone-200/90 dark:border-stone-700 shadow-warm-md text-espresso dark:text-[#F5EBE6] hover:bg-white hover:scale-110 active:scale-95 transition-all cursor-pointer"
             aria-label="Scroll categories right"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4 text-espresso dark:text-stone-100" />
           </button>
         )}
       </div>
