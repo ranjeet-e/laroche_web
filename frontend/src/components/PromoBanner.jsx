@@ -9,7 +9,7 @@ const DEFAULT_BANNERS = [
     tag: '⚡ SKIP THE QUEUE',
     title: 'Preorder Ahead & Grab Instantly',
     subtitle: 'Order during class, pickup hot & fresh at the counter without standing in lines.',
-    bg: 'bg-gradient-to-r from-espresso via-espresso-light to-stone-900',
+    bg: 'bg-[#2A2A22]',
     icon: <Zap className="w-10 h-10 sm:w-12 sm:h-12 text-honey-light" />,
     badgeColor: 'bg-terracotta text-white',
   },
@@ -18,7 +18,7 @@ const DEFAULT_BANNERS = [
     tag: '🔥 ARTISANAL COMBOS',
     title: 'Flat 20% Off on Sourdough Toasties & Shakes',
     subtitle: 'Pair our signature Paneer Tikka Toast with Belgian Chocolate Shake.',
-    bg: 'bg-gradient-to-r from-terracotta via-amber-700 to-amber-900',
+    bg: 'bg-[#2E201B]',
     icon: <Flame className="w-10 h-10 sm:w-12 sm:h-12 text-amber-200" />,
     badgeColor: 'bg-white text-terracotta',
   },
@@ -27,7 +27,7 @@ const DEFAULT_BANNERS = [
     tag: '☕ SPECIALTY ROASTS',
     title: 'Freshly Pulled Espresso & Cold Frappes',
     subtitle: 'Crafted with premium Arabica beans, frothed milk, and signature syrups.',
-    bg: 'bg-gradient-to-r from-[#2A1E1C] via-[#3D2C2A] to-[#1A1615]',
+    bg: 'bg-[#24211D]',
     icon: <Coffee className="w-10 h-10 sm:w-12 sm:h-12 text-honey" />,
     badgeColor: 'bg-[#F2EDE2] text-[#2A2A22]',
   },
@@ -61,7 +61,7 @@ const PromoBanner = () => {
             title: b.title || 'Artisanal Cafe Special',
             subtitle: b.subtitle || 'Freshly prepared and ready for counter pickup.',
             imageUrl: resolveAssetUrl(b.imageUrl),
-            bg: 'bg-gradient-to-r from-stone-900 via-espresso to-stone-900',
+            bg: 'bg-[#2A2A22]',
             icon: <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 text-honey" />,
             badgeColor: 'bg-terracotta text-white',
           }));
@@ -106,12 +106,9 @@ const PromoBanner = () => {
               alt={current.title}
               className="w-full h-full object-cover opacity-25 filter blur-[1px] scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+            <div className="absolute inset-0 bg-black/60" />
           </div>
         )}
-
-        {/* Ambient background glow */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="max-w-xl">

@@ -111,7 +111,7 @@ export default {
         'warm-md': '0 4px 16px rgba(35, 31, 32, 0.07)',
         'warm-lg': '0 10px 30px rgba(35, 31, 32, 0.09), 0 2px 8px rgba(35, 31, 32, 0.04)',
         'warm-xl': '0 20px 40px rgba(35, 31, 32, 0.12), 0 4px 12px rgba(35, 31, 32, 0.04)',
-        'glow-terracotta': '0 4px 20px rgba(159, 122, 96, 0.35)',
+        'glow-terracotta': '0 4px 14px rgba(35, 31, 32, 0.08)',
         'dark-card': '0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.3)',
       },
       borderRadius: {
