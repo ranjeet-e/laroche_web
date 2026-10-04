@@ -109,25 +109,22 @@ const FoodCard = ({ item, allItems = [] }) => {
         </div>
 
         {/* Card Details */}
-        <div className="p-2.5 sm:p-4 flex-1 flex flex-col justify-between font-sans">
+        <div className="p-2 sm:p-2.5 flex-1 flex flex-col justify-between font-sans">
           <div>
-            <span className="text-[10px] sm:text-[11px] font-medium text-taupe dark:text-stone-400 uppercase tracking-wider line-clamp-1">
-              {item.category}
-            </span>
-            <h3 className="font-serif font-medium text-espresso dark:text-stone-100 text-sm sm:text-[1.125rem] leading-snug group-hover:text-terracotta transition-colors mt-0.5 line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]" title={item.name}>
+            <h3 className="font-serif font-medium text-espresso dark:text-stone-100 text-xs sm:text-sm leading-snug group-hover:text-terracotta transition-colors line-clamp-1" title={item.name}>
               {item.name}
             </h3>
             {item.description && (
-              <p className="hidden sm:block text-xs font-normal text-taupe-light dark:text-stone-400 mt-1 line-clamp-2 leading-relaxed">
+              <p className="hidden md:block text-[11px] font-normal text-taupe dark:text-stone-400 mt-0.5 line-clamp-1 leading-snug">
                 {item.description}
               </p>
             )}
           </div>
 
           {/* Footer Price & Action */}
-          <div className="flex items-center justify-between gap-1 mt-2.5 sm:mt-4 pt-2 sm:pt-3 border-t border-stone-100 dark:border-stone-800">
+          <div className="flex items-center justify-between gap-1 mt-1.5 sm:mt-2 pt-1.5 sm:pt-2 border-t border-stone-100 dark:border-stone-800">
             <div>
-              <p className="font-price font-medium text-espresso dark:text-stone-100 text-sm sm:text-base whitespace-nowrap">
+              <p className="font-price font-medium text-espresso dark:text-stone-100 text-xs sm:text-sm whitespace-nowrap">
                 {hasMultipleVariants ? `₹${displayPrice}+` : `₹${displayPrice}`}
               </p>
             </div>
@@ -135,13 +132,13 @@ const FoodCard = ({ item, allItems = [] }) => {
             {/* Dynamic CTA Pill with Animated Micro-interaction */}
             <div>
               {justAdded ? (
-                /* Active / Added State: Soft success green with spring animation */
+                /* Active / Added State */
                 <button
                   type="button"
                   disabled
-                  className="animate-spring-pop inline-flex items-center justify-center gap-1 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#2E7D32] text-white text-[11px] sm:text-xs font-extrabold shadow-sm transition-all uppercase tracking-wide cursor-default"
+                  className="animate-spring-pop inline-flex items-center justify-center gap-0.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#2E7D32] text-white text-[10px] sm:text-[11px] font-bold shadow-sm uppercase tracking-wide cursor-default"
                 >
-                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                  <Check className="w-3 h-3 stroke-[3]" />
                   <span>ADDED</span>
                 </button>
               ) : quantity === 0 ? (
@@ -149,30 +146,30 @@ const FoodCard = ({ item, allItems = [] }) => {
                 <button
                   type="button"
                   onClick={handleAddClick}
-                  className="inline-flex items-center justify-center gap-1 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white text-[11px] sm:text-xs font-bold shadow-sm active:scale-95 transition-all duration-200 uppercase tracking-wide cursor-pointer hover:shadow-warm-sm"
+                  className="inline-flex items-center justify-center gap-0.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white text-[10px] sm:text-[11px] font-bold shadow-sm active:scale-95 transition-all uppercase tracking-wide cursor-pointer hover:shadow-warm-sm"
                 >
-                  <Plus className="w-3 h-3 stroke-[2.5]" />
+                  <Plus className="w-2.5 h-2.5 stroke-[2.5]" />
                   <span>ADD</span>
                 </button>
               ) : (
-                /* Stepper State: Rust theme matching quantity adjuster */
-                <div className="inline-flex items-center bg-[#A6472B] text-white rounded-full p-0.5 sm:p-1 shadow-sm transition-all duration-200">
+                /* Stepper State */
+                <div className="inline-flex items-center bg-[#A6472B] text-white rounded-full p-0.5 shadow-sm transition-all">
                   <button
                     type="button"
                     onClick={handleDecrease}
-                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full hover:bg-black/20 flex items-center justify-center transition-colors"
+                    className="w-4 h-4 sm:w-5 sm:h-5 rounded-full hover:bg-black/20 flex items-center justify-center transition-colors"
                     aria-label="Decrease"
                   >
-                    <Minus className="w-3 h-3 stroke-[2.5]" />
+                    <Minus className="w-2.5 h-2.5 stroke-[2.5]" />
                   </button>
-                  <span className="px-1.5 sm:px-2 font-bold text-[11px] sm:text-xs text-white">{quantity}</span>
+                  <span className="px-1.5 font-bold text-[10px] sm:text-xs text-white">{quantity}</span>
                   <button
                     type="button"
                     onClick={handleAddClick}
-                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full hover:bg-black/20 flex items-center justify-center transition-colors"
+                    className="w-4 h-4 sm:w-5 sm:h-5 rounded-full hover:bg-black/20 flex items-center justify-center transition-colors"
                     aria-label="Increase"
                   >
-                    <Plus className="w-3 h-3 stroke-[2.5]" />
+                    <Plus className="w-2.5 h-2.5 stroke-[2.5]" />
                   </button>
                 </div>
               )}

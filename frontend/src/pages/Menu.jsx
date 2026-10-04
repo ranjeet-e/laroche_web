@@ -217,7 +217,7 @@ const Menu = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-4">
                 {searchResults.map((item) => (
                   <FoodCard key={item._id} item={item} allItems={items} />
                 ))}
@@ -225,8 +225,8 @@ const Menu = () => {
             )}
           </div>
         ) : (
-          /* Categorized Food Rails with Horizontal Items per Category */
-          <div className="space-y-12 sm:space-y-16 mt-4">
+          /* Categorized Food Rails with Compact Horizontal Items */
+          <div className="space-y-6 sm:space-y-8 mt-2">
             {categories.map((cat) => {
               const catItems = groupedItems[cat] || [];
               if (catItems.length === 0) return null;
@@ -236,36 +236,36 @@ const Menu = () => {
                   key={cat}
                   data-category={cat}
                   ref={(el) => (sectionRefs.current[cat] = el)}
-                  className="scroll-mt-36"
+                  className="scroll-mt-32"
                 >
                   {/* Category Header with Item Count & Horizontal Nav Controls */}
-                  <div className="flex items-end justify-between pb-3 mb-4 border-b border-stone-200/70 dark:border-[#3D3D30]">
-                    <div>
-                      <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-medium text-espresso dark:text-white tracking-tight">
+                  <div className="flex items-center justify-between pb-1.5 mb-2.5 border-b border-stone-200/70 dark:border-[#3D3D30]">
+                    <div className="flex items-baseline gap-2">
+                      <h2 className="text-base sm:text-lg md:text-xl font-serif font-medium text-espresso dark:text-white tracking-tight">
                         {cat}
                       </h2>
-                      <span className="text-xs font-medium text-taupe dark:text-stone-400 font-sans">
-                        {catItems.length} freshly prepared item{catItems.length > 1 ? 's' : ''}
+                      <span className="text-[11px] sm:text-xs font-medium text-taupe dark:text-stone-400 font-sans">
+                        ({catItems.length})
                       </span>
                     </div>
 
                     {/* Desktop Navigation Scroll Buttons */}
-                    <div className="hidden sm:flex items-center gap-1.5">
+                    <div className="hidden sm:flex items-center gap-1">
                       <button
                         type="button"
                         onClick={() => handleScrollHorizontalRail(cat, -1)}
-                        className="w-8 h-8 rounded-full bg-white dark:bg-[#23231C] border border-stone-200 dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                        className="w-7 h-7 rounded-full bg-white dark:bg-[#23231C] border border-stone-200 dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
                         aria-label={`Scroll ${cat} left`}
                       >
-                        <ChevronLeft className="w-4 h-4" />
+                        <ChevronLeft className="w-3.5 h-3.5" />
                       </button>
                       <button
                         type="button"
                         onClick={() => handleScrollHorizontalRail(cat, 1)}
-                        className="w-8 h-8 rounded-full bg-white dark:bg-[#23231C] border border-stone-200 dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                        className="w-7 h-7 rounded-full bg-white dark:bg-[#23231C] border border-stone-200 dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
                         aria-label={`Scroll ${cat} right`}
                       >
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronRight className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -273,12 +273,12 @@ const Menu = () => {
                   {/* Horizontal Scroll Track for Menu Items under this Category */}
                   <div
                     ref={(el) => (horizontalRailRefs.current[cat] = el)}
-                    className="flex items-stretch gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-3 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+                    className="flex items-stretch gap-2.5 sm:gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
                   >
                     {catItems.map((item) => (
                       <div
                         key={item._id}
-                        className="w-[260px] sm:w-[285px] md:w-[310px] snap-start flex-shrink-0 flex flex-col"
+                        className="w-[150px] sm:w-[175px] md:w-[195px] snap-start flex-shrink-0 flex flex-col"
                       >
                         <FoodCard item={item} allItems={items} />
                       </div>
