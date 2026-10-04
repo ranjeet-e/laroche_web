@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Sparkles } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import api from '../services/api';
 import FoodCard from '../components/FoodCard';
 import HeroSection from '../components/HeroSection';
@@ -19,9 +19,10 @@ const Menu = () => {
   const [error, setError] = useState('');
 
   const sectionRefs = useRef({});
+  const horizontalRailRefs = useRef({});
 
   useEffect(() => {
-    // 1. Instant Cache-First Display: Load cached menu from localStorage if available
+    // 1. Instant Cache-First Display
     try {
       const cached = localStorage.getItem('laroche_menu_cache');
       if (cached) {
@@ -35,7 +36,7 @@ const Menu = () => {
       // Ignore cache parse error and fallback to network
     }
 
-    // 2. Background Revalidation: Fetch fresh data from API
+    // 2. Background Revalidation
     const fetchMenu = async () => {
       try {
         const response = await api.get('/menu');
@@ -43,7 +44,6 @@ const Menu = () => {
           setItems(response.data);
           localStorage.setItem('laroche_menu_cache', JSON.stringify(response.data));
         } else {
-          console.warn('API returned non-array menu data:', response.data);
           setItems((current) => {
             if (!current || current.length === 0) {
               setError('Unable to load dishes. Please ensure the backend server is active.');
@@ -52,7 +52,6 @@ const Menu = () => {
           });
         }
       } catch (err) {
-        // Only display error UI if there's no cached data already rendering
         setItems((current) => {
           if (!current || current.length === 0) {
             setError('Could not load the menu. Please check connection and retry.');
@@ -96,7 +95,7 @@ const Menu = () => {
     );
   }, [items, searchQuery]);
 
-  // Track category scrolling with IntersectionObserver
+  // Track category scrolling with IntersectionObserver for Sticky Ribbon highlight
   useEffect(() => {
     if (categories.length === 0 || searchQuery) return;
 
@@ -108,7 +107,7 @@ const Menu = () => {
           }
         });
       },
-      { rootMargin: '-100px 0px -65% 0px' }
+      { rootMargin: '-130px 0px -55% 0px', threshold: 0.1 }
     );
 
     Object.values(sectionRefs.current).forEach((el) => {
@@ -120,8 +119,16 @@ const Menu = () => {
 
   const handleSelectCategory = (catKey) => {
     setActiveCategory(catKey);
-    if (sectionRefs.current[catKey]) {
-      sectionRefs.current[catKey].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const target = sectionRefs.current[catKey];
+    if (target) {
+      const navOffset = 130;
+      const elementPosition = target.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
     }
   };
 
@@ -129,6 +136,13 @@ const Menu = () => {
     const target = document.getElementById('category-rail-section');
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleScrollHorizontalRail = (cat, direction) => {
+    const rail = horizontalRailRefs.current[cat];
+    if (rail) {
+      rail.scrollBy({ left: direction * 320, behavior: 'smooth' });
     }
   };
 
@@ -173,7 +187,7 @@ const Menu = () => {
       {/* 3. Dynamic "Popular Right Now" Curated Spotlight Carousel */}
       {!searchQuery && <FeaturedCarousel allItems={items} />}
 
-      {/* 4. Unified Sticky Category Rail (Circular icons like Fig 3) */}
+      {/* 4. Unified Sticky Category Ribbon */}
       {!searchQuery && (
         <CategoryRail
           categories={categories}
@@ -211,8 +225,8 @@ const Menu = () => {
             )}
           </div>
         ) : (
-          /* Categorized Food Grids */
-          <div className="space-y-12 sm:space-y-16 mt-6">
+          /* Categorized Food Rails with Horizontal Items per Category */
+          <div className="space-y-12 sm:space-y-16 mt-4">
             {categories.map((cat) => {
               const catItems = groupedItems[cat] || [];
               if (catItems.length === 0) return null;
@@ -222,29 +236,52 @@ const Menu = () => {
                   key={cat}
                   data-category={cat}
                   ref={(el) => (sectionRefs.current[cat] = el)}
-                  className="scroll-mt-20 sm:scroll-mt-24"
+                  className="scroll-mt-36"
                 >
-                  {/* Category Header */}
-                  <div className="flex items-end justify-between pb-3 mb-6 border-b border-stone-200/70">
+                  {/* Category Header with Item Count & Horizontal Nav Controls */}
+                  <div className="flex items-end justify-between pb-3 mb-4 border-b border-stone-200/70 dark:border-[#3D3D30]">
                     <div>
-                      <h2 className="text-section-head font-serif font-medium text-espresso tracking-tight">
+                      <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-medium text-espresso dark:text-white tracking-tight">
                         {cat}
                       </h2>
-                      <span className="text-xs font-medium text-taupe font-sans">
-                        {catItems.length} freshly crafted item{catItems.length > 1 ? 's' : ''}
+                      <span className="text-xs font-medium text-taupe dark:text-stone-400 font-sans">
+                        {catItems.length} freshly prepared item{catItems.length > 1 ? 's' : ''}
                       </span>
                     </div>
 
-                    <div className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-terracotta">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span></span>
+                    {/* Desktop Navigation Scroll Buttons */}
+                    <div className="hidden sm:flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleScrollHorizontalRail(cat, -1)}
+                        className="w-8 h-8 rounded-full bg-white dark:bg-[#23231C] border border-stone-200 dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                        aria-label={`Scroll ${cat} left`}
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleScrollHorizontalRail(cat, 1)}
+                        className="w-8 h-8 rounded-full bg-white dark:bg-[#23231C] border border-stone-200 dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                        aria-label={`Scroll ${cat} right`}
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
 
-                  {/* Food Cards Grid (2-Column Mobile like Fig 1) */}
-                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
+                  {/* Horizontal Scroll Track for Menu Items under this Category */}
+                  <div
+                    ref={(el) => (horizontalRailRefs.current[cat] = el)}
+                    className="flex items-stretch gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-3 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+                  >
                     {catItems.map((item) => (
-                      <FoodCard key={item._id} item={item} allItems={items} />
+                      <div
+                        key={item._id}
+                        className="w-[260px] sm:w-[285px] md:w-[310px] snap-start flex-shrink-0 flex flex-col"
+                      >
+                        <FoodCard item={item} allItems={items} />
+                      </div>
                     ))}
                   </div>
                 </section>
@@ -254,7 +291,7 @@ const Menu = () => {
         )}
       </main>
 
-      {/* 6. Persistent Floating Order Bar (when items > 0) */}
+      {/* 6. Persistent Floating Order Bar */}
       <FloatingOrderBar />
     </div>
   );

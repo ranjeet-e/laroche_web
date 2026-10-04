@@ -53,9 +53,9 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Pinned Frosted Glass Navigation Bar */}
-      <nav className="sticky top-0 z-40 w-full h-[72px] bg-[#F2EDE2]/95 dark:bg-[#1A1A14]/95 backdrop-blur-md border-b border-[#DDD4C0] dark:border-[#3D3D30] px-4 sm:px-6 transition-colors duration-300">
-        <div className="max-w-7xl h-full mx-auto flex items-center justify-between gap-4">
+      {/* Pinned Frosted Glass Navigation Bar with Safe Area Clearance */}
+      <nav className="sticky top-0 z-40 w-full pt-[max(env(safe-area-inset-top),10px)] sm:pt-0 bg-[#F2EDE2]/95 dark:bg-[#1A1A14]/95 backdrop-blur-md border-b border-[#DDD4C0] dark:border-[#3D3D30] px-3 sm:px-6 transition-colors duration-300">
+        <div className="max-w-7xl h-[62px] sm:h-[72px] mx-auto flex items-center justify-between gap-3 sm:gap-4">
 
           {/* Brand Logo & Live Counter */}
           <div className="flex items-center gap-4 flex-shrink-0">
