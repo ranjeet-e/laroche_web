@@ -8,6 +8,7 @@ import {
   login as loginService,
   signup as signupService,
   googleLogin as googleLoginService,
+  updatePhone as updatePhoneService,
   forgotPassword as forgotPasswordService,
   verifyResetOtp as verifyResetOtpService,
   resetPassword as resetPasswordService,
@@ -44,16 +45,20 @@ const GoogleIcon = () => (
 );
 
 const Auth = ({ initialMode = 'login' }) => {
-  const [searchParams] = useSearchParams();
+  const searchParams = useSearchParams()[0];
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, updateUser } = useAuth();
   const { isDark } = useTheme();
 
   // Mode: 'login' | 'signup' | 'forgot'
   const isSignupRoute = location.pathname === '/signup' || initialMode === 'signup';
   const [mode, setMode] = useState(isSignupRoute ? 'signup' : 'login');
   const [loginMethod, setLoginMethod] = useState('phone'); // 'phone' | 'email'
+
+  // Google Post-Login Phone State
+  const [googleAuthPending, setGoogleAuthPending] = useState(null);
+  const [googlePhone, setGooglePhone] = useState('');
 
   // Phone OTP States (Sign In)
   const [phone, setPhone] = useState(searchParams.get('phone') || '');
@@ -162,7 +167,14 @@ const Auth = ({ initialMode = 'login' }) => {
         setLoading(true);
         try {
           const data = await googleLoginService({ accessToken: tokenResponse.access_token });
-          handlePostAuthRedirect(data);
+          // If Google user does not have a phone number on record, ask for it
+          if (!data.user?.phone) {
+            login(data);
+            setGoogleAuthPending(data);
+            setGooglePhone('');
+          } else {
+            handlePostAuthRedirect(data);
+          }
         } catch (err) {
           setServerError(err.response?.data?.message || 'Google authentication failed. Please try again.');
         } finally {
@@ -177,6 +189,39 @@ const Auth = ({ initialMode = 'login' }) => {
   } catch (err) {
     triggerGoogleLogin = null;
   }
+
+  // Handle Google phone submission
+  const handleSaveGooglePhone = async (e) => {
+    if (e) e.preventDefault();
+    setServerError('');
+    setSuccessMessage('');
+
+    const cleanPhone = googlePhone.replace(/\D/g, '');
+    if (!isValidPhoneNumber(cleanPhone)) {
+      setErrors({ googlePhone: 'Enter a valid 10-digit mobile number' });
+      return;
+    }
+
+    setErrors({});
+    setLoading(true);
+
+    try {
+      await updatePhoneService({ phone: cleanPhone });
+      updateUser({ phone: cleanPhone });
+      const updatedData = {
+        ...googleAuthPending,
+        user: {
+          ...googleAuthPending.user,
+          phone: cleanPhone,
+        },
+      };
+      handlePostAuthRedirect(updatedData);
+    } catch (err) {
+      setServerError(err.response?.data?.message || 'Failed to update mobile number. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGoogleButtonClick = () => {
     setServerError('');
@@ -467,12 +512,65 @@ const Auth = ({ initialMode = 'login' }) => {
         )}
 
         {/* =========================================================================
-            1. SIGN IN VIEW (/login)
+            0. GOOGLE SIGN-IN PHONE COLLECTION STEP
            ========================================================================= */}
-        {mode === 'login' && (
-          <div>
-            {/* Bespoke Google Fast Sign-In */}
-            <button
+        {googleAuthPending ? (
+          <div className="space-y-5 animate-fadeIn">
+            <div className="p-4 rounded-2xl bg-[#FAF7F2] dark:bg-[#2F2F26] border border-[#DDD4C0] dark:border-[#3D3D30] text-xs text-[#5A5748] dark:text-[#DDD8CB] flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#A6472B]/10 text-[#A6472B] flex items-center justify-center flex-shrink-0">
+                <Smartphone className="w-5 h-5" />
+              </div>
+              <p className="leading-snug font-sans">
+                Please enter your 10-digit mobile number so our kitchen can notify you when your order is ready for counter pickup.
+              </p>
+            </div>
+
+            <form onSubmit={handleSaveGooglePhone} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">
+                  Mobile Number
+                </label>
+                <div className="flex items-center rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] overflow-hidden focus-within:border-[#A6472B] focus-within:ring-2 focus-within:ring-[#A6472B]/20 transition-all">
+                  <span className="px-3.5 py-3 bg-[#FAF7F2] dark:bg-[#23231C] text-[#2A2A22] dark:text-white text-xs font-bold border-r border-[#DDD4C0] dark:border-[#3D3D30]">
+                    🇮🇳 +91
+                  </span>
+                  <input
+                    type="tel"
+                    autoFocus
+                    className="w-full px-3.5 py-3 bg-transparent text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-sm font-semibold focus:outline-none"
+                    placeholder="Enter 10-digit mobile"
+                    value={googlePhone}
+                    maxLength={10}
+                    onChange={(e) => {
+                      setGooglePhone(e.target.value.replace(/\D/g, ''));
+                      if (errors.googlePhone) setErrors({});
+                    }}
+                  />
+                </div>
+                {errors.googlePhone && (
+                  <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.googlePhone}</p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || googlePhone.length !== 10}
+                className="w-full py-3.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer"
+              >
+                <span>{loading ? 'Saving mobile number...' : 'Continue to Menu'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
+          </div>
+        ) : (
+          <>
+            {/* =========================================================================
+                1. SIGN IN VIEW (/login)
+               ========================================================================= */}
+            {mode === 'login' && (
+              <div>
+                {/* Bespoke Google Fast Sign-In */}
+                <button
               type="button"
               onClick={handleGoogleButtonClick}
               disabled={loading}
@@ -486,7 +584,7 @@ const Auth = ({ initialMode = 'login' }) => {
             <div className="relative flex items-center justify-center my-5">
               <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
               <span className="bg-white dark:bg-[#23231C] px-3 text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider">
-                or sign in with
+                or 
               </span>
               <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
             </div>
@@ -994,6 +1092,8 @@ const Auth = ({ initialMode = 'login' }) => {
               </div>
             </form>
           )
+        )}
+        </>
         )}
 
       </div>

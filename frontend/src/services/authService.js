@@ -26,6 +26,11 @@ export const googleLogin = async ({ credential, accessToken }) => {
   return response.data;
 };
 
+export const updatePhone = async ({ phone }) => {
+  const response = await api.post('/auth/update-phone', { phone });
+  return response.data;
+};
+
 export const forgotPassword = async ({ email }) => {
   const response = await api.post('/auth/forgot-password', { email });
   return response.data;

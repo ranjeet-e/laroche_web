@@ -94,7 +94,7 @@ const Footer = () => {
                     href="mailto:contact@larochecafe.com"
                     className="hover:text-[#E07A5F] transition-colors text-stone-200"
                   >
-                    contact@larochecafe.com
+                    larochecafe26@gmail.com
                   </a>
                 </div>
               </li>

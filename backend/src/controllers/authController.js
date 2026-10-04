@@ -441,12 +441,52 @@ const googleLogin = async (req, res, next) => {
   }
 };
 
+// @route POST /api/auth/update-phone
+// @access Private (authMiddleware)
+const updatePhone = async (req, res, next) => {
+  try {
+    const { phone } = req.body;
+    const cleanPhone = normalizePhone(phone);
+
+    if (!cleanPhone || cleanPhone.length !== 10) {
+      return res.status(400).json({ message: 'Valid 10-digit mobile number is required' });
+    }
+
+    const existing = await User.findOne({ phone: cleanPhone, _id: { $ne: req.user._id } });
+    if (existing) {
+      return res.status(409).json({ message: 'This mobile number is already linked to another account' });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.phone = cleanPhone;
+    await user.save();
+
+    res.status(200).json({
+      message: 'Mobile number updated successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   sendOtp,
   verifyOtp,
   signup,
   login,
   googleLogin,
+  updatePhone,
   forgotPassword,
   verifyResetOtp,
   resetPassword,
