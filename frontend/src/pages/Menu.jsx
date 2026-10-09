@@ -121,12 +121,21 @@ const Menu = () => {
     setActiveCategory(catKey);
     const target = sectionRefs.current[catKey];
     if (target) {
-      const navOffset = 180;
+      // Accurately measure dynamic sticky header (Navbar + CategoryRail + any active banner)
+      const navbarEl = document.querySelector('header, .navbar, nav');
+      const railEl = document.getElementById('category-rail-section');
+      const bannerEl = document.querySelector('.bg-gradient-to-r');
+
+      const navbarH = navbarEl ? navbarEl.offsetHeight : 64;
+      const railH = railEl ? railEl.offsetHeight : 88;
+      const bannerH = bannerEl ? bannerEl.offsetHeight : 0;
+
+      const totalHeaderOffset = navbarH + railH + bannerH + 12; // 12px breathing room above category title
       const elementPosition = target.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+      const offsetPosition = elementPosition + window.pageYOffset - totalHeaderOffset;
 
       window.scrollTo({
-        top: offsetPosition,
+        top: Math.max(0, offsetPosition),
         behavior: 'smooth',
       });
     }
@@ -135,9 +144,18 @@ const Menu = () => {
   const handleExploreClick = () => {
     const target = document.getElementById('category-rail-section');
     if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const navbarEl = document.querySelector('header, .navbar, nav');
+      const navbarH = navbarEl ? navbarEl.offsetHeight : 64;
+      const elementPosition = target.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navbarH - 8;
+
+      window.scrollTo({
+        top: Math.max(0, offsetPosition),
+        behavior: 'smooth',
+      });
     }
   };
+
 
   const handleScrollHorizontalRail = (cat, direction) => {
     const rail = horizontalRailRefs.current[cat];
@@ -224,9 +242,18 @@ const Menu = () => {
               </div>
             )}
           </div>
+        ) : categories.length === 0 ? (
+          <div className="py-16 text-center bg-white dark:bg-[#2B2421] rounded-3xl border border-stone-200/80 dark:border-stone-700 shadow-warm-sm p-8 max-w-lg mx-auto my-8">
+            <span className="text-4xl mb-3 block">🍽️</span>
+            <h3 className="text-lg font-bold text-espresso dark:text-white mb-1">No Menu Dishes Available</h3>
+            <p className="text-xs sm:text-sm text-taupe dark:text-stone-400 mb-6">
+              The menu items are currently empty or loading from the database.
+            </p>
+          </div>
         ) : (
           /* Categorized Food Rails with Compact Horizontal Items */
           <div className="space-y-6 sm:space-y-8 mt-2">
+
             {categories.map((cat) => {
               const catItems = groupedItems[cat] || [];
               if (catItems.length === 0) return null;

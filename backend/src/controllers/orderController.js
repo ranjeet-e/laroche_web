@@ -1,12 +1,35 @@
 const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const MenuItem = require('../models/MenuItem');
+const { getStoreStatusHelper } = require('./kitchenController');
+
+// @route GET /api/orders/store-status
+// Public — check if cafe is currently accepting orders or paused
+const getPublicStoreStatus = async (req, res, next) => {
+  try {
+    const status = await getStoreStatusHelper();
+    res.status(200).json(status);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // @route POST /api/orders
 // Student-only — place a new order with server-verified pricing (blocks price tampering)
 const placeOrder = async (req, res, next) => {
   try {
+    // Check if kitchen has paused new orders due to rush/overcrowding
+    const storeStatus = await getStoreStatusHelper();
+    if (storeStatus.paused) {
+      return res.status(403).json({
+        message: storeStatus.reason || 'The kitchen is currently overloaded and pausing new orders. Please try again shortly.',
+        storePaused: true,
+        resumeAt: storeStatus.resumeAt,
+      });
+    }
+
     const { items } = req.body;
+
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: 'Order must contain at least one item' });
@@ -154,4 +177,4 @@ const getOrderById = async (req, res, next) => {
   }
 };
 
-module.exports = { placeOrder, getMyOrders, getOrderById };
+module.exports = { placeOrder, getMyOrders, getOrderById, getPublicStoreStatus };

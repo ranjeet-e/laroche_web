@@ -1,8 +1,9 @@
-import { useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ArrowDown, Sparkles, Clock } from 'lucide-react';
 import './HeroSection.css';
 
 const HeroSection = ({ onExploreClick }) => {
+  const [isVideoReady, setIsVideoReady] = useState(false);
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -16,17 +17,21 @@ const HeroSection = ({ onExploreClick }) => {
 
       const playPromise = videoRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          const handleFirstGesture = () => {
-            if (videoRef.current) {
-              videoRef.current.defaultMuted = true;
-              videoRef.current.muted = true;
-              videoRef.current.play().catch(() => {});
-            }
-          };
-          window.addEventListener('touchstart', handleFirstGesture, { once: true, passive: true });
-          window.addEventListener('click', handleFirstGesture, { once: true, passive: true });
-        });
+        playPromise
+          .then(() => {
+            setIsVideoReady(true);
+          })
+          .catch(() => {
+            const handleFirstGesture = () => {
+              if (videoRef.current) {
+                videoRef.current.defaultMuted = true;
+                videoRef.current.muted = true;
+                videoRef.current.play().then(() => setIsVideoReady(true)).catch(() => {});
+              }
+            };
+            window.addEventListener('touchstart', handleFirstGesture, { once: true, passive: true });
+            window.addEventListener('click', handleFirstGesture, { once: true, passive: true });
+          });
       }
     }
   }, []);
@@ -44,22 +49,29 @@ const HeroSection = ({ onExploreClick }) => {
 
   return (
     <section className="relative w-full h-[88vh] min-h-[580px] max-h-[820px] overflow-hidden bg-espresso dark:bg-[#14100E] flex items-center justify-center">
-      {/* Background B-Roll Video */}
+      {/* Background B-Roll Video with smooth fade-in */}
       <video
         ref={videoRef}
         src="/intro.mp4"
+        preload="auto"
         autoPlay
         loop
         muted
         playsInline
+        onPlaying={() => setIsVideoReady(true)}
+        onCanPlay={() => setIsVideoReady(true)}
         webkit-playsinline="true"
         x5-playsinline="true"
         disablePictureInPicture
         disableRemotePlayback
         tabIndex={-1}
+        controls={false}
         controlsList="nodownload nofullscreen noremoteplayback"
-        className="absolute inset-0 w-full h-full object-cover opacity-60 hero-video-mask scale-105 pointer-events-none select-none"
+        className={`absolute inset-0 w-full h-full object-cover hero-video-mask scale-105 pointer-events-none select-none transition-opacity duration-1000 ${
+          isVideoReady ? 'opacity-60' : 'opacity-0'
+        }`}
       />
+
 
       {/* Dark Ambient & Warm Vignette Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/40 pointer-events-none" />

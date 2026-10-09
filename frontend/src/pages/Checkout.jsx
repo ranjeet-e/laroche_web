@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { placeOrder } from '../services/orderService';
+import { placeOrder, getStoreStatus } from '../services/orderService';
+import { useSocket } from '../hooks/useSocket';
 import {
   createRazorpayOrder,
   verifyPayment,
@@ -17,6 +18,22 @@ const Checkout = () => {
 
   const [status, setStatus] = useState('idle'); // idle | placing | processing | success | failed
   const [errorMsg, setErrorMsg] = useState('');
+  const [storeStatus, setStoreStatus] = useState({ paused: false, reason: '', resumeAt: null });
+
+  useEffect(() => {
+    getStoreStatus()
+      .then((data) => {
+        if (data) setStoreStatus(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  useSocket({
+    onStoreStatusChanged: (data) => {
+      if (data) setStoreStatus(data);
+    },
+  });
+
 
   const handlePayment = async () => {
     if (!user || !localStorage.getItem('token')) {
@@ -24,8 +41,14 @@ const Checkout = () => {
       return;
     }
 
+    if (storeStatus.paused) {
+      setErrorMsg(storeStatus.reason || 'Kitchen has temporarily paused new orders. Please wait a few moments.');
+      return;
+    }
+
     setStatus('placing');
     setErrorMsg('');
+
 
     try {
       // Step 1: create the order in our DB (status: 'placed')
@@ -126,18 +149,38 @@ const Checkout = () => {
         </div>
       </div>
 
+      {storeStatus.paused && (
+        <div className="p-3 mb-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 text-xs font-medium">
+          ⚠️ <strong>Kitchen Rush:</strong> {storeStatus.reason || 'New orders are paused temporarily. Please try again shortly.'}
+        </div>
+      )}
+
       {errorMsg && <p className="checkout-error">{errorMsg}</p>}
 
       <button
         className="pay-btn"
         onClick={handlePayment}
-        disabled={status === 'placing' || status === 'processing' || status === 'success'}
+        disabled={storeStatus.paused || status === 'placing' || status === 'processing' || status === 'success'}
       >
-        {status === 'placing' && 'Placing order...'}
-        {status === 'processing' && 'Waiting for payment...'}
-        {status === 'success' && 'Payment successful ✓'}
-        {(status === 'idle' || status === 'failed') && `Pay ₹${totalAmount} via UPI / Cards`}
+        {storeStatus.paused && 'Orders Temporarily Paused'}
+        {!storeStatus.paused && status === 'placing' && 'Placing order...'}
+        {!storeStatus.paused && status === 'processing' && 'Waiting for payment...'}
+        {!storeStatus.paused && status === 'success' && 'Payment successful ✓'}
+        {!storeStatus.paused && (status === 'idle' || status === 'failed') && `Pay ₹${totalAmount} via UPI / Cards`}
       </button>
+
+      <p className="text-center text-[11px] text-gray-500 mt-3">
+        By completing payment, you agree to our{' '}
+        <a href="/terms-and-conditions" target="_blank" rel="noreferrer" className="underline">
+          Terms
+        </a>{' '}
+        &{' '}
+        <a href="/privacy-policy" target="_blank" rel="noreferrer" className="underline">
+          Privacy Policy
+        </a>.
+      </p>
+
+
 
       {status === 'success' && (
         <div className="payment-success-overlay">

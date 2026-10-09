@@ -77,7 +77,7 @@ const Footer = () => {
               <li className="flex items-start gap-2.5">
                 <Phone className="w-4 h-4 text-[#A6472B] flex-shrink-0 mt-0.5" />
                 <div>
-                  <span className="block text-white font-semibold">Direct Cafe Hotline:</span>
+                  <span className="block text-white font-semibold">:</span>
                   <a
                     href="tel:+919876543210"
                     className="hover:text-[#E07A5F] transition-colors font-mono font-bold text-stone-200"
@@ -102,7 +102,7 @@ const Footer = () => {
                 <MapPin className="w-4 h-4 text-[#A6472B] flex-shrink-0 mt-0.5" />
                 <div>
                   <span className="block text-white font-semibold">Counter Pickup:</span>
-                  <span>Campus Food Court, Ground Floor, La Roche Cafe Counter</span>
+                  <span></span>
                 </div>
               </li>
             </ul>
@@ -119,7 +119,7 @@ const Footer = () => {
                 <div>
                   <p className="text-white font-semibold">Counter Timings:</p>
                   <p className="mt-0.5">Mon – Sat: 8:30 AM – 9:30 PM</p>
-                  <p>Sun: 9:00 AM – 8:00 PM</p>
+                  
                 </div>
               </div>
             </div>

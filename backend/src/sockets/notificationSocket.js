@@ -60,10 +60,17 @@ const notifyOrderStatusUpdated = (order) => {
   }
 };
 
+// Called when kitchen pauses/resumes order acceptance
+const notifyStoreStatusChanged = (statusData) => {
+  if (io) {
+    io.emit('store_status_changed', statusData);
+  }
+};
+
 // Backward-compatibility alias
 const notifyStudentOrderReady = (studentId, order) => {
   notifyOrderStatusUpdated(order);
 };
 
-module.exports = { initSocket, notifyKitchenNewOrder, notifyOrderStatusUpdated, notifyStudentOrderReady };
+module.exports = { initSocket, notifyKitchenNewOrder, notifyOrderStatusUpdated, notifyStudentOrderReady, notifyStoreStatusChanged };
 

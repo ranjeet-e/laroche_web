@@ -1,7 +1,10 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBag, ArrowRight, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, ArrowRight, ArrowLeft, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { getStoreStatus } from '../services/orderService';
+import { useSocket } from '../hooks/useSocket';
 import CartItem from '../components/CartItem';
 import './Cart.css';
 
@@ -9,6 +12,20 @@ const Cart = () => {
   const { cartItems, totalAmount } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const [storeStatus, setStoreStatus] = useState({ paused: false, reason: '', resumeAt: null });
+
+  useEffect(() => {
+    getStoreStatus().then((data) => {
+      if (data) setStoreStatus(data);
+    }).catch(() => {});
+  }, []);
+
+  useSocket({
+    onStoreStatusChanged: (data) => {
+      if (data) setStoreStatus(data);
+    },
+  });
 
 
   if (cartItems.length === 0) {
@@ -96,25 +113,62 @@ const Cart = () => {
               </div>
             </div>
 
+            {storeStatus.paused && (
+              <div className="mt-4 p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-start gap-2.5 text-xs text-amber-900 dark:text-amber-200">
+                <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold block mb-0.5">Kitchen Rush: New Orders Temporarily Paused</span>
+                  <span>{storeStatus.reason || 'Please wait a few minutes while the kitchen clears current orders. Your cart is saved.'}</span>
+                </div>
+              </div>
+            )}
+
             <button
               type="button"
+              disabled={storeStatus.paused}
               onClick={() => {
+                if (storeStatus.paused) return;
                 if (!user) {
                   navigate('/login?redirect=/checkout');
                 } else {
                   navigate('/checkout');
                 }
               }}
-              className="w-full mt-6 py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm shadow-glow-terracotta flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99]"
+              className={`w-full mt-6 py-3.5 rounded-full font-bold text-sm shadow-glow-terracotta flex items-center justify-center gap-2 transition-all ${
+                storeStatus.paused
+                  ? 'bg-stone-300 dark:bg-stone-700 text-stone-500 dark:text-stone-400 cursor-not-allowed shadow-none'
+                  : 'bg-terracotta hover:bg-terracotta-hover text-white hover:scale-[1.01] active:scale-[0.99]'
+              }`}
             >
-              <span>Proceed to Pay ₹{grandTotal}</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{storeStatus.paused ? 'Orders Temporarily Paused' : `Proceed to Pay ₹${grandTotal}`}</span>
+              {!storeStatus.paused && <ArrowRight className="w-4 h-4" />}
             </button>
 
             <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-taupe dark:text-stone-400 mt-4">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
               <span>100% Safe & Secure Online Payment</span>
             </div>
+
+            <p className="text-center text-[11px] text-taupe/80 dark:text-stone-500 mt-3 leading-tight">
+              By placing an order, you agree to our{' '}
+              <a
+                href="/terms-and-conditions"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-espresso dark:hover:text-stone-300"
+              >
+                Terms of Service
+              </a>{' '}
+              &{' '}
+              <a
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-espresso dark:hover:text-stone-300"
+              >
+                Privacy Policy
+              </a>.
+            </p>
           </div>
 
         </div>
@@ -125,3 +179,5 @@ const Cart = () => {
 };
 
 export default Cart;
+
+

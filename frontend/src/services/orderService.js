@@ -15,6 +15,11 @@ export const getOrderById = async (orderId) => {
   return response.data;
 };
 
+export const getStoreStatus = async () => {
+  const response = await api.get('/orders/store-status');
+  return response.data;
+};
+
 // Kitchen-only
 export const getActiveKitchenOrders = async () => {
   const response = await api.get('/kitchen/orders');
@@ -25,3 +30,14 @@ export const updateOrderStatus = async (orderId, status) => {
   const response = await api.put(`/kitchen/orders/${orderId}/status`, { status });
   return response.data;
 };
+
+export const getKitchenStoreStatus = async () => {
+  const response = await api.get('/kitchen/store-status');
+  return response.data;
+};
+
+export const toggleKitchenStoreOrders = async (data) => {
+  const response = await api.post('/kitchen/toggle-orders', data);
+  return response.data;
+};
+

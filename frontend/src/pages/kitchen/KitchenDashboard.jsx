@@ -19,13 +19,22 @@ import {
   Layers,
   Eye,
   EyeOff,
+  AlertTriangle,
+  Play,
+  Pause,
 } from 'lucide-react';
-import { getActiveKitchenOrders, updateOrderStatus } from '../../services/orderService';
+import {
+  getActiveKitchenOrders,
+  updateOrderStatus,
+  getKitchenStoreStatus,
+  toggleKitchenStoreOrders,
+} from '../../services/orderService';
 import { useSocket } from '../../hooks/useSocket';
 import { playOrderBellSound, playReminderPingSound, unlockAudio } from '../../utils/audioAlerts';
 import { uploadImage } from '../../services/uploadService';
 import api, { resolveAssetUrl } from '../../services/api';
 import './KitchenDashboard.css';
+
 
 const columns = [
   { key: 'paid', label: 'New', actionLabel: 'Start Prep', nextStatus: 'preparing' },
@@ -129,6 +138,28 @@ const KitchenDashboard = () => {
 
   const [uploadingId, setUploadingId] = useState(null);
 
+  // Overcrowd Rush Mode State
+  const [storeStatus, setStoreStatus] = useState({
+    paused: false,
+    reason: '',
+    resumeAt: null,
+  });
+  const [isOvercrowdModalOpen, setIsOvercrowdModalOpen] = useState(false);
+  const [pauseDuration, setPauseDuration] = useState(15);
+  const [pauseReason, setPauseReason] = useState('Kitchen rush / High order volume');
+  const [togglingStoreStatus, setTogglingStoreStatus] = useState(false);
+  const [countdownText, setCountdownText] = useState('');
+
+  // Fetch Store Status
+  const fetchStoreStatus = async () => {
+    try {
+      const data = await getKitchenStoreStatus();
+      if (data) setStoreStatus(data);
+    } catch (err) {
+      console.error('Failed to fetch kitchen store status', err);
+    }
+  };
+
   // Fetch Orders
   const fetchOrders = async () => {
     try {
@@ -179,14 +210,40 @@ const KitchenDashboard = () => {
     fetchMenuItems();
     fetchBanners();
     fetchSalesStats();
+    fetchStoreStatus();
 
-    // Live background polling for orders
+    // Live background polling for orders and store status
     const interval = setInterval(() => {
       fetchOrders();
+      fetchStoreStatus();
     }, 4000);
 
     return () => clearInterval(interval);
   }, []);
+
+  // Live countdown timer for active timed rush pause
+  useEffect(() => {
+    if (!storeStatus.paused || !storeStatus.resumeAt) {
+      setCountdownText('');
+      return;
+    }
+
+    const updateCountdown = () => {
+      const diff = Math.max(0, Math.floor((new Date(storeStatus.resumeAt).getTime() - Date.now()) / 1000));
+      if (diff <= 0) {
+        setCountdownText('');
+        setStoreStatus((prev) => ({ ...prev, paused: false, resumeAt: null }));
+      } else {
+        const mins = Math.floor(diff / 60);
+        const secs = diff % 60;
+        setCountdownText(`${mins}:${secs < 10 ? '0' : ''}${secs}`);
+      }
+    };
+
+    updateCountdown();
+    const timerInterval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timerInterval);
+  }, [storeStatus.paused, storeStatus.resumeAt]);
 
   // 30-Second Ping Reminder: Alerts kitchen staff if any order is not yet shifted from "New" (paid) column
   useEffect(() => {
@@ -206,7 +263,7 @@ const KitchenDashboard = () => {
     return () => clearInterval(pingInterval);
   }, [orders]);
 
-  // Real-time WebSocket: automatically play counter service bell sound on new orders
+  // Real-time WebSocket: automatically play counter service bell sound on new orders & sync store status
   useSocket({
     onNewOrder: (newOrder) => {
       playOrderBellSound();
@@ -233,7 +290,46 @@ const KitchenDashboard = () => {
       }
       fetchSalesStats();
     },
+    onStoreStatusChanged: (newStatus) => {
+      if (newStatus) setStoreStatus(newStatus);
+    },
   });
+
+  // Toggle Pause Handlers
+  const handlePauseOrders = async () => {
+    setTogglingStoreStatus(true);
+    try {
+      const res = await toggleKitchenStoreOrders({
+        paused: true,
+        reason: pauseReason.trim() || 'Kitchen rush / High order volume',
+        durationMinutes: pauseDuration,
+      });
+      setStoreStatus(res);
+      setIsOvercrowdModalOpen(false);
+    } catch (err) {
+      console.error('Failed to pause orders', err);
+      alert('Failed to update kitchen status. Please check network connection.');
+    } finally {
+      setTogglingStoreStatus(false);
+    }
+  };
+
+  const handleResumeOrders = async () => {
+    setTogglingStoreStatus(true);
+    try {
+      const res = await toggleKitchenStoreOrders({
+        paused: false,
+        reason: '',
+        durationMinutes: 0,
+      });
+      setStoreStatus(res);
+    } catch (err) {
+      console.error('Failed to resume orders', err);
+      alert('Failed to resume orders. Please check network connection.');
+    } finally {
+      setTogglingStoreStatus(false);
+    }
+  };
 
   // --- Order Kanban Status Action ---
   const handleStatusUpdate = async (orderId, nextStatus) => {
@@ -524,7 +620,39 @@ const KitchenDashboard = () => {
           </button>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Overcrowd Rush Mode Control Button */}
+          {!storeStatus.paused ? (
+            <button
+              type="button"
+              onClick={() => setIsOvercrowdModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 text-xs font-bold text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 shadow-warm-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              title="Click to pause new incoming orders during kitchen rush"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <span>Orders Open</span>
+              <span className="text-[10px] bg-emerald-200 dark:bg-emerald-800/60 text-emerald-900 dark:text-emerald-100 px-2 py-0.5 rounded-full font-bold uppercase">
+                Pause Rush
+              </span>
+            </button>
+          ) : (
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 text-xs font-bold text-rose-800 dark:text-rose-200 shadow-warm-sm">
+              <span className="h-2.5 w-2.5 rounded-full bg-rose-500 animate-ping"></span>
+              <span>Orders Paused {countdownText && `(${countdownText})`}</span>
+              <button
+                type="button"
+                onClick={handleResumeOrders}
+                disabled={togglingStoreStatus}
+                className="ml-1 px-3 py-1 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              >
+                {togglingStoreStatus ? 'Resuming...' : '▶ Reopen Orders'}
+              </button>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={() => {
@@ -538,6 +666,7 @@ const KitchenDashboard = () => {
           </button>
         </div>
       </div>
+
 
       {/* ============================================================ */}
       {/* TAB 1: KANBAN LIVE ORDERS                                     */}
@@ -1269,8 +1398,105 @@ const KitchenDashboard = () => {
           </div>
         </div>
       )}
+
+      {/* ============================================================ */}
+      {/* MODAL: OVERCROWD RUSH PAUSE                                    */}
+      {/* ============================================================ */}
+      {isOvercrowdModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#2B2421] rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 dark:border-stone-700 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold">
+                  ⚠️
+                </div>
+                <h3 className="text-lg font-serif font-bold text-espresso dark:text-white">
+                  Pause Incoming Orders (Kitchen Rush)
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsOvercrowdModalOpen(false)}
+                className="p-1 rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-white"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p className="text-xs text-taupe dark:text-stone-300 mt-3 leading-relaxed">
+              Temporarily stops customers from placing new orders while your team clears the current preparation queue. Active orders in progress will not be affected.
+            </p>
+
+            <div className="mt-4 space-y-4 text-xs sm:text-sm">
+              {/* Duration selection */}
+              <div>
+                <label className="block font-bold text-espresso dark:text-stone-200 mb-2">
+                  Select Pause Duration
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { mins: 15, label: '15 Mins', desc: 'Short Rush' },
+                    { mins: 30, label: '30 Mins', desc: 'Heavy Rush' },
+                    { mins: 45, label: '45 Mins', desc: 'Peak Hour' },
+                    { mins: 0, label: 'Indefinite', desc: 'Manual Open' },
+                  ].map((option) => (
+                    <button
+                      key={option.mins}
+                      type="button"
+                      onClick={() => setPauseDuration(option.mins)}
+                      className={`p-2.5 rounded-2xl border text-center transition-all cursor-pointer ${
+                        pauseDuration === option.mins
+                          ? 'bg-[#8D5B4C] border-[#8D5B4C] text-white shadow-sm scale-[1.02]'
+                          : 'bg-stone-50 dark:bg-stone-800/60 border-stone-200 dark:border-stone-700 text-espresso dark:text-stone-200 hover:bg-stone-100'
+                      }`}
+                    >
+                      <div className="font-bold text-xs">{option.label}</div>
+                      <div className={`text-[10px] ${pauseDuration === option.mins ? 'text-stone-200' : 'text-stone-400'}`}>
+                        {option.desc}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Reason / Customer Notice */}
+              <div>
+                <label className="block font-bold text-espresso dark:text-stone-200 mb-1">
+                  Customer Announcement Message
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Kitchen is experiencing high demand. Resuming soon!"
+                  value={pauseReason}
+                  onChange={(e) => setPauseReason(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-espresso dark:text-white focus:outline-none focus:ring-2 focus:ring-[#8D5B4C]"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-stone-100 dark:border-stone-800">
+                <button
+                  type="button"
+                  onClick={() => setIsOvercrowdModalOpen(false)}
+                  className="px-4 py-2 rounded-full border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePauseOrders}
+                  disabled={togglingStoreStatus}
+                  className="px-6 py-2 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                >
+                  {togglingStoreStatus ? 'Pausing Orders...' : '🛑 Confirm & Pause Orders'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default KitchenDashboard;
+

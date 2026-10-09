@@ -13,24 +13,24 @@ const getSocketUrl = () => {
   return undefined;
 };
 
-export const useSocket = ({ onNewOrder, onOrderReady, onOrderStatusUpdated, orderId } = {}) => {
+export const useSocket = ({ onNewOrder, onOrderReady, onOrderStatusUpdated, onStoreStatusChanged, orderId } = {}) => {
   const socketRef = useRef(null);
   const { user, isStudent, isKitchen } = useAuth();
 
   useEffect(() => {
-    if (!user) return;
-
     const socket = io(getSocketUrl(), {
       transports: ['websocket', 'polling'],
     });
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      const studentId = user.id || user._id;
-      if (isKitchen) {
-        socket.emit('join_kitchen');
-      } else if (isStudent && studentId) {
-        socket.emit('join_student', studentId);
+      if (user) {
+        const studentId = user.id || user._id;
+        if (isKitchen) {
+          socket.emit('join_kitchen');
+        } else if (isStudent && studentId) {
+          socket.emit('join_student', studentId);
+        }
       }
       if (orderId) {
         socket.emit('join_order', orderId);
@@ -49,10 +49,15 @@ export const useSocket = ({ onNewOrder, onOrderReady, onOrderStatusUpdated, orde
       socket.on('order_status_updated', onOrderStatusUpdated);
     }
 
+    if (onStoreStatusChanged) {
+      socket.on('store_status_changed', onStoreStatusChanged);
+    }
+
     return () => {
       socket.disconnect();
     };
-  }, [user, isStudent, isKitchen, orderId]);
+  }, [user, isStudent, isKitchen, orderId, onStoreStatusChanged]);
 
   return socketRef.current;
 };
+

@@ -10,8 +10,8 @@ import IntroVideo from './components/IntroVideo';
 import SiteLock from './components/SiteLock';
 import AddToHomeScreen from './components/AddToHomeScreen';
 import CookieConsent from './components/CookieConsent';
-import LegalConsentGate from './components/LegalConsentGate';
 import Auth from './pages/Auth';
+
 import Menu from './pages/Menu';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
@@ -22,6 +22,8 @@ import TermsConditions from './pages/TermsConditions';
 import NotFound from './pages/NotFound';
 import KitchenDashboard from './pages/kitchen/KitchenDashboard';
 import KitchenLogin from './pages/kitchen/KitchenLogin';
+import CafeScheduleBanner from './components/CafeScheduleBanner';
+import ScrollToTop from './components/ScrollToTop';
 
 // Decides where "/" should redirect to based on auth state
 const RootRedirect = () => {
@@ -38,11 +40,14 @@ const RootRedirect = () => {
 const AppRoutes = () => {
   return (
     <div className="flex flex-col min-h-screen">
+      <ScrollToTop />
       <Navbar />
+      <CafeScheduleBanner />
       <AddToHomeScreen />
-      <LegalConsentGate />
       <CookieConsent />
+
       <div className="flex-1">
+
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<Auth initialMode="login" />} />

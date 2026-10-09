@@ -4,6 +4,7 @@ import './IntroVideo.css';
 
 const IntroVideo = ({ onFinish }) => {
   const [fading, setFading] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
   const videoRef = useRef(null);
 
   const handleFinish = () => {
@@ -24,18 +25,22 @@ const IntroVideo = ({ onFinish }) => {
 
       const playPromise = videoRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // If browser suspended autoplay, kickstart on first user gesture
-          const handleFirstGesture = () => {
-            if (videoRef.current) {
-              videoRef.current.defaultMuted = true;
-              videoRef.current.muted = true;
-              videoRef.current.play().catch(() => {});
-            }
-          };
-          window.addEventListener('touchstart', handleFirstGesture, { once: true, passive: true });
-          window.addEventListener('click', handleFirstGesture, { once: true, passive: true });
-        });
+        playPromise
+          .then(() => {
+            setIsVideoReady(true);
+          })
+          .catch(() => {
+            // If browser suspended autoplay, kickstart on first user gesture
+            const handleFirstGesture = () => {
+              if (videoRef.current) {
+                videoRef.current.defaultMuted = true;
+                videoRef.current.muted = true;
+                videoRef.current.play().then(() => setIsVideoReady(true)).catch(() => {});
+              }
+            };
+            window.addEventListener('touchstart', handleFirstGesture, { once: true, passive: true });
+            window.addEventListener('click', handleFirstGesture, { once: true, passive: true });
+          });
       }
     }
 
@@ -76,20 +81,26 @@ const IntroVideo = ({ onFinish }) => {
       {/* Background B-Roll Video with pointer-events disabled to prevent native browser pause overlay */}
       <video
         ref={videoRef}
-        className="intro-video pointer-events-none select-none"
+        className={`intro-video pointer-events-none select-none transition-opacity duration-700 ${
+          isVideoReady ? 'opacity-100' : 'opacity-0'
+        }`}
         src="/intro.mp4"
-        preload="metadata"
+        preload="auto"
         autoPlay
         muted
         loop
         playsInline
+        onPlaying={() => setIsVideoReady(true)}
+        onCanPlay={() => setIsVideoReady(true)}
         webkit-playsinline="true"
         x5-playsinline="true"
         disablePictureInPicture
         disableRemotePlayback
         tabIndex={-1}
+        controls={false}
         controlsList="nodownload nofullscreen noremoteplayback"
       />
+
 
       {/* Cinematic Dark & Warm Vignette Overlay */}
       <div className="intro-backdrop-vignette" />
