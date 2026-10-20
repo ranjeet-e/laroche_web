@@ -30,8 +30,14 @@ import {
   toggleKitchenStoreOrders,
 } from '../../services/orderService';
 import { useSocket } from '../../hooks/useSocket';
-import { playOrderBellSound, playReminderPingSound, unlockAudio } from '../../utils/audioAlerts';
+import {
+  playOrderBellSound,
+  playReminderPingSound,
+  unlockAudio,
+  speakOrderAnnouncement,
+} from '../../utils/audioAlerts';
 import { uploadImage } from '../../services/uploadService';
+
 import api, { resolveAssetUrl } from '../../services/api';
 import './KitchenDashboard.css';
 
@@ -263,13 +269,15 @@ const KitchenDashboard = () => {
     return () => clearInterval(pingInterval);
   }, [orders]);
 
-  // Real-time WebSocket: automatically play counter service bell sound on new orders & sync store status
+  // Real-time WebSocket: automatically play counter service bell sound + voice dictate on new orders & sync store status
   useSocket({
     onNewOrder: (newOrder) => {
       playOrderBellSound();
+      speakOrderAnnouncement(newOrder);
       try {
         if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
       } catch (e) {}
+
 
       setOrders((prev) => {
         const exists = prev.some((o) => o._id === newOrder._id);
@@ -658,14 +666,20 @@ const KitchenDashboard = () => {
             onClick={() => {
               unlockAudio();
               playOrderBellSound();
+              speakOrderAnnouncement({
+                student: { name: 'Ranjeet' },
+                items: [{ name: 'Peri-Peri Fries', quantity: 1 }],
+              });
             }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#2B2421] border border-[#E5D7D0] dark:border-[#4A3B32] text-xs font-bold text-[#6B5B52] dark:text-[#E8D8CD] hover:text-[#231F20] dark:hover:text-white shadow-warm-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            title="Test counter bell chime and voice dictation"
           >
             <span>🔔</span>
             <span>Test Sound</span>
           </button>
         </div>
       </div>
+
 
 
       {/* ============================================================ */}

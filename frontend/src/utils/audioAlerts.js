@@ -131,3 +131,63 @@ export const playReminderPingSound = async () => {
     console.warn('Could not play reminder ping:', err);
   }
 };
+
+/**
+ * Voice dictation: Announces incoming order items and customer name for the kitchen team
+ * e.g., "Peri-Peri Fries for Ranjeet"
+ */
+export const speakOrderAnnouncement = (order) => {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+  try {
+    // Cancel previous speech to prevent overlapping queues
+    window.speechSynthesis.cancel();
+
+    const customerName =
+      order?.student?.name?.trim()?.split(' ')[0] ||
+      (order?.orderNumber ? `Order ${order.orderNumber}` : 'Student');
+
+    const items = Array.isArray(order?.items) ? order.items : [];
+    let itemsText = '';
+    if (items.length > 0) {
+      itemsText = items
+        .map((i) => `${i.quantity > 1 ? `${i.quantity} ` : ''}${i.name}`)
+        .join(', and ');
+    } else {
+      itemsText = 'New order';
+    }
+
+    const phrase = `${itemsText} for ${customerName}`;
+
+    const utterance = new SpeechSynthesisUtterance(phrase);
+    utterance.rate = 0.92; // clear, steady kitchen tempo
+    utterance.pitch = 1.02;
+    utterance.lang = 'en-IN'; // Indian English pronunciation
+
+    // Select Indian English voice if available in browser
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice =
+      voices.find((v) => v.lang === 'en-IN' || v.lang === 'en_IN') ||
+      voices.find((v) => v.lang?.startsWith('en'));
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+
+    // 350ms delay to let the initial bell chime register first
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance);
+    }, 350);
+  } catch (err) {
+    console.warn('Speech synthesis alert failed:', err);
+  }
+};
+
+// Pre-load browser speech voices
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = () => {
+    try {
+      window.speechSynthesis.getVoices();
+    } catch (e) {}
+  };
+}
+
