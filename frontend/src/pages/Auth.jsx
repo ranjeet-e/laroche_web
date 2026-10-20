@@ -532,7 +532,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 </label>
                 <div className="flex items-center rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] overflow-hidden focus-within:border-[#A6472B] focus-within:ring-2 focus-within:ring-[#A6472B]/20 transition-all">
                   <span className="px-3.5 py-3 bg-[#FAF7F2] dark:bg-[#23231C] text-[#2A2A22] dark:text-white text-xs font-bold border-r border-[#DDD4C0] dark:border-[#3D3D30]">
-                    🇮🇳 +91
+                    +91
                   </span>
                   <input
                     type="tel"
@@ -815,7 +815,7 @@ const Auth = ({ initialMode = 'login' }) => {
             <div className="relative flex items-center justify-center my-5">
               <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
               <span className="bg-white dark:bg-[#23231C] px-3 text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider">
-                or register with details
+                or 
               </span>
               <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
             </div>

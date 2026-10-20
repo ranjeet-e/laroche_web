@@ -195,7 +195,7 @@ const Menu = () => {
   }
 
   return (
-    <div className="min-h-screen bg-oat pb-24">
+    <div className="min-h-screen bg-oat pb-36 md:pb-24">
       {/* 1. Full-Bleed Cinematic Hero Section (hidden when user is searching) */}
       {!searchQuery && <HeroSection onExploreClick={handleExploreClick} />}
 

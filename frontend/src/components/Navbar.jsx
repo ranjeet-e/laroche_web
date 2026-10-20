@@ -360,7 +360,7 @@ const Navbar = () => {
               Log Out?
             </h3>
             <p className="text-xs sm:text-sm text-[#5A5748] dark:text-[#C4BFB2] mb-6 leading-relaxed">
-              Are you sure you want to log out from <strong>La Roche Cafe</strong>? You will need to verify your number or email when signing back in.
+              Are you sure you want to log out from <strong>La Roche Cafe</strong>? 
             </p>
             <div className="flex items-center gap-3">
               <button

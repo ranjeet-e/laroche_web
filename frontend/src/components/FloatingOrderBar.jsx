@@ -20,7 +20,7 @@ const FloatingOrderBar = () => {
   const remainingCount = distinctItems.length - 3;
 
   return (
-    <aside aria-label="Cart Overview" className="fixed bottom-4 sm:bottom-6 left-0 right-0 z-40 px-4 sm:px-6 pointer-events-none flex justify-center animate-cart-float-in">
+    <aside aria-label="Cart Overview" className="fixed bottom-[calc(68px+var(--safe-bottom,0px))] md:bottom-6 left-0 right-0 z-40 px-4 sm:px-6 pointer-events-none flex justify-center animate-cart-float-in">
       <div
         id="floating-cart-pill"
         role="button"
