@@ -281,6 +281,24 @@ const KitchenDashboard = () => {
     return () => clearInterval(pingInterval);
   }, [orders]);
 
+  // Auto-unlock audio and speech synthesizer on first interaction in kitchen dashboard
+  useEffect(() => {
+    const handleGesture = () => {
+      unlockAudio();
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+      }
+    };
+    window.addEventListener('click', handleGesture, { once: true, passive: true });
+    window.addEventListener('keydown', handleGesture, { once: true, passive: true });
+    window.addEventListener('touchstart', handleGesture, { once: true, passive: true });
+    return () => {
+      window.removeEventListener('click', handleGesture);
+      window.removeEventListener('keydown', handleGesture);
+      window.removeEventListener('touchstart', handleGesture);
+    };
+  }, []);
+
   // Real-time WebSocket: automatically play counter service bell sound + voice dictate on new orders & sync store status
   useSocket({
     onNewOrder: (newOrder) => {
@@ -680,7 +698,7 @@ const KitchenDashboard = () => {
               playOrderBellSound();
               speakOrderAnnouncement({
                 student: { name: 'Ranjeet' },
-                items: [{ name: 'Peri-Peri Fries', quantity: 1 }],
+                items: [{ name: 'Cheese Chilli Maggie', quantity: 1 }],
               });
             }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#2B2421] border border-[#E5D7D0] dark:border-[#4A3B32] text-xs font-bold text-[#6B5B52] dark:text-[#E8D8CD] hover:text-[#231F20] dark:hover:text-white shadow-warm-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"

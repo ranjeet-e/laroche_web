@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
-  Bell,
   BellRing,
   CheckCircle2,
   ChefHat,
@@ -9,23 +8,9 @@ import {
   Sparkles,
   ArrowLeft,
   ShieldCheck,
-  AlertTriangle,
-  Smartphone,
-  Check,
-  Volume2,
 } from 'lucide-react';
 import { getOrderById } from '../services/orderService';
 import { useSocket } from '../hooks/useSocket';
-import {
-  isNotificationSupported,
-  getNotificationPermission,
-  requestNotificationPermission,
-  notifyOrderPreparing,
-  notifyOrderReady,
-  isIOSDevice,
-  isStandalonePWA,
-} from '../utils/notifications';
-import { playOrderBellSound, unlockAudio } from '../utils/audioAlerts';
 import './OrderHistory.css';
 
 const STATUS_STEPS = [
@@ -134,9 +119,7 @@ const OrderTracking = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [notificationPermission, setNotificationPermission] = useState(getNotificationPermission());
   const [inAppToast, setInAppToast] = useState(null);
-  const [isRequesting, setIsRequesting] = useState(false);
 
   const previousStatusRef = useRef(null);
 
@@ -158,7 +141,7 @@ const OrderTracking = () => {
     return () => clearInterval(interval);
   }, [id]);
 
-  // Monitor order status transitions and fire browser & in-app notifications
+  // Monitor order status transitions and fire in-app status toast
   useEffect(() => {
     if (!order) return;
 
@@ -169,14 +152,12 @@ const OrderTracking = () => {
       const shortId = order.orderNumber ? `#${order.orderNumber}` : `#${order._id.slice(-4).toUpperCase()}`;
 
       if (currentStatus === 'preparing') {
-        notifyOrderPreparing(order);
         setInAppToast({
           type: 'preparing',
           title: '🍳 Chefs are Preparing Your Order!',
           message: `Order ${shortId} is now on the stove / griddle. It will be ready shortly.`,
         });
       } else if (currentStatus === 'ready') {
-        notifyOrderReady(order);
         setInAppToast({
           type: 'ready',
           title: '🎉 Order Ready for Pickup!',
@@ -209,29 +190,6 @@ const OrderTracking = () => {
     },
   });
 
-  const handleEnableNotifications = async () => {
-    setIsRequesting(true);
-    unlockAudio();
-    playOrderBellSound();
-
-    try {
-      const result = await requestNotificationPermission();
-      setNotificationPermission(result.permission);
-
-      if (result.success) {
-        setInAppToast({
-          type: 'ready',
-          title: '🔔 Order Alerts Enabled!',
-          message: "You'll receive instant sound and browser alerts when your meal is ready.",
-        });
-      }
-    } catch (err) {
-      console.warn('Failed to enable notifications:', err);
-    } finally {
-      setIsRequesting(false);
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center bg-oat px-4">
@@ -261,8 +219,6 @@ const OrderTracking = () => {
   }
 
   const currentStepIndex = STATUS_STEPS.findIndex((s) => s.key === order.status);
-  const isIOS = isIOSDevice();
-  const isPWA = isStandalonePWA();
 
   return (
     <div className="min-h-screen bg-oat py-8 px-4 sm:px-6 pb-28">
@@ -300,81 +256,7 @@ const OrderTracking = () => {
           </div>
         )}
 
-        {/* Notification Permission Card Banner */}
-        {notificationPermission === 'granted' ? (
-          <div className="mb-6 p-4 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 shadow-warm-sm flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
-                <Check className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="font-bold text-emerald-900 dark:text-emerald-200 text-xs sm:text-sm">
-                  Live Counter Alerts Active
-                </h4>
-                <p className="text-[11px] text-emerald-700 dark:text-emerald-400">
-                  You'll be alerted immediately when your meal is hot & ready for pickup.
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                unlockAudio();
-                playOrderBellSound();
-              }}
-              className="p-2 text-emerald-800 dark:text-emerald-200 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-full transition-colors flex-shrink-0"
-              title="Test Alert Chime"
-            >
-              <Volume2 className="w-4 h-4" />
-            </button>
-          </div>
-        ) : notificationPermission === 'denied' ? (
-          <div className="mb-6 p-4 rounded-3xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 shadow-warm-sm flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <h4 className="font-bold text-amber-900 dark:text-amber-200 text-xs sm:text-sm">
-                Notifications are blocked in your browser
-              </h4>
-              <p className="text-[11px] text-amber-800 dark:text-amber-300 mt-0.5 leading-snug">
-                To enable live alerts, tap the <strong>🔒 padlock / tune icon</strong> in your browser address bar and switch Notifications to <strong>Allow</strong>.
-              </p>
-            </div>
-          </div>
-        ) : isIOS && !isPWA ? (
-          <div className="mb-6 p-4 rounded-3xl bg-[#F2EDE2] dark:bg-[#2F2F26] border border-[#DDD4C0] dark:border-[#3D3D30] shadow-warm-sm flex items-start gap-3">
-            <Smartphone className="w-5 h-5 text-terracotta flex-shrink-0 mt-0.5" />
-            <div>
-              <h4 className="font-bold text-espresso dark:text-white text-xs sm:text-sm">
-                Enable iPhone Push Alerts
-              </h4>
-              <p className="text-[11px] text-stone-600 dark:text-stone-300 mt-0.5 leading-snug">
-                Tap <strong>Share ➔ Add to Home Screen</strong> in Safari to receive real-time counter pickup notifications on your lock screen.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-[#F2EDE2] dark:bg-[#2F2F26] border border-[#DDD4C0] dark:border-[#3D3D30] shadow-warm-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#A6472B] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
-                <BellRing className="w-5 h-5 animate-bounce" />
-              </div>
-              <div>
-                <h4 className="font-bold text-[#2A2A22] dark:text-white text-sm">Allow Order Alerts</h4>
-                <p className="text-xs text-[#5A5748] dark:text-[#C4BFB2] mt-0.5 font-sans">
-                  Get instant notifications the moment your order is ready for pickup!
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleEnableNotifications}
-              disabled={isRequesting}
-              className="px-5 py-2.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white font-bold text-xs shadow-sm hover:scale-105 active:scale-95 transition-all flex-shrink-0 whitespace-nowrap self-start sm:self-auto cursor-pointer"
-            >
-              {isRequesting ? 'Enabling...' : 'Allow Notifications'}
-            </button>
-          </div>
-        )}
+
 
         {/* Main Tracking Card */}
         <div className="bg-white dark:bg-[#23231C] rounded-3xl border border-[#DDD4C0] dark:border-[#3D3D30] shadow-warm-xl p-6 sm:p-8">

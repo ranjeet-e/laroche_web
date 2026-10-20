@@ -134,60 +134,119 @@ export const playReminderPingSound = async () => {
 
 /**
  * Voice dictation: Announces incoming order items and customer name for the kitchen team
- * e.g., "Peri-Peri Fries for Ranjeet"
+ * e.g., "1 Cheese Chilli Maggie for Ranjeet"
  */
+let activeUtteranceRef = null;
+
 export const speakOrderAnnouncement = (order) => {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    console.warn('[Kitchen Audio] Speech synthesis not supported in this browser');
+    return;
+  }
 
   try {
-    // Cancel previous speech to prevent overlapping queues
-    window.speechSynthesis.cancel();
+    // Determine customer name cleanly
+    let customerName = 'Guest';
+    if (order?.student?.name) {
+      customerName = order.student.name.trim().split(' ')[0];
+    } else if (order?.customerName) {
+      customerName = order.customerName.trim().split(' ')[0];
+    } else if (order?.orderNumber) {
+      customerName = `Order ${order.orderNumber}`;
+    }
 
-    const customerName =
-      order?.student?.name?.trim()?.split(' ')[0] ||
-      (order?.orderNumber ? `Order ${order.orderNumber}` : 'Student');
+    // Capitalize first letter (e.g., "ranjeet" -> "Ranjeet")
+    if (customerName && customerName.length > 0) {
+      customerName = customerName.charAt(0).toUpperCase() + customerName.slice(1);
+    }
 
+    // Format items: "1 Cheese Chilli Maggie", "2 Cold Coffee, and 1 Peri-Peri Fries"
     const items = Array.isArray(order?.items) ? order.items : [];
     let itemsText = '';
     if (items.length > 0) {
       itemsText = items
-        .map((i) => `${i.quantity > 1 ? `${i.quantity} ` : ''}${i.name}`)
+        .map((i) => {
+          const qty = i.quantity || 1;
+          const name = i.name || i.title || 'Item';
+          return `${qty} ${name}`;
+        })
         .join(', and ');
     } else {
       itemsText = 'New order';
     }
 
     const phrase = `${itemsText} for ${customerName}`;
+    console.log('[Kitchen Audio] Dictating incoming order:', phrase);
 
-    const utterance = new SpeechSynthesisUtterance(phrase);
-    utterance.rate = 0.92; // clear, steady kitchen tempo
-    utterance.pitch = 1.02;
-    utterance.lang = 'en-IN'; // Indian English pronunciation
-
-    // Select Indian English voice if available in browser
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice =
-      voices.find((v) => v.lang === 'en-IN' || v.lang === 'en_IN') ||
-      voices.find((v) => v.lang?.startsWith('en'));
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
+    // Cancel previous utterance and resume if browser suspended speech
+    window.speechSynthesis.cancel();
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
     }
 
-    // 350ms delay to let the initial bell chime register first
+    const utterance = new SpeechSynthesisUtterance(phrase);
+    utterance.rate = 0.92;
+    utterance.pitch = 1.0;
+    utterance.lang = 'en-IN';
+
+    // Prevent Chrome V8 garbage-collection bug:
+    // Retain a persistent global reference until speech finishes
+    activeUtteranceRef = utterance;
+    window._laroche_active_speech = utterance;
+
+    utterance.onend = () => {
+      activeUtteranceRef = null;
+      window._laroche_active_speech = null;
+    };
+
+    utterance.onerror = (err) => {
+      console.warn('[Kitchen Audio] Speech error:', err);
+      activeUtteranceRef = null;
+      window._laroche_active_speech = null;
+    };
+
+    // Voice selection: prioritize Indian English, then British/American, then default
+    const voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length > 0) {
+      const preferredVoice =
+        voices.find((v) => v.lang === 'en-IN' || v.lang === 'en_IN') ||
+        voices.find((v) => v.lang === 'en-GB') ||
+        voices.find((v) => v.lang?.startsWith('en')) ||
+        voices[0];
+
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+        utterance.lang = preferredVoice.lang;
+      }
+    }
+
+    // Delay 450ms so the initial counter bell chime rings first, followed by clear voice dictation
     setTimeout(() => {
-      window.speechSynthesis.speak(utterance);
-    }, 350);
+      try {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+        window.speechSynthesis.speak(utterance);
+      } catch (err) {
+        console.warn('[Kitchen Audio] speak() failed:', err);
+      }
+    }, 450);
   } catch (err) {
-    console.warn('Speech synthesis alert failed:', err);
+    console.warn('[Kitchen Audio] Speech synthesis failure:', err);
   }
 };
 
 // Pre-load browser speech voices
 if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-  window.speechSynthesis.onvoiceschanged = () => {
-    try {
-      window.speechSynthesis.getVoices();
-    } catch (e) {}
-  };
+  try {
+    window.speechSynthesis.getVoices();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        try {
+          window.speechSynthesis.getVoices();
+        } catch (e) {}
+      };
+    }
+  } catch (e) {}
 }
 

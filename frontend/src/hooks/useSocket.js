@@ -17,6 +17,18 @@ export const useSocket = ({ onNewOrder, onOrderReady, onOrderStatusUpdated, onSt
   const socketRef = useRef(null);
   const { user, isStudent, isKitchen } = useAuth();
 
+  const onNewOrderRef = useRef(onNewOrder);
+  onNewOrderRef.current = onNewOrder;
+
+  const onOrderReadyRef = useRef(onOrderReady);
+  onOrderReadyRef.current = onOrderReady;
+
+  const onOrderStatusUpdatedRef = useRef(onOrderStatusUpdated);
+  onOrderStatusUpdatedRef.current = onOrderStatusUpdated;
+
+  const onStoreStatusChangedRef = useRef(onStoreStatusChanged);
+  onStoreStatusChangedRef.current = onStoreStatusChanged;
+
   useEffect(() => {
     const socket = io(getSocketUrl(), {
       transports: ['websocket', 'polling'],
@@ -24,39 +36,47 @@ export const useSocket = ({ onNewOrder, onOrderReady, onOrderStatusUpdated, onSt
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      if (user) {
-        const studentId = user.id || user._id;
-        if (isKitchen) {
-          socket.emit('join_kitchen');
-        } else if (isStudent && studentId) {
-          socket.emit('join_student', studentId);
-        }
+      const studentId = user?.id || user?._id;
+      // Join kitchen room if kitchen, admin, cms, or if component handles new orders
+      if (isKitchen || user?.role === 'admin' || user?.role === 'cms' || Boolean(onNewOrderRef.current)) {
+        socket.emit('join_kitchen');
+      }
+      if (isStudent && studentId) {
+        socket.emit('join_student', studentId);
       }
       if (orderId) {
         socket.emit('join_order', orderId);
       }
     });
 
-    if (onNewOrder) {
-      socket.on('new_order', onNewOrder);
-    }
+    socket.on('new_order', (order) => {
+      if (onNewOrderRef.current) {
+        onNewOrderRef.current(order);
+      }
+    });
 
-    if (onOrderReady) {
-      socket.on('order_ready', onOrderReady);
-    }
+    socket.on('order_ready', (order) => {
+      if (onOrderReadyRef.current) {
+        onOrderReadyRef.current(order);
+      }
+    });
 
-    if (onOrderStatusUpdated) {
-      socket.on('order_status_updated', onOrderStatusUpdated);
-    }
+    socket.on('order_status_updated', (order) => {
+      if (onOrderStatusUpdatedRef.current) {
+        onOrderStatusUpdatedRef.current(order);
+      }
+    });
 
-    if (onStoreStatusChanged) {
-      socket.on('store_status_changed', onStoreStatusChanged);
-    }
+    socket.on('store_status_changed', (status) => {
+      if (onStoreStatusChangedRef.current) {
+        onStoreStatusChangedRef.current(status);
+      }
+    });
 
     return () => {
       socket.disconnect();
     };
-  }, [user, isStudent, isKitchen, orderId, onStoreStatusChanged]);
+  }, [user, isStudent, isKitchen, orderId]);
 
   return socketRef.current;
 };
