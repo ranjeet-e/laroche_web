@@ -115,12 +115,19 @@ const updateOrderStatus = async (req, res, next) => {
     }
 
     order.status = status;
+    if (status === 'ready' && !order.readyAt) {
+      order.readyAt = new Date();
+    } else if (status === 'collected' && !order.collectedAt) {
+      order.collectedAt = new Date();
+    }
+
     await order.save();
 
     // Broadcast status change across all clients (student order tracking + other kitchen tabs)
     notifyOrderStatusUpdated(order);
 
     res.status(200).json(order);
+
   } catch (error) {
     next(error);
   }

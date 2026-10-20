@@ -36,7 +36,99 @@ const STATUS_STEPS = [
   { key: 'collected', label: 'Completed', desc: 'Order collected. Enjoy your meal!' },
 ];
 
+const FreshnessCountdown = ({ readyAt, updatedAt }) => {
+  const baseTime = readyAt
+    ? new Date(readyAt).getTime()
+    : updatedAt
+    ? new Date(updatedAt).getTime()
+    : Date.now();
+  const FRESHNESS_DURATION = 10 * 60; // 10 minutes in seconds
+
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const elapsed = Math.floor((Date.now() - baseTime) / 1000);
+    return Math.max(0, FRESHNESS_DURATION - elapsed);
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - baseTime) / 1000);
+      setTimeLeft(Math.max(0, FRESHNESS_DURATION - elapsed));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [baseTime]);
+
+  const mins = Math.floor(timeLeft / 60);
+  const secs = timeLeft % 60;
+  const timeFormatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  const progressPercent = Math.min(100, Math.max(0, (timeLeft / FRESHNESS_DURATION) * 100));
+
+  if (timeLeft > 0) {
+    return (
+      <div className="my-5 p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-[#2B231D] dark:to-[#221B16] border-2 border-orange-300/80 dark:border-orange-800/60 shadow-warm-md animate-fadeIn">
+        <div className="flex items-center justify-between gap-3 mb-2.5">
+          <div className="flex items-center gap-2">
+            <span className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-sm">
+              🔥
+            </span>
+            <div>
+              <h4 className="font-bold text-espresso dark:text-white text-sm sm:text-base">
+                Peak Freshness Window
+              </h4>
+              <p className="text-[11px] text-taupe dark:text-stone-400">
+                Freshly plated off the griddle & coffee bar
+              </p>
+            </div>
+          </div>
+          <div className="text-right">
+            <span className="font-mono text-xl sm:text-2xl font-black text-orange-600 dark:text-orange-400">
+              {timeFormatted}
+            </span>
+            <span className="block text-[10px] uppercase font-bold text-stone-500 tracking-wider">
+              Remaining
+            </span>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="w-full bg-orange-200/50 dark:bg-stone-800 h-2 rounded-full overflow-hidden mb-2.5">
+          <div
+            className="bg-gradient-to-r from-amber-500 to-orange-600 h-full rounded-full transition-all duration-1000"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+
+        <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
+          ⚡ <strong>Head to the counter:</strong> Sourdough toasties, sandwiches & coffees are at peak crunch and temperature. Please collect before the timer expires!
+        </p>
+      </div>
+    );
+  }
+
+  // Expired State
+  return (
+    <div className="my-5 p-4 sm:p-5 rounded-3xl bg-amber-500/10 dark:bg-amber-950/40 border-2 border-amber-500/40 dark:border-amber-700/60 shadow-warm-md animate-fadeIn">
+      <div className="flex items-start gap-3">
+        <div className="w-8 h-8 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-400 flex items-center justify-center flex-shrink-0 font-bold mt-0.5">
+          ⚠️
+        </div>
+        <div>
+          <h4 className="font-bold text-amber-900 dark:text-amber-200 text-sm sm:text-base">
+            Peak Freshness Window Expired
+          </h4>
+          <p className="text-xs text-amber-800/90 dark:text-amber-300/90 mt-1 leading-relaxed">
+            This order was prepared over 10 minutes ago. Artisanal sourdough toasties and coffees naturally lose crispness and optimal heat over time.
+          </p>
+          <div className="mt-2 p-2.5 rounded-xl bg-amber-500/15 text-[11px] font-semibold text-amber-950 dark:text-amber-100 border border-amber-500/20">
+            * Advisory Notice: To maintain food quality standards, the café is not liable for sogginess, texture change, or loss of temperature after this window expires. Please collect your order immediately at the pickup counter.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const OrderTracking = () => {
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
@@ -314,8 +406,14 @@ const OrderTracking = () => {
             </div>
           </div>
 
+          {/* Freshness Countdown & Quality Advisory (Shows when order is Ready) */}
+          {order.status === 'ready' && (
+            <FreshnessCountdown readyAt={order.readyAt} updatedAt={order.updatedAt} />
+          )}
+
           {/* Stepper Progress */}
           <div className="my-8 space-y-6">
+
             {STATUS_STEPS.map((step, idx) => {
               const isCompleted = currentStepIndex >= idx;
               const isCurrent = currentStepIndex === idx;

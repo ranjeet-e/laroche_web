@@ -59,29 +59,41 @@ const CATEGORIES = [
   'Add-ons',
 ];
 
-const KitchenOrderTimer = ({ createdAt, status }) => {
+const KitchenOrderTimer = ({ createdAt, readyAt, status }) => {
+  const isReady = status === 'ready';
+  const referenceTime = isReady ? (readyAt || createdAt) : createdAt;
+
   const [elapsed, setElapsed] = useState(() => {
-    return Math.max(0, Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000));
+    return Math.max(0, Math.floor((Date.now() - new Date(referenceTime).getTime()) / 1000));
   });
 
   useEffect(() => {
     if (status === 'collected') return;
 
     const interval = setInterval(() => {
-      setElapsed(Math.max(0, Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000)));
+      setElapsed(Math.max(0, Math.floor((Date.now() - new Date(referenceTime).getTime()) / 1000)));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [createdAt, status]);
+  }, [referenceTime, status]);
 
   const mins = Math.floor(elapsed / 60);
   const secs = elapsed % 60;
   const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
-  if (status === 'ready') {
+  if (isReady) {
+    if (mins >= 10) {
+      return (
+        <div className="kitchen-order-timer timer-overdue" title={`Ready ${mins}m ago (Cold)`}>
+          <span className="kitchen-timer-digits">⚠️ Ready {mins}m</span>
+          <span className="kitchen-timer-badge">Cold</span>
+        </div>
+      );
+    }
     return (
-      <div className="kitchen-order-timer timer-ready-state">
-        <span className="kitchen-timer-digits">✓ Ready</span>
+      <div className="kitchen-order-timer timer-ready-state" title={`Ready ${mins}m ago`}>
+        <span className="kitchen-timer-digits">✓ Ready ({mins}m)</span>
+        <span className="kitchen-timer-badge">Counter</span>
       </div>
     );
   }
@@ -706,7 +718,7 @@ const KitchenDashboard = () => {
                         <span className="order-id">
                           Order #{order.orderNumber ? order.orderNumber : order._id.slice(-4).toUpperCase()}
                         </span>
-                        <KitchenOrderTimer createdAt={order.createdAt} status={order.status} />
+                        <KitchenOrderTimer createdAt={order.createdAt} readyAt={order.readyAt || order.updatedAt} status={order.status} />
                       </div>
                       <div className="order-card-subinfo">
                         <span className="order-card-kanban-student">{order.student?.name || 'Guest'}</span>

@@ -52,12 +52,16 @@ const TermsConditions = () => {
 
           <section>
             <h2 className="text-lg font-bold text-espresso dark:text-white mb-2 font-serif flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-terracotta" /> 3. Food Freshness & Quality
+              <CheckCircle2 className="w-4 h-4 text-terracotta" /> 3. Food Freshness & 10-Minute Quality Window
             </h2>
             <p>
-              All coffees, artisan toasties, and baked goods are made fresh to order. We recommend collecting your order within 10 minutes of receiving the "Ready for Pickup" alert for optimal taste and quality.
+              All coffees, artisan toasties, and baked goods are prepared fresh to order. We provide a <strong>10-minute Peak Freshness window</strong> immediately following the &quot;Ready for Pickup&quot; notification.
+            </p>
+            <p className="mt-2 text-xs sm:text-sm">
+              Because freshly grilled sandwiches, paninis, and hot coffees naturally lose temperature and crispness over time, the café bears no liability for sogginess, texture change, melting (desserts/shakes), or loss of heat if an order is collected beyond this 10-minute timeframe. Customers are strongly encouraged to collect their orders promptly upon counter notification.
             </p>
           </section>
+
         </div>
       </div>
     </div>

@@ -59,9 +59,16 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Payment',
     },
+    readyAt: {
+      type: Date,
+    },
+    collectedAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
+
 
 // Fast student order history lookups and kitchen active order queues
 orderSchema.index({ student: 1, createdAt: -1 });
