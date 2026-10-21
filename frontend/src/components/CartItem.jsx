@@ -20,7 +20,7 @@ const CartItem = ({ item }) => {
   const hasAddons = Array.isArray(item.addons) && item.addons.length > 0;
 
   return (
-    <div className="flex items-center justify-between p-4 sm:p-5 bg-white dark:bg-[#2B2421] rounded-2xl border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-sm hover:shadow-warm-md transition-all duration-200">
+    <div className="flex items-center justify-between p-4 sm:p-5 bg-[#FFF9EC] dark:bg-[#2B2421] rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm hover:shadow-warm-md transition-all duration-200">
       <div className="flex-1 pr-3 font-sans">
         <h4 className="font-serif font-medium text-espresso dark:text-stone-100 text-sm sm:text-base leading-snug">
           {item.name}
@@ -32,7 +32,7 @@ const CartItem = ({ item }) => {
             {item.addons.map((addon, i) => (
               <span
                 key={addon._id || i}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#E9E0CC] dark:bg-[#2F2F26] text-[#A6472B] dark:text-[#E9E0CC] border border-[#DDD4C0] dark:border-[#3D3D30]"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-[#F9EAC7] dark:bg-[#2F2F26] text-[#A6472B] dark:text-[#E9E0CC] border border-[#ECD5A5] dark:border-[#3D3D30]"
               >
                 <span>+ {addon.name}</span>
                 {addon.price > 0 && <span className="opacity-75 font-price">(₹{addon.price})</span>}
@@ -48,11 +48,11 @@ const CartItem = ({ item }) => {
 
       <div className="flex items-center gap-3">
         {/* Stepper */}
-        <div className="inline-flex items-center bg-stone-100 dark:bg-[#362E2A] rounded-full p-1 border border-stone-200/80 dark:border-[#4A3B32]">
+        <div className="inline-flex items-center bg-[#F9EAC7]/70 dark:bg-[#362E2A] rounded-full p-1 border border-[#ECD5A5] dark:border-[#4A3B32]">
           <button
             type="button"
             onClick={handleDecrease}
-            className="w-7 h-7 rounded-full bg-white dark:bg-[#2B2421] hover:bg-stone-200 dark:hover:bg-[#4A3B32] text-espresso dark:text-stone-100 flex items-center justify-center shadow-xs transition-colors"
+            className="w-7 h-7 rounded-full bg-[#FFF9EC] dark:bg-[#2B2421] hover:bg-[#F9EAC7] dark:hover:bg-[#4A3B32] text-espresso dark:text-stone-100 flex items-center justify-center shadow-xs transition-colors"
             aria-label="Decrease"
           >
             <Minus className="w-3.5 h-3.5" />
@@ -61,7 +61,7 @@ const CartItem = ({ item }) => {
           <button
             type="button"
             onClick={handleIncrease}
-            className="w-7 h-7 rounded-full bg-white dark:bg-[#2B2421] hover:bg-stone-200 dark:hover:bg-[#4A3B32] text-espresso dark:text-stone-100 flex items-center justify-center shadow-xs transition-colors"
+            className="w-7 h-7 rounded-full bg-[#FFF9EC] dark:bg-[#2B2421] hover:bg-[#F9EAC7] dark:hover:bg-[#4A3B32] text-espresso dark:text-stone-100 flex items-center justify-center shadow-xs transition-colors"
             aria-label="Increase"
           >
             <Plus className="w-3.5 h-3.5" />

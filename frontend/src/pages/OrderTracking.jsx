@@ -192,7 +192,7 @@ const OrderTracking = () => {
 
   if (loading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-oat px-4">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-transparent px-4">
         <div className="w-12 h-12 rounded-full border-3 border-terracotta/20 border-t-terracotta animate-spin mb-4" />
         <p className="text-sm font-bold text-taupe tracking-wide">Tracking order live...</p>
       </div>
@@ -201,7 +201,7 @@ const OrderTracking = () => {
 
   if (error || !order) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-oat px-6 text-center">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-transparent px-6 text-center">
         <div className="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-4 text-2xl font-bold">
           ⚠️
         </div>
@@ -221,7 +221,7 @@ const OrderTracking = () => {
   const currentStepIndex = STATUS_STEPS.findIndex((s) => s.key === order.status);
 
   return (
-    <div className="min-h-screen bg-oat py-8 px-4 sm:px-6 pb-28">
+    <div className="min-h-screen bg-transparent py-8 px-4 sm:px-6 pb-28">
       <div className="max-w-2xl mx-auto">
         {/* Navigation Link */}
         <div className="mb-4">
@@ -259,9 +259,9 @@ const OrderTracking = () => {
 
 
         {/* Main Tracking Card */}
-        <div className="bg-white dark:bg-[#23231C] rounded-3xl border border-[#DDD4C0] dark:border-[#3D3D30] shadow-warm-xl p-6 sm:p-8">
+        <div className="bg-[#FFF9EC] dark:bg-[#23231C] rounded-3xl border border-[#ECD5A5] dark:border-[#3D3D30] shadow-warm-xl p-6 sm:p-8">
           {/* Card Header */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-[#DDD4C0] dark:border-[#3D3D30]">
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-[#ECD5A5] dark:border-[#3D3D30]">
             <div>
               <span className="text-xs font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider block">
                 Live Status Tracker
@@ -318,7 +318,7 @@ const OrderTracking = () => {
                         ? 'bg-[#A6472B] text-white shadow-glow-terracotta'
                         : isCurrent
                         ? 'bg-[#2A2A22] dark:bg-[#A6472B] text-white ring-4 ring-[#A6472B]/20'
-                        : 'bg-[#F2EDE2] dark:bg-[#2F2F26] text-[#5A5748] dark:text-[#8D897A] border border-[#DDD4C0] dark:border-[#3D3D30]'
+                        : 'bg-[#F9EAC7] dark:bg-[#2F2F26] text-[#5A5748] dark:text-[#8D897A] border border-[#ECD5A5] dark:border-[#3D3D30]'
                     }`}
                   >
                     {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
@@ -345,7 +345,7 @@ const OrderTracking = () => {
           </div>
 
           {/* Ordered Items Summary */}
-          <div className="pt-6 border-t border-[#E5D7D0] dark:border-[#4A3B32]">
+          <div className="pt-6 border-t border-[#ECD5A5] dark:border-[#4A3B32]">
             <h4 className="font-bold text-[#231F20] dark:text-white text-base mb-4">Your Items</h4>
             <div className="space-y-2.5">
               {order.items.map((item, idx) => (
@@ -368,14 +368,14 @@ const OrderTracking = () => {
               ))}
             </div>
 
-            <div className="mt-4 pt-4 border-t border-stone-100 dark:border-[#4A3B32] flex justify-between items-center text-base sm:text-lg font-extrabold text-espresso dark:text-white">
+            <div className="mt-4 pt-4 border-t border-[#ECD5A5] dark:border-[#4A3B32] flex justify-between items-center text-base sm:text-lg font-extrabold text-espresso dark:text-white">
               <span>Total Amount</span>
               <span className="text-terracotta">₹{order.totalAmount}</span>
             </div>
           </div>
 
           {/* Counter Pickup Callout (No QR) */}
-          <div className="mt-6 p-4 rounded-2xl bg-stone-50 dark:bg-[#362E2A] border border-stone-200/80 dark:border-[#4A3B32] text-center">
+          <div className="mt-6 p-4 rounded-2xl bg-[#F9EAC7]/70 dark:bg-[#362E2A] border border-[#ECD5A5] dark:border-[#4A3B32] text-center">
             <span className="text-xs font-bold text-taupe dark:text-[#C5B4A8] uppercase tracking-wider block mb-1">
               Counter Pickup Pass
             </span>

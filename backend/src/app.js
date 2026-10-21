@@ -1,3 +1,6 @@
+const path = require('path');
+const fs = require('fs');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -6,7 +9,6 @@ const authRoutes = require('./routes/authRoutes');
 const menuRoutes = require('./routes/menuRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
-const path = require('path');
 const kitchenRoutes = require('./routes/kitchenRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const cmsRoutes = require('./routes/cmsRoutes');
@@ -45,9 +47,12 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:5000',
+  'http://localhost:5050',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:5000',
+  'http://127.0.0.1:5050',
+  'http://172.16.100.42:5050',
 ];
 
 app.use(
@@ -58,7 +63,7 @@ app.use(
         return callback(null, true);
       }
 
-      // 2. Allow if wildcard or development
+      // 2. Allow if wildcard, development, port 5050 or college subnet
       if (
         process.env.CLIENT_URL === '*' ||
         process.env.NODE_ENV !== 'production' ||
@@ -66,7 +71,10 @@ app.use(
         origin.endsWith('.vercel.app') ||
         origin.includes('vercel.app') ||
         origin.includes('localhost') ||
-        origin.includes('127.0.0.1')
+        origin.includes('127.0.0.1') ||
+        origin.includes(':5050') ||
+        origin.startsWith('http://172.16.') ||
+        origin.startsWith('https://172.16.')
       ) {
         return callback(null, true);
       }
@@ -108,10 +116,29 @@ app.use('/api/kitchen', kitchenRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/cms', cmsRoutes);
 
-// Root endpoint
-app.get('/', (req, res) => {
-  res.status(200).json({ message: 'La Roche Cafe API is running' });
-});
+// Serve frontend static files if built
+const frontendDistPath = path.join(__dirname, '../../frontend/dist');
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+
+  // Client-side SPA routing fallback: serve index.html for any non-API route
+  app.get('*', (req, res, next) => {
+    if (
+      req.path.startsWith('/api') ||
+      req.path.startsWith('/uploads') ||
+      req.path.startsWith('/menu-items') ||
+      req.path === '/health'
+    ) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+} else {
+  // Fallback root endpoint if frontend is not built
+  app.get('/', (req, res) => {
+    res.status(200).json({ message: 'La Roche Cafe API is running' });
+  });
+}
 
 // Global error handler — must be last
 app.use(errorHandler);

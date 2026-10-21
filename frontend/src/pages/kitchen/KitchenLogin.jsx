@@ -145,8 +145,8 @@ const KitchenLogin = () => {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-oat dark:bg-[#1A1412] transition-colors">
-      <div className="w-full max-w-md bg-white dark:bg-[#2B2421] rounded-3xl border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-xl p-6 sm:p-8 relative">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-transparent dark:bg-[#1A1412] transition-colors">
+      <div className="w-full max-w-md bg-[#FFF9EC] dark:bg-[#2B2421] rounded-3xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-xl p-6 sm:p-8 relative">
         
         {/* Header */}
         <div className="text-center mb-6">
@@ -183,7 +183,7 @@ const KitchenLogin = () => {
                 <input
                   type="email"
                   name="email"
-                  className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#1E1815] text-espresso dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#1E1815] focus:ring-2 focus:ring-terracotta/10 transition-all"
+                  className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] bg-[#F9EAC7]/40 dark:bg-[#1E1815] text-espresso dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-[#FFF9EC] dark:focus:bg-[#1E1815] focus:ring-2 focus:ring-terracotta/10 transition-all"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Enter staff email"
@@ -214,7 +214,7 @@ const KitchenLogin = () => {
                 <input
                   type="password"
                   name="password"
-                  className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#1E1815] text-espresso dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#1E1815] focus:ring-2 focus:ring-terracotta/10 transition-all"
+                  className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] bg-[#F9EAC7]/40 dark:bg-[#1E1815] text-espresso dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-[#FFF9EC] dark:focus:bg-[#1E1815] focus:ring-2 focus:ring-terracotta/10 transition-all"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter staff password"
@@ -241,7 +241,7 @@ const KitchenLogin = () => {
                   <Mail className="w-4 h-4 text-taupe dark:text-stone-400 absolute left-3.5 pointer-events-none" />
                   <input
                     type="email"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#1E1815] text-espresso dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#1E1815] focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] bg-[#F9EAC7]/40 dark:bg-[#1E1815] text-espresso dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-[#FFF9EC] dark:focus:bg-[#1E1815] focus:ring-2 focus:ring-terracotta/10 transition-all"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="staff@laroche.com"
@@ -288,7 +288,7 @@ const KitchenLogin = () => {
                 <input
                   type="text"
                   inputMode="numeric"
-                  className="w-full px-4 py-3 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#1E1815] text-espresso dark:text-stone-100 text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#1E1815] focus:ring-2 focus:ring-terracotta/10 transition-all"
+                  className="w-full px-4 py-3 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] bg-[#F9EAC7]/40 dark:bg-[#1E1815] text-espresso dark:text-stone-100 text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-terracotta focus:bg-[#FFF9EC] dark:focus:bg-[#1E1815] focus:ring-2 focus:ring-terracotta/10 transition-all"
                   placeholder="••••••"
                   value={forgotOtp}
                   maxLength={6}
@@ -303,7 +303,7 @@ const KitchenLogin = () => {
                   <Lock className="w-4 h-4 text-taupe dark:text-stone-400 absolute left-3.5 pointer-events-none" />
                   <input
                     type="password"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-stone-200 dark:border-[#4A3B32] bg-stone-50/50 dark:bg-[#1E1815] text-espresso dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-white dark:focus:bg-[#1E1815] focus:ring-2 focus:ring-terracotta/10 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] bg-[#F9EAC7]/40 dark:bg-[#1E1815] text-espresso dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 text-xs sm:text-sm font-medium focus:outline-none focus:border-terracotta focus:bg-[#FFF9EC] dark:focus:bg-[#1E1815] focus:ring-2 focus:ring-terracotta/10 transition-all"
                     value={forgotNewPassword}
                     onChange={(e) => setForgotNewPassword(e.target.value)}
                     placeholder="Enter at least 6 characters"

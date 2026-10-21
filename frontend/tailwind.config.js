@@ -10,12 +10,12 @@ export default {
       colors: {
         // Core Palette Tokens
         cream: {
-          DEFAULT: '#F2EDE2', // Primary background — warm, not stark white
-          2: '#E9E0CC',       // Secondary surface — cards, process block, form fields
-          surface: '#F2EDE2',
-          card: '#E9E0CC',
-          light: '#FAF7F2',
-          border: '#DDD4C0',
+          DEFAULT: '#F9EAC7', // Primary warm cafe background (100% match)
+          2: '#F5D7B6',       // Secondary doodle & warm accent tone
+          surface: '#F9EAC7',
+          card: '#FFF9EC',    // Warm custard card surface
+          light: '#FFFCF4',
+          border: '#ECD5A5',  // Warm biscuit border
         },
         ink: {
           DEFAULT: '#2A2A22', // Primary text, dark surfaces (nav-dark card, buttons)
@@ -65,10 +65,10 @@ export default {
           subtle: '#F2EDE2',
         },
         oat: {
-          DEFAULT: '#F2EDE2',
-          light: '#FAF7F2',
-          dark: '#E9E0CC',
-          surface: '#F2EDE2',
+          DEFAULT: '#F9EAC7',
+          light: '#FFFCF4',
+          dark: '#F5D7B6',
+          surface: '#F9EAC7',
           night: '#1A1A14',
         },
         terracotta: {

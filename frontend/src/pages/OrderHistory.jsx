@@ -27,7 +27,7 @@ const OrderHistory = () => {
 
   if (loading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-oat dark:bg-[#1A1718] px-4">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-transparent dark:bg-[#1A1718] px-4">
         <div className="w-12 h-12 rounded-full border-3 border-terracotta/20 border-t-terracotta animate-spin mb-4" />
         <p className="text-sm font-bold text-taupe dark:text-stone-400 tracking-wide">Loading your orders...</p>
       </div>
@@ -36,7 +36,7 @@ const OrderHistory = () => {
 
   if (error) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-oat dark:bg-[#1A1718] px-6 text-center">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-transparent dark:bg-[#1A1718] px-6 text-center">
         <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/40 text-red-500 flex items-center justify-center mb-4 text-2xl font-bold">
           ⚠️
         </div>
@@ -55,8 +55,8 @@ const OrderHistory = () => {
 
   if (orders.length === 0) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-oat dark:bg-[#1A1718] px-4 text-center">
-        <div className="w-20 h-20 rounded-full bg-white dark:bg-[#2B2421] border border-stone-200 dark:border-[#4A3B32] shadow-warm-md flex items-center justify-center mb-5 text-terracotta">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-transparent dark:bg-[#1A1718] px-4 text-center">
+        <div className="w-20 h-20 rounded-full bg-[#FFF9EC] dark:bg-[#2B2421] border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-md flex items-center justify-center mb-5 text-terracotta">
           🍽️
         </div>
         <h2 className="text-2xl font-serif font-bold text-espresso dark:text-white mb-2">
@@ -77,7 +77,7 @@ const OrderHistory = () => {
   }
 
   return (
-    <div className="min-h-screen bg-oat dark:bg-[#1A1718] py-8 px-4 sm:px-6 pb-28 transition-colors">
+    <div className="min-h-screen bg-transparent dark:bg-[#1A1718] py-8 px-4 sm:px-6 pb-28 transition-colors">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl sm:text-3xl font-serif font-bold text-espresso dark:text-white mb-6 tracking-tight">
           My Orders
@@ -88,7 +88,7 @@ const OrderHistory = () => {
             <div
               key={order._id}
               onClick={() => navigate(`/orders/${order._id}`)}
-              className="p-5 sm:p-6 bg-white dark:bg-[#2B2421] rounded-3xl border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-sm hover:shadow-warm-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+              className="p-5 sm:p-6 bg-[#FFF9EC] dark:bg-[#2B2421] rounded-3xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm hover:shadow-warm-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
             >
               <div className="flex items-center justify-between gap-3 mb-3">
                 <span className="font-extrabold text-espresso dark:text-white text-base">

@@ -16,7 +16,7 @@ export const getApiBaseUrl = () => {
 
 export const getBackendBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL;
-  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '' && !envUrl.startsWith('/')) {
     return envUrl.trim().replace(/\/api\/?$/, '').replace(/\/$/, '');
   }
   if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {

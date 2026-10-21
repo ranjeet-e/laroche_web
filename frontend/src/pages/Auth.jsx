@@ -463,8 +463,8 @@ const Auth = ({ initialMode = 'login' }) => {
   const searchParamStr = searchParams.toString() ? `?${searchParams.toString()}` : '';
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#F2EDE2] dark:bg-[#1A1A14] transition-colors duration-300">
-      <div className="w-full max-w-md bg-white dark:bg-[#23231C] rounded-3xl border border-[#DDD4C0] dark:border-[#3D3D30] shadow-warm-xl p-6 sm:p-8 relative overflow-hidden transition-colors duration-300">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-transparent dark:bg-[#1A1A14] transition-colors duration-300">
+      <div className="w-full max-w-md bg-[#FFF9EC] dark:bg-[#23231C] rounded-3xl border border-[#ECD5A5] dark:border-[#3D3D30] shadow-warm-xl p-6 sm:p-8 relative overflow-hidden transition-colors duration-300">
         
         {/* Brand Logo Header */}
         <div className="text-center mb-6">
@@ -530,8 +530,8 @@ const Auth = ({ initialMode = 'login' }) => {
                 <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">
                   Mobile Number
                 </label>
-                <div className="flex items-center rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] overflow-hidden focus-within:border-[#A6472B] focus-within:ring-2 focus-within:ring-[#A6472B]/20 transition-all">
-                  <span className="px-3.5 py-3 bg-[#FAF7F2] dark:bg-[#23231C] text-[#2A2A22] dark:text-white text-xs font-bold border-r border-[#DDD4C0] dark:border-[#3D3D30]">
+                <div className="flex items-center rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] overflow-hidden focus-within:border-[#A6472B] focus-within:ring-2 focus-within:ring-[#A6472B]/20 transition-all">
+                  <span className="px-3.5 py-3 bg-[#F9EAC7] dark:bg-[#23231C] text-[#2A2A22] dark:text-white text-xs font-bold border-r border-[#ECD5A5] dark:border-[#3D3D30]">
                     +91
                   </span>
                   <input
@@ -574,7 +574,7 @@ const Auth = ({ initialMode = 'login' }) => {
               type="button"
               onClick={handleGoogleButtonClick}
               disabled={loading}
-              className="w-full py-3 px-4 rounded-full border border-[#DDD4C0] dark:border-[#3D3D30] bg-white hover:bg-[#FAF7F2] dark:bg-[#2F2F26] dark:hover:bg-[#3D3D30] text-[#2A2A22] dark:text-white font-bold text-xs sm:text-sm shadow-warm-sm hover:shadow-warm-md transition-all flex items-center justify-center gap-3 active:scale-[0.99] disabled:opacity-50"
+              className="w-full py-3 px-4 rounded-full border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] hover:bg-[#F9EAC7] dark:bg-[#2F2F26] dark:hover:bg-[#3D3D30] text-[#2A2A22] dark:text-white font-bold text-xs sm:text-sm shadow-warm-sm hover:shadow-warm-md transition-all flex items-center justify-center gap-3 active:scale-[0.99] disabled:opacity-50"
             >
               <GoogleIcon />
               <span>Continue with Google</span>
@@ -582,15 +582,15 @@ const Auth = ({ initialMode = 'login' }) => {
 
             {/* Divider */}
             <div className="relative flex items-center justify-center my-5">
-              <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
-              <span className="bg-white dark:bg-[#23231C] px-3 text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider">
+              <div className="border-t border-[#ECD5A5] dark:border-[#3D3D30] w-full"></div>
+              <span className="bg-[#FFF9EC] dark:bg-[#23231C] px-3 text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider">
                 or 
               </span>
-              <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
+              <div className="border-t border-[#ECD5A5] dark:border-[#3D3D30] w-full"></div>
             </div>
 
             {/* 2 Sign In Methods Sub-Toggle */}
-            <div className="flex bg-[#F2EDE2] dark:bg-[#2F2F26] p-1 rounded-full mb-6 border border-[#DDD4C0] dark:border-[#3D3D30]">
+            <div className="flex bg-[#F9EAC7] dark:bg-[#2F2F26] p-1 rounded-full mb-6 border border-[#ECD5A5] dark:border-[#3D3D30]">
               <button
                 type="button"
                 onClick={() => {
@@ -632,8 +632,8 @@ const Auth = ({ initialMode = 'login' }) => {
                 <form onSubmit={handleSendLoginOtp} className="space-y-4">
                   <div>
                     <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Mobile Number</label>
-                    <div className="flex items-center rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] overflow-hidden focus-within:border-[#A6472B] focus-within:ring-2 focus-within:ring-[#A6472B]/20 transition-all">
-                      <span className="px-3.5 py-3 bg-[#FAF7F2] dark:bg-[#23231C] text-[#2A2A22] dark:text-white text-xs font-bold border-r border-[#DDD4C0] dark:border-[#3D3D30]">
+                    <div className="flex items-center rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] overflow-hidden focus-within:border-[#A6472B] focus-within:ring-2 focus-within:ring-[#A6472B]/20 transition-all">
+                      <span className="px-3.5 py-3 bg-[#F9EAC7] dark:bg-[#23231C] text-[#2A2A22] dark:text-white text-xs font-bold border-r border-[#ECD5A5] dark:border-[#3D3D30]">
                         🇮🇳 +91
                       </span>
                       <input
@@ -682,7 +682,7 @@ const Auth = ({ initialMode = 'login' }) => {
                       ref={otpInputRef}
                       type="text"
                       inputMode="numeric"
-                      className="w-full px-4 py-3 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
+                      className="w-full px-4 py-3 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                       placeholder="••••••"
                       value={otp}
                       maxLength={6}
@@ -727,7 +727,7 @@ const Auth = ({ initialMode = 'login' }) => {
                     <input
                       type="email"
                       name="email"
-                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
+                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                       placeholder="Enter your email"
@@ -761,7 +761,7 @@ const Auth = ({ initialMode = 'login' }) => {
                     <input
                       type="password"
                       name="password"
-                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
+                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                       value={loginData.password}
                       onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                       placeholder="Enter your password"
@@ -805,7 +805,7 @@ const Auth = ({ initialMode = 'login' }) => {
               type="button"
               onClick={handleGoogleButtonClick}
               disabled={loading}
-              className="w-full py-3 px-4 rounded-full border border-[#DDD4C0] dark:border-[#3D3D30] bg-white hover:bg-[#FAF7F2] dark:bg-[#2F2F26] dark:hover:bg-[#3D3D30] text-[#2A2A22] dark:text-white font-bold text-xs sm:text-sm shadow-warm-sm hover:shadow-warm-md transition-all flex items-center justify-center gap-3 active:scale-[0.99] disabled:opacity-50"
+              className="w-full py-3 px-4 rounded-full border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] hover:bg-[#F9EAC7] dark:bg-[#2F2F26] dark:hover:bg-[#3D3D30] text-[#2A2A22] dark:text-white font-bold text-xs sm:text-sm shadow-warm-sm hover:shadow-warm-md transition-all flex items-center justify-center gap-3 active:scale-[0.99] disabled:opacity-50"
             >
               <GoogleIcon />
               <span>Sign up with Google</span>
@@ -813,11 +813,11 @@ const Auth = ({ initialMode = 'login' }) => {
 
             {/* Divider */}
             <div className="relative flex items-center justify-center my-5">
-              <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
-              <span className="bg-white dark:bg-[#23231C] px-3 text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider">
+              <div className="border-t border-[#ECD5A5] dark:border-[#3D3D30] w-full"></div>
+              <span className="bg-[#FFF9EC] dark:bg-[#23231C] px-3 text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider">
                 or 
               </span>
-              <div className="border-t border-[#DDD4C0] dark:border-[#3D3D30] w-full"></div>
+              <div className="border-t border-[#ECD5A5] dark:border-[#3D3D30] w-full"></div>
             </div>
 
             <form onSubmit={handleSignupSubmit} className="space-y-4">
@@ -827,7 +827,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   <UserIcon className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
                   <input
                     type="text"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                     value={signupData.name}
                     onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
                     placeholder="Enter your name"
@@ -838,8 +838,8 @@ const Auth = ({ initialMode = 'login' }) => {
 
               <div>
                 <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Phone Number</label>
-                <div className="flex items-center rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] overflow-hidden focus-within:border-[#A6472B] focus-within:ring-2 focus-within:ring-[#A6472B]/20 transition-all">
-                  <span className="px-3.5 py-3 bg-[#FAF7F2] dark:bg-[#23231C] text-[#2A2A22] dark:text-white text-xs font-bold border-r border-[#DDD4C0] dark:border-[#3D3D30]">
+                <div className="flex items-center rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] overflow-hidden focus-within:border-[#A6472B] focus-within:ring-2 focus-within:ring-[#A6472B]/20 transition-all">
+                  <span className="px-3.5 py-3 bg-[#F9EAC7] dark:bg-[#23231C] text-[#2A2A22] dark:text-white text-xs font-bold border-r border-[#ECD5A5] dark:border-[#3D3D30]">
                     🇮🇳 +91
                   </span>
                   <input
@@ -860,7 +860,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   <Mail className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
                   <input
                     type="email"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                     value={signupData.email}
                     onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
                     placeholder="yourname@gmail.com"
@@ -875,7 +875,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   <Lock className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
                   <input
                     type="password"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#DDD4C0] dark:border-[#3D3D30] bg-white dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                     value={signupData.password}
                     onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                     placeholder="At least 6 characters"
@@ -894,7 +894,7 @@ const Auth = ({ initialMode = 'login' }) => {
               </button>
             </form>
 
-            <div className="mt-8 pt-5 border-t border-[#DDD4C0] dark:border-[#3D3D30] text-center">
+            <div className="mt-8 pt-5 border-t border-[#ECD5A5] dark:border-[#3D3D30] text-center">
               <p className="text-xs text-[#5A5748] dark:text-[#DDD8CB] mb-2">Already have an account?</p>
               <Link
                 to={`/login${searchParamStr}`}
@@ -920,7 +920,7 @@ const Auth = ({ initialMode = 'login' }) => {
                   <Mail className="w-4 h-4 text-[#6B5B52] dark:text-[#C5B4A8] absolute left-3.5 pointer-events-none" />
                   <input
                     type="email"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] bg-[#FFF9EC] dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="Enter your registered email"
@@ -971,7 +971,7 @@ const Auth = ({ initialMode = 'login' }) => {
                 <input
                   type="text"
                   inputMode="numeric"
-                  className="w-full px-4 py-3 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                  className="w-full px-4 py-3 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] bg-[#FFF9EC] dark:bg-[#362E2A] text-[#231F20] dark:text-white text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                   placeholder="••••••"
                   value={forgotOtp}
                   maxLength={6}
@@ -1031,7 +1031,7 @@ const Auth = ({ initialMode = 'login' }) => {
                     type={showNewPassword ? 'text' : 'password'}
                     name="new_password_field"
                     autoComplete="new-password"
-                    className="w-full h-11 pl-10 pr-10 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-10 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] bg-[#FFF9EC] dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={forgotNewPassword}
                     onChange={(e) => {
                       setForgotNewPassword(e.target.value);
@@ -1059,7 +1059,7 @@ const Auth = ({ initialMode = 'login' }) => {
                     type={showNewPassword ? 'text' : 'password'}
                     name="confirm_password_field"
                     autoComplete="new-password"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] bg-white dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] bg-[#FFF9EC] dark:bg-[#362E2A] text-[#231F20] dark:text-white placeholder:text-[#8F7E75] dark:placeholder:text-[#8F7E75] text-xs sm:text-sm font-medium focus:outline-none focus:border-[#9F7A60] focus:ring-2 focus:ring-[#9F7A60]/20 transition-all"
                     value={forgotConfirmPassword}
                     onChange={(e) => {
                       setForgotConfirmPassword(e.target.value);

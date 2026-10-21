@@ -101,7 +101,7 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
   return (
     <div
       id="category-rail-section"
-      className="sticky top-[calc(62px+max(env(safe-area-inset-top,0px),10px))] sm:top-[72px] z-30 w-full bg-[#F2EDE2]/95 dark:bg-[#1A1A14]/95 backdrop-blur-md border-b border-[#DDD4C0] dark:border-[#3D3D30] py-2 sm:py-3 shadow-warm-sm transition-all"
+      className="sticky top-[calc(62px+max(env(safe-area-inset-top,0px),10px))] sm:top-[72px] z-30 w-full bg-[#F9EAC7]/95 dark:bg-[#1A1A14]/95 backdrop-blur-md border-b border-[#ECD5A5] dark:border-[#3D3D30] py-2 sm:py-3 shadow-warm-sm transition-all"
     >
       <div className="max-w-7xl mx-auto px-2 sm:px-6 relative flex items-center">
         {/* Floating Left Scroll Arrow */}
@@ -109,7 +109,7 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
           <button
             type="button"
             onClick={() => handleScroll(-1)}
-            className="absolute left-1 sm:left-3 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/95 dark:bg-[#2B2421]/95 backdrop-blur-md border border-stone-200/90 dark:border-stone-700 shadow-warm-md text-espresso dark:text-[#F5EBE6] hover:bg-white hover:scale-110 active:scale-95 transition-all cursor-pointer"
+            className="absolute left-1 sm:left-3 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#FFF9EC]/95 dark:bg-[#2B2421]/95 backdrop-blur-md border border-[#ECD5A5] dark:border-stone-700 shadow-warm-md text-espresso dark:text-[#F5EBE6] hover:bg-[#F9EAC7] hover:scale-110 active:scale-95 transition-all cursor-pointer"
             aria-label="Scroll categories left"
           >
             <ChevronLeft className="w-4 h-4 text-espresso dark:text-stone-100" />
@@ -133,10 +133,10 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
               >
                 {/* Circular Dish Image */}
                 <div
-                  className={`w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full overflow-hidden bg-white dark:bg-[#2B2421] shadow-warm-sm transition-all duration-200 p-0.5 ${
+                  className={`w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full overflow-hidden bg-[#FFF9EC] dark:bg-[#2B2421] shadow-warm-sm transition-all duration-200 p-0.5 ${
                     isActive
-                      ? 'ring-2.5 sm:ring-3 ring-[#A6472B] ring-offset-2 ring-offset-[#F2EDE2] dark:ring-offset-[#1A1A14] scale-105 shadow-warm-md'
-                      : 'border-2 border-stone-200/80 dark:border-stone-700/80 group-hover:border-[#A6472B]/60 group-hover:scale-105'
+                      ? 'ring-2.5 sm:ring-3 ring-[#A6472B] ring-offset-2 ring-offset-[#F9EAC7] dark:ring-offset-[#1A1A14] scale-105 shadow-warm-md'
+                      : 'border-2 border-[#ECD5A5] dark:border-stone-700/80 group-hover:border-[#A6472B]/60 group-hover:scale-105'
                   }`}
                 >
                   <img
@@ -170,7 +170,7 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
           <button
             type="button"
             onClick={() => handleScroll(1)}
-            className="absolute right-1 sm:right-3 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/95 dark:bg-[#2B2421]/95 backdrop-blur-md border border-stone-200/90 dark:border-stone-700 shadow-warm-md text-espresso dark:text-[#F5EBE6] hover:bg-white hover:scale-110 active:scale-95 transition-all cursor-pointer"
+            className="absolute right-1 sm:right-3 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#FFF9EC]/95 dark:bg-[#2B2421]/95 backdrop-blur-md border border-[#ECD5A5] dark:border-stone-700 shadow-warm-md text-espresso dark:text-[#F5EBE6] hover:bg-[#F9EAC7] hover:scale-110 active:scale-95 transition-all cursor-pointer"
             aria-label="Scroll categories right"
           >
             <ChevronRight className="w-4 h-4 text-espresso dark:text-stone-100" />

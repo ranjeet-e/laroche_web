@@ -4,8 +4,8 @@ import { ArrowLeft, Shield, Lock, Eye, CheckCircle2 } from 'lucide-react';
 
 const PrivacyPolicy = () => {
   return (
-    <div className="min-h-screen bg-oat text-espresso py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto bg-white dark:bg-[#23231C] rounded-3xl border border-[#DDD4C0] dark:border-[#3D3D30] p-6 sm:p-10 shadow-warm-xl">
+    <div className="min-h-screen bg-transparent text-espresso py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto bg-[#FFF9EC] dark:bg-[#23231C] rounded-3xl border border-[#ECD5A5] dark:border-[#3D3D30] p-6 sm:p-10 shadow-warm-xl">
         <Link
           to="/menu"
           className="inline-flex items-center gap-2 text-xs font-bold text-taupe hover:text-espresso dark:text-stone-300 dark:hover:text-white mb-6 transition-colors"

@@ -2,6 +2,7 @@
   "name": "laroche-cafe",
   "private": true,
   "scripts": {
+    "start": "node backend/server.js",
     "build": "cd frontend && npm install --include=optional && npm run build"
   },
   "dependencies": {

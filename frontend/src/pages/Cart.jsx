@@ -30,8 +30,8 @@ const Cart = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-[75vh] flex flex-col items-center justify-center bg-oat dark:bg-[#1A1718] px-4 text-center">
-        <div className="w-20 h-20 rounded-full bg-white dark:bg-[#2B2421] border border-stone-200 dark:border-[#4A3B32] shadow-warm-md flex items-center justify-center mb-5 text-terracotta">
+      <div className="min-h-[75vh] flex flex-col items-center justify-center bg-transparent px-4 text-center">
+        <div className="w-20 h-20 rounded-full bg-[#FFF9EC] dark:bg-[#2B2421] border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-md flex items-center justify-center mb-5 text-terracotta">
           <ShoppingBag className="w-10 h-10" />
         </div>
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-espresso dark:text-white mb-2">
@@ -57,7 +57,7 @@ const Cart = () => {
   const grandTotal = totalAmount + packagingCharge + gst;
 
   return (
-    <div className="min-h-screen bg-oat dark:bg-[#1A1718] py-8 px-4 sm:px-6 pb-28 transition-colors">
+    <div className="min-h-screen bg-transparent py-8 px-4 sm:px-6 pb-28 transition-colors">
       <div className="max-w-4xl mx-auto">
         
         {/* Back Link & Header */}
@@ -89,7 +89,7 @@ const Cart = () => {
           </div>
 
           {/* Bill Summary Receipt */}
-          <div className="md:col-span-5 bg-white dark:bg-[#2B2421] rounded-3xl border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-lg p-6 sticky top-28 font-sans">
+          <div className="md:col-span-5 bg-[#FFF9EC] dark:bg-[#2B2421] rounded-3xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-lg p-6 sticky top-28 font-sans">
             <h3 className="font-serif font-medium text-espresso dark:text-white text-lg pb-3 mb-4 border-b border-stone-100 dark:border-stone-800">
               Bill Summary
             </h3>

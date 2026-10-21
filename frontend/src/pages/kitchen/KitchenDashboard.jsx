@@ -697,7 +697,7 @@ const KitchenDashboard = () => {
               unlockAudio();
               playOrderBellSound();
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#2B2421] border border-[#E5D7D0] dark:border-[#4A3B32] text-xs font-bold text-[#6B5B52] dark:text-[#E8D8CD] hover:text-[#231F20] dark:hover:text-white shadow-warm-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFF9EC] dark:bg-[#2B2421] border border-[#ECD5A5] dark:border-[#4A3B32] text-xs font-bold text-[#6B5B52] dark:text-[#E8D8CD] hover:text-[#231F20] dark:hover:text-white shadow-warm-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
             title="Test counter service bell chime"
           >
             <span>🔔</span>
@@ -778,7 +778,7 @@ const KitchenDashboard = () => {
       {activeTab === 'menu_cms' && (
         <div className="cms-menu-container space-y-5">
           {/* Action Toolbar */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white dark:bg-[#2B2421] p-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-[#FFF9EC] dark:bg-[#2B2421] p-4 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-taupe dark:text-stone-400" />
               <input
@@ -810,7 +810,7 @@ const KitchenDashboard = () => {
                 className={`px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide whitespace-nowrap transition-all duration-200 cursor-pointer ${
                   selectedCategory === cat
                     ? 'bg-[#4A3B32] text-white shadow-sm dark:bg-[#9F7A60]'
-                    : 'bg-white dark:bg-[#2B2421] text-[#6B5B52] dark:text-[#C5B4A8] border border-[#E5D7D0] dark:border-[#4A3B32] hover:border-[#8D5B4C]'
+                    : 'bg-[#FFF9EC] dark:bg-[#2B2421] text-[#6B5B52] dark:text-[#C5B4A8] border border-[#ECD5A5] dark:border-[#4A3B32] hover:border-[#8D5B4C]'
                 }`}
               >
                 {cat}
@@ -823,7 +823,7 @@ const KitchenDashboard = () => {
             {filteredMenuItems.map((item) => (
               <div
                 key={item._id}
-                className="group relative bg-white dark:bg-[#2B2421] rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] p-4 shadow-warm-sm hover:shadow-warm-md transition-all flex flex-col justify-between"
+                className="group relative bg-[#FFF9EC] dark:bg-[#2B2421] rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] p-4 shadow-warm-sm hover:shadow-warm-md transition-all flex flex-col justify-between"
               >
                 <div className="flex items-start gap-3.5">
                   {/* Photo Thumbnail + Quick Upload Trigger */}
@@ -940,7 +940,7 @@ const KitchenDashboard = () => {
       {/* ============================================================ */}
       {activeTab === 'banners_cms' && (
         <div className="cms-banners-container space-y-6">
-          <div className="flex items-center justify-between gap-4 bg-white dark:bg-[#2B2421] p-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm">
+          <div className="flex items-center justify-between gap-4 bg-[#FFF9EC] dark:bg-[#2B2421] p-4 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
             <div>
               <h3 className="text-base font-serif font-bold text-espresso dark:text-white">
                 Active Customer Hero Banners
@@ -1031,7 +1031,7 @@ const KitchenDashboard = () => {
       {/* ============================================================ */}
       {activeTab === 'sales_stats' && (
         <div className="cms-sales-container space-y-6">
-          <div className="flex items-center justify-between gap-4 bg-white dark:bg-[#2B2421] p-4 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm">
+          <div className="flex items-center justify-between gap-4 bg-[#FFF9EC] dark:bg-[#2B2421] p-4 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
             <div>
               <h3 className="text-base font-serif font-bold text-espresso dark:text-white">
                 Today's Daily Sales & Kitchen Telemetry
@@ -1054,7 +1054,7 @@ const KitchenDashboard = () => {
 
           {/* Metric Summary Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white dark:bg-[#2B2421] p-5 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm">
+            <div className="bg-[#FFF9EC] dark:bg-[#2B2421] p-5 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
                   Today's Revenue
@@ -1071,7 +1071,7 @@ const KitchenDashboard = () => {
               </span>
             </div>
 
-            <div className="bg-white dark:bg-[#2B2421] p-5 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm">
+            <div className="bg-[#FFF9EC] dark:bg-[#2B2421] p-5 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
                   Total Orders
@@ -1088,7 +1088,7 @@ const KitchenDashboard = () => {
               </span>
             </div>
 
-            <div className="bg-white dark:bg-[#2B2421] p-5 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm">
+            <div className="bg-[#FFF9EC] dark:bg-[#2B2421] p-5 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
                   Active Queue
@@ -1105,7 +1105,7 @@ const KitchenDashboard = () => {
               </span>
             </div>
 
-            <div className="bg-white dark:bg-[#2B2421] p-5 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm">
+            <div className="bg-[#FFF9EC] dark:bg-[#2B2421] p-5 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
                   Collected Orders
@@ -1124,7 +1124,7 @@ const KitchenDashboard = () => {
           </div>
 
           {/* Top 5 Best Sellers Leaderboard */}
-          <div className="bg-white dark:bg-[#2B2421] p-6 rounded-2xl border border-[#E5D7D0] dark:border-[#4A3B32] shadow-warm-sm">
+          <div className="bg-[#FFF9EC] dark:bg-[#2B2421] p-6 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="w-5 h-5 text-[#8D5B4C]" />
               <h3 className="text-base font-serif font-bold text-espresso dark:text-white">
@@ -1169,7 +1169,7 @@ const KitchenDashboard = () => {
       {/* ============================================================ */}
       {isDishModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#2B2421] rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 dark:border-stone-700 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[#FFF9EC] dark:bg-[#2B2421] rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#ECD5A5] dark:border-stone-700 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
               <h3 className="text-lg font-serif font-bold text-espresso dark:text-white">
                 {editingDish ? 'Edit Dish Details' : 'Add New Menu Dish'}
@@ -1318,7 +1318,7 @@ const KitchenDashboard = () => {
       {/* ============================================================ */}
       {isBannerModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#2B2421] rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 dark:border-stone-700 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[#FFF9EC] dark:bg-[#2B2421] rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#ECD5A5] dark:border-stone-700 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
               <h3 className="text-lg font-serif font-bold text-espresso dark:text-white">
                 Create Hero Promo Banner
@@ -1444,7 +1444,7 @@ const KitchenDashboard = () => {
       {/* ============================================================ */}
       {isOvercrowdModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#2B2421] rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 dark:border-stone-700 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[#FFF9EC] dark:bg-[#2B2421] rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#ECD5A5] dark:border-stone-700 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold">

@@ -29,11 +29,11 @@ export default defineConfig({
     allowedHosts: true, // Allow all tunnel hosts like .loca.lt, ngrok, etc.
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5050',
         changeOrigin: true,
       },
       '/socket.io': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5050',
         ws: true,
       },
     },

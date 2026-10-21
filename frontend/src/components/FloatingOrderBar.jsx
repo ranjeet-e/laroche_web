@@ -76,8 +76,8 @@ const FloatingOrderBar = () => {
           </div>
         </div>
 
-        {/* Right: White circular arrow button (→) */}
-        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white text-[#221C19] flex items-center justify-center shadow-md flex-shrink-0 group-hover:translate-x-0.5 transition-transform duration-200">
+        {/* Right: Cream circular arrow button (→) */}
+        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FFF9EC] text-[#221C19] flex items-center justify-center shadow-md flex-shrink-0 group-hover:translate-x-0.5 transition-transform duration-200">
           <ArrowRight className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.5]" />
         </div>
       </div>

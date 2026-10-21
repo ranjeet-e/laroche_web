@@ -110,7 +110,7 @@ const FeaturedCarousel = ({ allItems = [] }) => {
           <button
             type="button"
             onClick={() => scroll(-1)}
-            className="w-9 h-9 rounded-full bg-white dark:bg-[#2B2421] border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-sm text-espresso dark:text-stone-100 hover:bg-stone-50 dark:hover:bg-[#362E2A] hover:border-stone-300 dark:hover:border-stone-600 flex items-center justify-center transition-all duration-200"
+            className="w-9 h-9 rounded-full bg-[#FFF9EC] dark:bg-[#2B2421] border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm text-espresso dark:text-stone-100 hover:bg-[#F9EAC7] dark:hover:bg-[#362E2A] flex items-center justify-center transition-all duration-200"
             aria-label="Scroll left"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -118,7 +118,7 @@ const FeaturedCarousel = ({ allItems = [] }) => {
           <button
             type="button"
             onClick={() => scroll(1)}
-            className="w-9 h-9 rounded-full bg-white dark:bg-[#2B2421] border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-sm text-espresso dark:text-stone-100 hover:bg-stone-50 dark:hover:bg-[#362E2A] hover:border-stone-300 dark:hover:border-stone-600 flex items-center justify-center transition-all duration-200"
+            className="w-9 h-9 rounded-full bg-[#FFF9EC] dark:bg-[#2B2421] border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm text-espresso dark:text-stone-100 hover:bg-[#F9EAC7] dark:hover:bg-[#362E2A] flex items-center justify-center transition-all duration-200"
             aria-label="Scroll right"
           >
             <ChevronRight className="w-4 h-4" />
@@ -146,10 +146,10 @@ const FeaturedCarousel = ({ allItems = [] }) => {
           return (
             <div
               key={item._id || idx}
-              className="group flex-shrink-0 w-[240px] sm:w-[270px] bg-white dark:bg-[#2B2421] rounded-2xl border border-stone-200/70 dark:border-[#4A3B32] shadow-warm-sm hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between"
+              className="group flex-shrink-0 w-[240px] sm:w-[270px] bg-[#FFF9EC] dark:bg-[#2B2421] rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between"
             >
               {/* Card Image Wrap (Aspect 4/3) */}
-              <div className="relative w-full aspect-[4/3] bg-stone-100 dark:bg-stone-800 overflow-hidden">
+              <div className="relative w-full aspect-[4/3] bg-[#F5E6CA] dark:bg-stone-800 overflow-hidden">
                 <img
                   ref={(el) => {
                     if (el && item._id) imgRefs.current[item._id] = el;
@@ -183,7 +183,7 @@ const FeaturedCarousel = ({ allItems = [] }) => {
                 </div>
 
                 {/* Veg Indicator Mini Badge */}
-                <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-md bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm border border-emerald-500/40 flex items-center justify-center shadow-sm">
+                <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-md bg-[#FFF9EC]/90 dark:bg-stone-900/90 backdrop-blur-sm border border-emerald-500/40 flex items-center justify-center shadow-sm">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
                 </div>
               </div>

@@ -28,7 +28,7 @@ const CookieConsent = () => {
   return (
     <aside
       aria-label="Cookie consent"
-      className="fixed bottom-4 left-4 right-4 max-w-xl mx-auto z-50 bg-white dark:bg-[#23231C] text-espresso dark:text-white rounded-3xl p-4 sm:p-5 shadow-warm-xl border border-[#DDD4C0] dark:border-[#3D3D30] animate-slideUp flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+      className="fixed bottom-4 left-4 right-4 max-w-xl mx-auto z-50 bg-[#FFF9EC] dark:bg-[#23231C] text-espresso dark:text-white rounded-3xl p-4 sm:p-5 shadow-warm-xl border border-[#ECD5A5] dark:border-[#3D3D30] animate-slideUp flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
     >
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 rounded-2xl bg-terracotta/10 text-terracotta dark:bg-terracotta/20 dark:text-amber-300 flex items-center justify-center flex-shrink-0">
@@ -49,7 +49,7 @@ const CookieConsent = () => {
         <button
           type="button"
           onClick={handleDecline}
-          className="flex-1 sm:flex-initial px-3.5 py-2 rounded-full border border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-300 text-xs font-bold hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+          className="flex-1 sm:flex-initial px-3.5 py-2 rounded-full border border-[#ECD5A5] dark:border-stone-700 text-stone-600 dark:text-stone-300 text-xs font-bold hover:bg-[#F9EAC7] dark:hover:bg-stone-800 transition-colors"
         >
           Decline
         </button>

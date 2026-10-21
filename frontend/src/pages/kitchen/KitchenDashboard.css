@@ -13,8 +13,8 @@
 .tab {
   padding: 10px 24px;
   border-radius: 9999px;
-  border: 1.5px solid #E5D7D0;
-  background-color: #FFFFFF;
+  border: 1.5px solid #ECD5A5;
+  background-color: #FFF9EC;
   color: #6B5B52;
   font-weight: 700;
   font-size: 0.925rem;
@@ -61,11 +61,11 @@
 }
 
 .kanban-column {
-  background-color: #FAF5F2;
+  background-color: rgba(249, 234, 199, 0.5);
   border-radius: 1.5rem;
   padding: 20px;
   min-height: 70vh;
-  border: 1px solid #E5D7D0;
+  border: 1px solid #ECD5A5;
   transition: background-color 0.2s ease;
 }
 
@@ -100,12 +100,12 @@
 }
 
 .order-card-kanban {
-  background-color: #FFFFFF;
+  background-color: #FFF9EC;
   border-radius: 1.25rem;
   padding: 16px;
   margin-bottom: 14px;
   box-shadow: 0 4px 16px rgba(35, 31, 32, 0.05);
-  border: 1px solid #E5D7D0;
+  border: 1px solid #ECD5A5;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -242,7 +242,7 @@
   margin: 0 0 16px 0;
   font-size: 0.875rem;
   color: #4A3B32;
-  border-top: 1px dashed #E5D7D0;
+  border-top: 1px dashed #ECD5A5;
   padding-top: 10px;
 }
 
@@ -296,8 +296,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #FFFFFF;
-  border: 1px solid #E5D7D0;
+  background-color: #FFF9EC;
+  border: 1px solid #ECD5A5;
   border-radius: 1rem;
   padding: 12px 18px;
   box-shadow: 0 2px 8px rgba(35, 31, 32, 0.04);
@@ -322,8 +322,8 @@
   height: 52px;
   border-radius: 12px;
   overflow: hidden;
-  background: #FAF5F2;
-  border: 1px solid #E5D7D0;
+  background: #FFF9EC;
+  border: 1px solid #ECD5A5;
   flex-shrink: 0;
 }
 

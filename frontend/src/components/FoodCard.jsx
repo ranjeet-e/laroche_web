@@ -66,10 +66,10 @@ const FoodCard = ({ item, allItems = [] }) => {
 
   return (
     <>
-      <div className="group bg-white dark:bg-[#2B2421] rounded-2xl border border-stone-200/80 dark:border-[#4A3B32] shadow-warm-sm hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between">
+      <div className="group bg-[#FFF9EC] dark:bg-[#2B2421] rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between">
         
         {/* Media Wrap (Uniform 4/3 Aspect Ratio) */}
-        <div className="relative w-full aspect-[4/3] bg-stone-100 dark:bg-stone-800 overflow-hidden">
+        <div className="relative w-full aspect-[4/3] bg-[#F5E6CA] dark:bg-stone-800 overflow-hidden">
           <img
             ref={imgRef}
             src={resolveAssetUrl(item.imageUrl) || '/placeholder-food.png'}
@@ -95,13 +95,13 @@ const FoodCard = ({ item, allItems = [] }) => {
           />
 
           {/* Veg Dot Badge */}
-          <div className="absolute top-2 left-2 w-4 h-4 sm:w-5 sm:h-5 rounded-md bg-white/95 dark:bg-stone-900/90 backdrop-blur-sm border border-emerald-500 flex items-center justify-center shadow-sm" title="Vegetarian">
+          <div className="absolute top-2 left-2 w-4 h-4 sm:w-5 sm:h-5 rounded-md bg-[#FFF9EC]/95 dark:bg-stone-900/90 backdrop-blur-sm border border-emerald-500 flex items-center justify-center shadow-sm" title="Vegetarian">
             <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-600" />
           </div>
 
           {/* Customisable Indicator Pill */}
           {(hasMultipleVariants || showAddons) && (
-            <div className="absolute top-2 right-2 inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-bold uppercase tracking-wider bg-white/95 dark:bg-stone-900/90 backdrop-blur-md text-espresso dark:text-stone-200 border border-stone-200/60 dark:border-stone-700 shadow-sm">
+            <div className="absolute top-2 right-2 inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-bold uppercase tracking-wider bg-[#FFF9EC]/95 dark:bg-stone-900/90 backdrop-blur-md text-espresso dark:text-stone-200 border border-[#ECD5A5] dark:border-stone-700 shadow-sm">
               <SlidersHorizontal className="w-2 h-2 text-terracotta" />
               <span className="hidden xs:inline">Custom</span>
             </div>

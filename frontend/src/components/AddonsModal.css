@@ -19,7 +19,7 @@
 .modal-sheet {
   width: 100%;
   max-width: 460px;
-  background-color: #FFFFFF;
+  background-color: #FFF9EC;
   color: #2A2A22;
   border-radius: 24px 24px 0 0;
   padding: 24px 20px calc(24px + var(--safe-bottom, 0px)) 20px;
@@ -27,7 +27,7 @@
   animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
   max-height: 85vh;
   overflow-y: auto;
-  border-top: 1px solid #DDD4C0;
+  border-top: 1px solid #ECD5A5;
 }
 
 .dark .modal-sheet {
@@ -61,7 +61,7 @@
 }
 
 .modal-close {
-  background: #F2EDE2;
+  background: #F9EAC7;
   border: none;
   width: 34px;
   height: 34px;
@@ -109,11 +109,11 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 16px;
-  border: 1.5px solid #DDD4C0;
+  border: 1.5px solid #ECD5A5;
   border-radius: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  background-color: #FFFFFF;
+  background-color: #FFF9EC;
   color: #2A2A22;
 }
 
@@ -125,7 +125,7 @@
 
 .variant-row:hover {
   border-color: #A6472B;
-  background-color: #FAF7F2;
+  background-color: #F9EAC7;
 }
 
 .dark .variant-row:hover {
@@ -135,7 +135,7 @@
 
 .variant-row:has(input:checked) {
   border-color: #A6472B !important;
-  background-color: #E9E0CC;
+  background-color: #F5D7B6;
 }
 
 .dark .variant-row:has(input:checked) {

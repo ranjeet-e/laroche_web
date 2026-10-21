@@ -166,7 +166,7 @@ const Menu = () => {
 
   if (loading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-oat px-4">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-transparent px-4">
         <div className="w-12 h-12 rounded-full border-3 border-terracotta/20 border-t-terracotta animate-spin mb-4" />
         <p className="text-sm font-bold text-taupe tracking-wide animate-pulse">
           Crafting fresh menu...
@@ -177,7 +177,7 @@ const Menu = () => {
 
   if (error) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-oat px-6 text-center">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center bg-transparent px-6 text-center">
         <div className="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-4 text-2xl font-bold">
           ⚠️
         </div>
@@ -195,7 +195,7 @@ const Menu = () => {
   }
 
   return (
-    <div className="min-h-screen bg-oat pb-36 md:pb-24">
+    <div className="min-h-screen bg-transparent pb-36 md:pb-24">
       {/* 1. Full-Bleed Cinematic Hero Section (hidden when user is searching) */}
       {!searchQuery && <HeroSection onExploreClick={handleExploreClick} />}
 
@@ -227,7 +227,7 @@ const Menu = () => {
             </div>
 
             {searchResults.length === 0 ? (
-              <div className="py-20 text-center bg-white rounded-3xl border border-stone-200/80 shadow-warm-sm p-8 max-w-lg mx-auto">
+              <div className="py-20 text-center bg-[#FFF9EC] dark:bg-[#2B2421] rounded-3xl border border-[#ECD5A5] dark:border-stone-700 shadow-warm-sm p-8 max-w-lg mx-auto">
                 <span className="text-4xl mb-3 block">🔍</span>
                 <h3 className="text-lg font-bold text-espresso mb-1">No dishes found</h3>
                 <p className="text-xs sm:text-sm text-taupe mb-6">
@@ -243,7 +243,7 @@ const Menu = () => {
             )}
           </div>
         ) : categories.length === 0 ? (
-          <div className="py-16 text-center bg-white dark:bg-[#2B2421] rounded-3xl border border-stone-200/80 dark:border-stone-700 shadow-warm-sm p-8 max-w-lg mx-auto my-8">
+          <div className="py-16 text-center bg-[#FFF9EC] dark:bg-[#2B2421] rounded-3xl border border-[#ECD5A5] dark:border-stone-700 shadow-warm-sm p-8 max-w-lg mx-auto my-8">
             <span className="text-4xl mb-3 block">🍽️</span>
             <h3 className="text-lg font-bold text-espresso dark:text-white mb-1">No Menu Dishes Available</h3>
             <p className="text-xs sm:text-sm text-taupe dark:text-stone-400 mb-6">
@@ -266,7 +266,7 @@ const Menu = () => {
                   className="scroll-mt-32"
                 >
                   {/* Category Header with Item Count & Horizontal Nav Controls */}
-                  <div className="flex items-center justify-between pb-1.5 mb-2.5 border-b border-stone-200/70 dark:border-[#3D3D30]">
+                  <div className="flex items-center justify-between pb-1.5 mb-2.5 border-b border-[#ECD5A5] dark:border-[#3D3D30]">
                     <div className="flex items-baseline gap-2">
                       <h2 className="text-base sm:text-lg md:text-xl font-serif font-medium text-espresso dark:text-white tracking-tight">
                         {cat}
@@ -281,7 +281,7 @@ const Menu = () => {
                       <button
                         type="button"
                         onClick={() => handleScrollHorizontalRail(cat, -1)}
-                        className="w-7 h-7 rounded-full bg-white dark:bg-[#23231C] border border-stone-200 dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                        className="w-7 h-7 rounded-full bg-[#FFF9EC] dark:bg-[#23231C] border border-[#ECD5A5] dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
                         aria-label={`Scroll ${cat} left`}
                       >
                         <ChevronLeft className="w-3.5 h-3.5" />
@@ -289,7 +289,7 @@ const Menu = () => {
                       <button
                         type="button"
                         onClick={() => handleScrollHorizontalRail(cat, 1)}
-                        className="w-7 h-7 rounded-full bg-white dark:bg-[#23231C] border border-stone-200 dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                        className="w-7 h-7 rounded-full bg-[#FFF9EC] dark:bg-[#23231C] border border-[#ECD5A5] dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
                         aria-label={`Scroll ${cat} right`}
                       >
                         <ChevronRight className="w-3.5 h-3.5" />
