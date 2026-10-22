@@ -133,11 +133,84 @@ const updateOrderStatus = async (req, res, next) => {
   }
 };
 
+// @route GET /api/kitchen/daily-sales
+// Returns simple daily sales ledger with order id, student name, items, payment, and timestamp milestones
+const getDailySalesLedger = async (req, res, next) => {
+  try {
+    const { date } = req.query;
+    let startOfDay, endOfDay;
+    if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      const [year, month, day] = date.split('-').map(Number);
+      startOfDay = new Date(year, month - 1, day, 0, 0, 0, 0);
+      endOfDay = new Date(year, month - 1, day, 23, 59, 59, 999);
+    } else {
+      startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+    }
+
+    const orders = await Order.find({
+      createdAt: { $gte: startOfDay, $lte: endOfDay },
+    })
+      .populate('student', 'name email phone')
+      .populate('paymentId', 'status razorpayPaymentId')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const formattedOrders = orders.map((o) => {
+      const isPaid = ['paid', 'preparing', 'ready', 'collected'].includes(o.status) || o.paymentId?.status === 'paid';
+      const itemsList = (o.items || []).map((item) => {
+        const addonText = item.addons && item.addons.length > 0
+          ? ` (+ ${item.addons.map((a) => a.name).join(', ')})`
+          : '';
+        return `${item.quantity}x ${item.name}${addonText}`;
+      });
+
+      return {
+        _id: o._id,
+        orderNumber: o.orderNumber,
+        customerName: o.student?.name || 'Walk-in / Student',
+        customerPhone: o.student?.phone || '',
+        customerEmail: o.student?.email || '',
+        itemsSummary: itemsList.join(' • ') || 'No items',
+        items: o.items || [],
+        totalAmount: o.totalAmount || 0,
+        status: o.status,
+        isPaid,
+        paidStatus: isPaid ? 'Paid' : (o.status === 'cancelled' ? 'Cancelled' : 'Unpaid'),
+        orderCameAt: o.createdAt,
+        preparedAt: o.readyAt || null,
+        givenAt: o.collectedAt || null,
+      };
+    });
+
+    const totalRevenue = formattedOrders
+      .filter((o) => o.isPaid && o.status !== 'cancelled')
+      .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+
+    const collectedCount = formattedOrders.filter((o) => o.status === 'collected').length;
+    const inProgressCount = formattedOrders.filter((o) => ['paid', 'preparing', 'ready'].includes(o.status)).length;
+
+    res.status(200).json({
+      date: date || new Date().toISOString().split('T')[0],
+      totalOrders: formattedOrders.length,
+      totalRevenue,
+      collectedCount,
+      inProgressCount,
+      orders: formattedOrders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getActiveOrders,
   updateOrderStatus,
   getStoreStatus,
   toggleStoreOrdersStatus,
   getStoreStatusHelper,
+  getDailySalesLedger,
 };
 

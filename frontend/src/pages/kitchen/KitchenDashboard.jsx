@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Camera,
   Image as ImageIcon,
@@ -22,6 +22,13 @@ import {
   AlertTriangle,
   Play,
   Pause,
+  ChefHat,
+  ChevronDown,
+  ArrowLeft,
+  Calendar,
+  Download,
+  ClipboardList,
+  UtensilsCrossed,
 } from 'lucide-react';
 import {
   getActiveKitchenOrders,
@@ -127,6 +134,21 @@ const KitchenDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [refreshingStats, setRefreshingStats] = useState(false);
 
+  // Kitchen Navigation Menu Dropdown state
+  const [kitchenMenuOpen, setKitchenMenuOpen] = useState(false);
+  const kitchenMenuRef = useRef(null);
+
+  // Daily Sales Ledger state
+  const [dailySalesData, setDailySalesData] = useState(null);
+  const [selectedSalesDate, setSelectedSalesDate] = useState(() => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  });
+  const [salesSearchQuery, setSalesSearchQuery] = useState('');
+
   // Menu Search & Category Filter
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -223,11 +245,97 @@ const KitchenDashboard = () => {
     }
   };
 
+  // Fetch Daily Sales Ledger (simple order log by date)
+  const fetchDailySales = async (date) => {
+    setRefreshingStats(true);
+    try {
+      const targetDate = date || selectedSalesDate;
+      const response = await api.get(`/kitchen/daily-sales?date=${targetDate}`);
+      setDailySalesData(response.data);
+    } catch (err) {
+      console.error('Failed to fetch daily sales ledger', err);
+    } finally {
+      setRefreshingStats(false);
+    }
+  };
+
+  // Export Daily Sales Ledger to CSV spreadsheet
+  const exportDailySalesCSV = () => {
+    if (!dailySalesData || !dailySalesData.orders || dailySalesData.orders.length === 0) {
+      alert('No sales data available for this date to export.');
+      return;
+    }
+    const headers = [
+      'Order ID',
+      'Customer Name',
+      'Customer Phone',
+      'Items Ordered',
+      'Total Amount (INR)',
+      'Paid Status',
+      'Order Status',
+      'Order Came (Date & Time)',
+      'Order Prepared (Date & Time)',
+      'Order Given (Date & Time)',
+    ];
+    const rows = dailySalesData.orders.map((o) => [
+      `"#${o.orderNumber || o._id.slice(-6)}"`,
+      `"${(o.customerName || '').replace(/"/g, '""')}"`,
+      `"${o.customerPhone || ''}"`,
+      `"${(o.itemsSummary || '').replace(/"/g, '""')}"`,
+      o.totalAmount || 0,
+      `"${o.paidStatus || 'Paid'}"`,
+      `"${o.status || ''}"`,
+      `"${o.orderCameAt ? new Date(o.orderCameAt).toLocaleString('en-IN') : ''}"`,
+      `"${o.preparedAt ? new Date(o.preparedAt).toLocaleString('en-IN') : 'N/A'}"`,
+      `"${o.givenAt ? new Date(o.givenAt).toLocaleString('en-IN') : 'N/A'}"`,
+    ]);
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `Daily_Sales_Ledger_${selectedSalesDate}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const formatTimeOrDate = (dateVal) => {
+    if (!dateVal) return null;
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
+  const formatFullDateTime = (dateVal) => {
+    if (!dateVal) return '—';
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return '—';
+    return `${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}, ${d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`;
+  };
+
+  // Close kitchen menu dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (kitchenMenuRef.current && !kitchenMenuRef.current.contains(e.target)) {
+        setKitchenMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   useEffect(() => {
     fetchOrders();
     fetchMenuItems();
     fetchBanners();
     fetchSalesStats();
+    fetchDailySales(selectedSalesDate);
     fetchStoreStatus();
 
     // Live background polling for orders and store status
@@ -615,6 +723,16 @@ const KitchenDashboard = () => {
     return matchesCategory && matchesSearch;
   });
 
+  // Filtered Daily Sales Orders for simple ledger
+  const filteredSalesOrders = (dailySalesData?.orders || []).filter((o) => {
+    if (!salesSearchQuery.trim()) return true;
+    const query = salesSearchQuery.toLowerCase();
+    const idMatch = String(o.orderNumber || '').includes(query) || (o._id || '').toLowerCase().includes(query);
+    const nameMatch = (o.customerName || '').toLowerCase().includes(query);
+    const itemMatch = (o.itemsSummary || '').toLowerCase().includes(query);
+    return idMatch || nameMatch || itemMatch;
+  });
+
   if (loading) {
     return (
       <div className="dashboard-loading">
@@ -626,36 +744,150 @@ const KitchenDashboard = () => {
 
   return (
     <div className="kitchen-dashboard">
-      {/* Top Navigation & Sound Bell Bar */}
+      {/* Top Navigation Bar: Kitchen Menu Icon, Rush Control & Sound */}
       <div className="flex items-center justify-between gap-4 flex-wrap mb-7">
-        <div className="dashboard-tabs !mb-0">
-          <button
-            className={`tab ${activeTab === 'orders' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('orders')}
-          >
-            📋 Live Orders ({orders.length})
-          </button>
-          <button
-            className={`tab ${activeTab === 'menu_cms' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('menu_cms')}
-          >
-            🍽️ Menu CMS ({menuItems.length})
-          </button>
-          <button
-            className={`tab ${activeTab === 'banners_cms' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('banners_cms')}
-          >
-            🎨 Promo Banners ({banners.length})
-          </button>
-          <button
-            className={`tab ${activeTab === 'sales_stats' ? 'tab-active' : ''}`}
-            onClick={() => {
-              setActiveTab('sales_stats');
-              fetchSalesStats();
-            }}
-          >
-            📊 Daily Sales Ledger
-          </button>
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Kitchen Icon Dropdown Button */}
+          <div className="relative" ref={kitchenMenuRef}>
+            <button
+              type="button"
+              onClick={() => setKitchenMenuOpen((prev) => !prev)}
+              className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-[#FFF9EC] dark:bg-[#23231C] border border-[#ECD5A5] dark:border-[#3D3D30] text-[#2A2A22] dark:text-[#F2EDE2] shadow-warm-sm hover:border-[#A6472B] active:scale-95 transition-all cursor-pointer font-bold text-xs sm:text-sm"
+              title="Kitchen Management Menu"
+            >
+              <div className="w-7 h-7 rounded-xl bg-[#A6472B] text-white flex items-center justify-center shadow-warm-sm">
+                <ChefHat className="w-4 h-4" />
+              </div>
+              <span>Kitchen Menu</span>
+              <ChevronDown
+                className={`w-4 h-4 text-[#8D5B4C] transition-transform duration-200 ${
+                  kitchenMenuOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            {kitchenMenuOpen && (
+              <div className="absolute left-0 mt-2 w-64 rounded-2xl bg-[#FFF9EC] dark:bg-[#23231C] border border-[#ECD5A5] dark:border-[#3D3D30] shadow-warm-xl p-2 z-50 animate-scaleUp">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('orders');
+                    setKitchenMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-colors ${
+                    activeTab === 'orders'
+                      ? 'bg-[#A6472B] text-white shadow-warm-sm'
+                      : 'text-[#2A2A22] dark:text-[#E9E0CC] hover:bg-[#F9EAC7] dark:hover:bg-[#2F2F26]'
+                  }`}
+                >
+                  <span className="flex items-center gap-2.5">
+                    <ClipboardList className="w-4 h-4" />
+                    <span>Live Orders</span>
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                      activeTab === 'orders'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-[#ECD5A5] dark:bg-[#3D3D30] text-[#2A2A22] dark:text-[#E9E0CC]'
+                    }`}
+                  >
+                    {orders.length}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('menu_cms');
+                    setKitchenMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-colors ${
+                    activeTab === 'menu_cms'
+                      ? 'bg-[#A6472B] text-white shadow-warm-sm'
+                      : 'text-[#2A2A22] dark:text-[#E9E0CC] hover:bg-[#F9EAC7] dark:hover:bg-[#2F2F26]'
+                  }`}
+                >
+                  <span className="flex items-center gap-2.5">
+                    <UtensilsCrossed className="w-4 h-4" />
+                    <span>Menu CMS</span>
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                      activeTab === 'menu_cms'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-[#ECD5A5] dark:bg-[#3D3D30] text-[#2A2A22] dark:text-[#E9E0CC]'
+                    }`}
+                  >
+                    {menuItems.length}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('banners_cms');
+                    setKitchenMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-colors ${
+                    activeTab === 'banners_cms'
+                      ? 'bg-[#A6472B] text-white shadow-warm-sm'
+                      : 'text-[#2A2A22] dark:text-[#E9E0CC] hover:bg-[#F9EAC7] dark:hover:bg-[#2F2F26]'
+                  }`}
+                >
+                  <span className="flex items-center gap-2.5">
+                    <Sparkles className="w-4 h-4" />
+                    <span>Promo Banners</span>
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                      activeTab === 'banners_cms'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-[#ECD5A5] dark:bg-[#3D3D30] text-[#2A2A22] dark:text-[#E9E0CC]'
+                    }`}
+                  >
+                    {banners.length}
+                  </span>
+                </button>
+
+                <div className="my-1 border-t border-[#ECD5A5] dark:border-[#3D3D30]" />
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('sales_stats');
+                    setKitchenMenuOpen(false);
+                    fetchDailySales(selectedSalesDate);
+                  }}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-colors ${
+                    activeTab === 'sales_stats'
+                      ? 'bg-[#A6472B] text-white shadow-warm-sm'
+                      : 'text-[#2A2A22] dark:text-[#E9E0CC] hover:bg-[#F9EAC7] dark:hover:bg-[#2F2F26]'
+                  }`}
+                >
+                  <span className="flex items-center gap-2.5">
+                    <TrendingUp className="w-4 h-4" />
+                    <span>Daily Sales</span>
+                  </span>
+                  <span className="text-[10px] text-[#A6472B] dark:text-amber-300 font-extrabold">
+                    Ledger
+                  </span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Quick Back to Live Orders Button when in CMS or Sales view */}
+          {activeTab !== 'orders' && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('orders')}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-[#A6472B] hover:bg-[#7E351F] text-white text-xs font-bold shadow-warm-sm active:scale-95 transition-all cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Orders ({orders.length})</span>
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
@@ -1027,139 +1259,265 @@ const KitchenDashboard = () => {
       )}
 
       {/* ============================================================ */}
-      {/* TAB 4: DAILY SALES LEDGER & TELEMETRY                        */}
+      {/* TAB 4: SIMPLE DAILY SALES LEDGER                             */}
       {/* ============================================================ */}
       {activeTab === 'sales_stats' && (
-        <div className="cms-sales-container space-y-6">
-          <div className="flex items-center justify-between gap-4 bg-[#FFF9EC] dark:bg-[#2B2421] p-4 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
+        <div className="space-y-5">
+          {/* Top Control Bar: Title, Date Filter & Actions */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#FFF9EC] dark:bg-[#23231C] p-5 rounded-3xl border border-[#ECD5A5] dark:border-[#3D3D30] shadow-warm-sm">
             <div>
-              <h3 className="text-base font-serif font-bold text-espresso dark:text-white">
-                Today's Daily Sales & Kitchen Telemetry
-              </h3>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
-                Live automated financial ledger computed directly from kitchen ticket dispatch.
+              <div className="flex items-center gap-2">
+                <span className="text-xl">📊</span>
+                <h3 className="text-lg font-serif font-bold text-[#2A2A22] dark:text-white">
+                  Daily Sales Ledger
+                </h3>
+              </div>
+              <p className="text-xs text-[#5A5748] dark:text-[#C4BFB2] mt-0.5">
+                Simple order dispatch and payment ledger by date
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={fetchSalesStats}
-              disabled={refreshingStats}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-espresso dark:text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
-            >
-              <RefreshCw size={14} className={refreshingStats ? 'animate-spin' : ''} />
-              <span>Refresh Ledger</span>
-            </button>
-          </div>
-
-          {/* Metric Summary Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-[#FFF9EC] dark:bg-[#2B2421] p-5 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
-                  Today's Revenue
-                </span>
-                <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center">
-                  <DollarSign size={16} />
-                </div>
+            {/* Date Filters & Action Buttons */}
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {/* Quick Date Pills */}
+              <div className="flex items-center gap-1.5 bg-[#F9EAC7] dark:bg-[#2F2F26] p-1 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    setSelectedSalesDate(todayStr);
+                    fetchDailySales(todayStr);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    selectedSalesDate === new Date().toISOString().split('T')[0]
+                      ? 'bg-[#A6472B] text-white shadow-warm-sm'
+                      : 'text-[#5A5748] dark:text-[#C4BFB2] hover:text-[#2A2A22]'
+                  }`}
+                >
+                  Today
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const yest = new Date();
+                    yest.setDate(yest.getDate() - 1);
+                    const yestStr = yest.toISOString().split('T')[0];
+                    setSelectedSalesDate(yestStr);
+                    fetchDailySales(yestStr);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    selectedSalesDate !== new Date().toISOString().split('T')[0] &&
+                    selectedSalesDate === new Date(Date.now() - 86400000).toISOString().split('T')[0]
+                      ? 'bg-[#A6472B] text-white shadow-warm-sm'
+                      : 'text-[#5A5748] dark:text-[#C4BFB2] hover:text-[#2A2A22]'
+                  }`}
+                >
+                  Yesterday
+                </button>
               </div>
-              <h3 className="text-2xl font-serif font-bold text-espresso dark:text-white mt-3">
-                ₹{salesStats?.todayRevenue?.toLocaleString('en-IN') || 0}
-              </h3>
-              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                ✓ Settled & In-Process
-              </span>
-            </div>
 
-            <div className="bg-[#FFF9EC] dark:bg-[#2B2421] p-5 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
-                  Total Orders
-                </span>
-                <div className="w-8 h-8 rounded-full bg-[#8D5B4C]/15 text-[#8D5B4C] flex items-center justify-center">
-                  <ShoppingBag size={16} />
-                </div>
+              {/* Date Input */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white dark:bg-[#1A1A14] border border-[#ECD5A5] dark:border-[#3D3D30] text-xs font-bold shadow-inner">
+                <Calendar className="w-3.5 h-3.5 text-[#8D5B4C]" />
+                <input
+                  type="date"
+                  value={selectedSalesDate}
+                  onChange={(e) => {
+                    setSelectedSalesDate(e.target.value);
+                    fetchDailySales(e.target.value);
+                  }}
+                  className="bg-transparent border-none outline-none text-xs font-bold text-[#2A2A22] dark:text-[#F2EDE2] cursor-pointer"
+                />
               </div>
-              <h3 className="text-2xl font-serif font-bold text-espresso dark:text-white mt-3">
-                {salesStats?.todayOrdersCount || 0}
-              </h3>
-              <span className="text-[10px] text-stone-500 dark:text-stone-400">
-                Placed Since 00:00 AM
-              </span>
-            </div>
 
-            <div className="bg-[#FFF9EC] dark:bg-[#2B2421] p-5 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
-                  Active Queue
-                </span>
-                <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center">
-                  <Clock size={16} />
-                </div>
-              </div>
-              <h3 className="text-2xl font-serif font-bold text-espresso dark:text-white mt-3">
-                {salesStats?.activeTokensCount || 0}
-              </h3>
-              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold">
-                In Prep / Ready for Pickup
-              </span>
-            </div>
+              {/* Refresh Button */}
+              <button
+                type="button"
+                onClick={() => fetchDailySales(selectedSalesDate)}
+                disabled={refreshingStats}
+                className="p-2 rounded-2xl bg-[#FFF9EC] dark:bg-[#23231C] border border-[#ECD5A5] dark:border-[#3D3D30] text-[#2A2A22] dark:text-white shadow-warm-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                title="Refresh Ledger"
+              >
+                <RefreshCw size={15} className={refreshingStats ? 'animate-spin' : ''} />
+              </button>
 
-            <div className="bg-[#FFF9EC] dark:bg-[#2B2421] p-5 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
-                  Collected Orders
-                </span>
-                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 flex items-center justify-center">
-                  <Check size={16} />
-                </div>
-              </div>
-              <h3 className="text-2xl font-serif font-bold text-espresso dark:text-white mt-3">
-                {salesStats?.completedOrdersCount || 0}
-              </h3>
-              <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold">
-                Fulfilled by Counter Staff
-              </span>
+              {/* Export to CSV Button */}
+              <button
+                type="button"
+                onClick={exportDailySalesCSV}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-[#FFF9EC] dark:bg-[#23231C] border border-[#ECD5A5] dark:border-[#3D3D30] text-xs font-bold text-[#2A2A22] dark:text-white shadow-warm-sm hover:border-[#A6472B] active:scale-95 transition-all cursor-pointer"
+                title="Download CSV spreadsheet"
+              >
+                <Download size={14} className="text-[#A6472B]" />
+                <span className="hidden sm:inline">Export CSV</span>
+              </button>
             </div>
           </div>
 
-          {/* Top 5 Best Sellers Leaderboard */}
-          <div className="bg-[#FFF9EC] dark:bg-[#2B2421] p-6 rounded-2xl border border-[#ECD5A5] dark:border-[#4A3B32] shadow-warm-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-5 h-5 text-[#8D5B4C]" />
-              <h3 className="text-base font-serif font-bold text-espresso dark:text-white">
-                Today's Top 5 Best-Selling Dishes
-              </h3>
+          {/* Simple Metrics Strip */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-[#FFF9EC] dark:bg-[#23231C] p-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] shadow-warm-sm">
+              <span className="text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider block">
+                Total Orders
+              </span>
+              <span className="text-2xl font-serif font-black text-[#2A2A22] dark:text-white mt-1 block">
+                {dailySalesData?.totalOrders || 0}
+              </span>
             </div>
 
-            {salesStats?.topSelling && salesStats.topSelling.length > 0 ? (
-              <div className="space-y-3">
-                {salesStats.topSelling.map((item, index) => {
-                  const maxQty = salesStats.topSelling[0].qty || 1;
-                  const percent = Math.min(100, Math.round((item.qty / maxQty) * 100));
-                  return (
-                    <div key={index} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-espresso dark:text-stone-100">
-                          #{index + 1} {item.name}
-                        </span>
-                        <span className="font-mono font-extrabold text-[#8D5B4C] dark:text-amber-300">
-                          {item.qty} units sold
-                        </span>
-                      </div>
-                      <div className="w-full bg-stone-100 dark:bg-stone-800 rounded-full h-2 overflow-hidden">
-                        <div
-                          className="bg-[#8D5B4C] h-full rounded-full transition-all duration-500"
-                          style={{ width: `${percent}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="text-xs text-stone-400">No sales recorded yet for today.</p>
-            )}
+            <div className="bg-[#FFF9EC] dark:bg-[#23231C] p-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] shadow-warm-sm">
+              <span className="text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider block">
+                Total Revenue
+              </span>
+              <span className="text-2xl font-serif font-black text-emerald-700 dark:text-emerald-400 mt-1 block">
+                ₹{(dailySalesData?.totalRevenue || 0).toLocaleString('en-IN')}
+              </span>
+            </div>
+
+            <div className="bg-[#FFF9EC] dark:bg-[#23231C] p-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] shadow-warm-sm">
+              <span className="text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider block">
+                Given / Collected
+              </span>
+              <span className="text-2xl font-serif font-black text-blue-700 dark:text-blue-400 mt-1 block">
+                {dailySalesData?.collectedCount || 0}
+              </span>
+            </div>
+
+            <div className="bg-[#FFF9EC] dark:bg-[#23231C] p-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] shadow-warm-sm">
+              <span className="text-[11px] font-bold text-[#5A5748] dark:text-[#C4BFB2] uppercase tracking-wider block">
+                Active / In Prep
+              </span>
+              <span className="text-2xl font-serif font-black text-amber-700 dark:text-amber-400 mt-1 block">
+                {dailySalesData?.inProgressCount || 0}
+              </span>
+            </div>
+          </div>
+
+          {/* Search Input Bar */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8D5B4C]" />
+            <input
+              type="text"
+              value={salesSearchQuery}
+              onChange={(e) => setSalesSearchQuery(e.target.value)}
+              placeholder="Search by Order ID (#), Customer Name, or Dish..."
+              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FFF9EC] dark:bg-[#23231C] border border-[#ECD5A5] dark:border-[#3D3D30] text-xs font-bold text-[#2A2A22] dark:text-white placeholder-[#5A5748]/60 focus:outline-none focus:border-[#A6472B] shadow-warm-sm"
+            />
+          </div>
+
+          {/* The Simple Daily Sales Table */}
+          <div className="bg-[#FFF9EC] dark:bg-[#23231C] rounded-3xl border border-[#ECD5A5] dark:border-[#3D3D30] shadow-warm-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-[#ECD5A5] dark:border-[#3D3D30] bg-[#F9EAC7]/70 dark:bg-[#2F2F26]/70 text-[11px] uppercase tracking-wider text-[#5A5748] dark:text-[#C4BFB2] font-black">
+                    <th className="py-3.5 px-4">Order ID</th>
+                    <th className="py-3.5 px-4">Order Name</th>
+                    <th className="py-3.5 px-4">Item Name</th>
+                    <th className="py-3.5 px-4">Paid Status</th>
+                    <th className="py-3.5 px-4">Order Came</th>
+                    <th className="py-3.5 px-4">Prepared</th>
+                    <th className="py-3.5 px-4">Given</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#ECD5A5]/60 dark:divide-[#3D3D30]/60 text-xs">
+                  {filteredSalesOrders.length > 0 ? (
+                    filteredSalesOrders.map((order) => (
+                      <tr
+                        key={order._id}
+                        className="hover:bg-[#F9EAC7]/40 dark:hover:bg-[#2A2A22]/50 transition-colors"
+                      >
+                        {/* 1. Order ID */}
+                        <td className="py-3.5 px-4 whitespace-nowrap font-mono font-bold text-[#A6472B]">
+                          #{order.orderNumber || order._id.slice(-6)}
+                        </td>
+
+                        {/* 2. Order Name (Customer) */}
+                        <td className="py-3.5 px-4 font-bold text-[#2A2A22] dark:text-[#F2EDE2]">
+                          <div>{order.customerName}</div>
+                          {order.customerPhone && (
+                            <span className="text-[10px] text-[#5A5748] dark:text-[#C4BFB2] font-normal block">
+                              {order.customerPhone}
+                            </span>
+                          )}
+                        </td>
+
+                        {/* 3. Item Name(s) */}
+                        <td className="py-3.5 px-4 max-w-xs text-[#2A2A22] dark:text-[#E9E0CC] font-medium leading-relaxed">
+                          {order.itemsSummary}
+                        </td>
+
+                        {/* 4. Paid Status */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          {order.isPaid ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold text-[11px] border border-emerald-300 dark:border-emerald-800">
+                              <span>✓ Paid</span>
+                              <span className="font-mono text-[10px]">₹{order.totalAmount}</span>
+                            </span>
+                          ) : order.status === 'cancelled' ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 font-bold text-[11px] border border-rose-300 dark:border-rose-800">
+                              ✕ Cancelled
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold text-[11px] border border-amber-300 dark:border-amber-800">
+                              ⏳ Unpaid
+                              <span className="font-mono text-[10px]">₹{order.totalAmount}</span>
+                            </span>
+                          )}
+                        </td>
+
+                        {/* 5. Date & Time Order Came */}
+                        <td className="py-3.5 px-4 whitespace-nowrap text-[#5A5748] dark:text-[#C4BFB2] font-semibold">
+                          {order.orderCameAt ? formatFullDateTime(order.orderCameAt) : '—'}
+                        </td>
+
+                        {/* 6. Date & Time Prepared */}
+                        <td className="py-3.5 px-4 whitespace-nowrap font-semibold">
+                          {order.preparedAt ? (
+                            <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+                              ✓ {formatTimeOrDate(order.preparedAt)}
+                            </span>
+                          ) : order.status === 'collected' ? (
+                            <span className="text-emerald-700 dark:text-emerald-400 font-bold">✓ Ready</span>
+                          ) : order.status === 'cancelled' ? (
+                            <span className="text-stone-400">—</span>
+                          ) : (
+                            <span className="text-amber-600 dark:text-amber-400 text-[11px]">⏳ In Kitchen</span>
+                          )}
+                        </td>
+
+                        {/* 7. Date & Time Given */}
+                        <td className="py-3.5 px-4 whitespace-nowrap font-semibold">
+                          {order.givenAt ? (
+                            <span className="inline-flex items-center gap-1 text-blue-700 dark:text-blue-400 font-bold">
+                              <span>✓ Given</span>
+                              <span className="text-[11px] opacity-80">({formatTimeOrDate(order.givenAt)})</span>
+                            </span>
+                          ) : order.status === 'collected' ? (
+                            <span className="text-blue-700 dark:text-blue-400 font-bold">✓ Given</span>
+                          ) : order.status === 'cancelled' ? (
+                            <span className="text-stone-400">—</span>
+                          ) : order.preparedAt || order.status === 'ready' ? (
+                            <span className="text-emerald-600 dark:text-emerald-400 text-[11px] font-bold">
+                              🍽️ At Counter
+                            </span>
+                          ) : (
+                            <span className="text-stone-400 font-normal">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} className="py-12 text-center text-[#5A5748] dark:text-[#C4BFB2]">
+                        <p className="font-bold text-sm">No orders recorded for this date.</p>
+                        <p className="text-xs text-stone-400 mt-1">Try selecting a different date above.</p>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
