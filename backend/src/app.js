@@ -17,9 +17,11 @@ const { globalLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 
-// Serve in-house static uploads & menu items fallback
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use('/menu-items', express.static(path.join(__dirname, '../../frontend/public/menu-items')));
+// Serve in-house static uploads & menu items fallback with HTTP cache headers
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'), { maxAge: '7d' }));
+app.use('/menu-items', express.static(path.join(__dirname, '../../frontend/public/menu-items'), { maxAge: '30d' }));
+// Serve ACME challenge for automated Let's Encrypt SSL issuance
+app.use('/.well-known/acme-challenge', express.static(path.join(__dirname, '../../.well-known/acme-challenge')));
 
 // Trust reverse proxy (Render, Vercel, Cloudflare, Nginx) for accurate IP rate limiting
 app.set('trust proxy', 1);
@@ -53,6 +55,11 @@ const allowedOrigins = [
   'http://127.0.0.1:5000',
   'http://127.0.0.1:5050',
   'http://172.16.100.42:5050',
+  'http://121.241.29.115:5050',
+  'http://laroche.sakec.ac.in:5050',
+  'https://laroche.sakec.ac.in:5050',
+  'http://laroche.sakec.ac.in',
+  'https://laroche.sakec.ac.in',
 ];
 
 app.use(
@@ -73,6 +80,11 @@ app.use(
         origin.includes('localhost') ||
         origin.includes('127.0.0.1') ||
         origin.includes(':5050') ||
+        origin.includes('121.241.29.115') ||
+        origin.includes('sakec.ac.in') ||
+        origin.includes('nip.io') ||
+        origin.includes('sslip.io') ||
+        origin.includes('duckdns.org') ||
         origin.startsWith('http://172.16.') ||
         origin.startsWith('https://172.16.')
       ) {
@@ -116,10 +128,19 @@ app.use('/api/kitchen', kitchenRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/cms', cmsRoutes);
 
-// Serve frontend static files if built
+// Serve frontend static files if built (with aggressive asset caching & fresh index.html)
 const frontendDistPath = path.join(__dirname, '../../frontend/dist');
 if (fs.existsSync(frontendDistPath)) {
-  app.use(express.static(frontendDistPath));
+  app.use(
+    express.static(frontendDistPath, {
+      maxAge: '1d',
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('index.html')) {
+          res.setHeader('Cache-Control', 'no-cache');
+        }
+      },
+    })
+  );
 
   // Client-side SPA routing fallback: serve index.html for any non-API route
   app.get('*', (req, res, next) => {

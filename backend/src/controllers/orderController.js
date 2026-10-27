@@ -1,7 +1,30 @@
 const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const MenuItem = require('../models/MenuItem');
+const Counter = require('../models/Counter');
 const { getStoreStatusHelper } = require('./kitchenController');
+
+// Helper to atomically acquire the next sequential order number without race conditions during concurrent rushes
+const getNextOrderNumber = async () => {
+  const existingCounter = await Counter.findById('orderNumber');
+  if (!existingCounter) {
+    const highestOrder = await Order.findOne().sort({ orderNumber: -1 });
+    const startingSeq = highestOrder?.orderNumber || (await Order.countDocuments()) || 0;
+    await Counter.findByIdAndUpdate(
+      'orderNumber',
+      { $setOnInsert: { seq: startingSeq } },
+      { upsert: true, new: true }
+    );
+  }
+
+  const updated = await Counter.findByIdAndUpdate(
+    'orderNumber',
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+
+  return updated.seq;
+};
 
 // @route GET /api/orders/store-status
 // Public — check if cafe is currently accepting orders or paused
@@ -118,9 +141,8 @@ const placeOrder = async (req, res, next) => {
       0
     );
 
-    // Calculate sequential order number (Order #1, #2, #3...)
-    const lastOrder = await Order.findOne().sort({ createdAt: -1 });
-    const orderNumber = (lastOrder?.orderNumber ? lastOrder.orderNumber : await Order.countDocuments()) + 1;
+    // Calculate sequential order number atomically (prevents duplicate tokens during rush spikes)
+    const orderNumber = await getNextOrderNumber();
 
     const newOrder = await Order.create({
       orderNumber,

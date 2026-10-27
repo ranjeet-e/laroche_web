@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowDown, Sparkles, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, ArrowDown } from 'lucide-react';
 import './HeroSection.css';
 
 const HeroSection = ({ onExploreClick }) => {
   const [isVideoReady, setIsVideoReady] = useState(false);
+  const [craving, setCraving] = useState('');
   const videoRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (videoRef.current) {
@@ -47,8 +50,21 @@ const HeroSection = ({ onExploreClick }) => {
     }
   };
 
+  const handleSearchSubmit = (e) => {
+    if (e) e.preventDefault();
+    if (craving.trim()) {
+      navigate(`/menu?q=${encodeURIComponent(craving.trim())}`);
+      const target = document.getElementById('category-rail-section') || document.getElementById('menu-content');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      handleScrollDown();
+    }
+  };
+
   return (
-    <section className="relative w-full h-[88vh] min-h-[580px] max-h-[820px] overflow-hidden bg-espresso dark:bg-[#14100E] flex items-center justify-center">
+    <section className="relative w-full h-[88vh] min-h-[560px] max-h-[820px] overflow-hidden bg-espresso dark:bg-[#14100E] flex items-center justify-center pt-16 sm:pt-20 border-b-2 border-[#ECD5A5] dark:border-[#3D312A] shadow-md">
       {/* Background B-Roll Video with smooth fade-in */}
       <video
         ref={videoRef}
@@ -72,55 +88,45 @@ const HeroSection = ({ onExploreClick }) => {
         }`}
       />
 
-
       {/* Dark Ambient & Warm Vignette Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/40 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/55 pointer-events-none" />
 
       {/* Hero Content Overlay */}
-      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center flex flex-col items-center pt-8">
+      <div className="relative z-10 max-w-4xl mx-auto px-5 sm:px-6 text-center flex flex-col items-center">
         
-        {/* Fresh Brewed Glass Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 dark:bg-stone-900/90 backdrop-blur-md shadow-warm-md text-espresso dark:text-stone-100 text-xs md:text-sm font-semibold tracking-wide mb-6 border border-white/70 dark:border-stone-700/80 animate-pulse-subtle">
-          <Sparkles className="w-4 h-4 text-terracotta fill-terracotta" />
-          <span>Freshly Brewed & Prepared • Skip the Lunch Rush</span>
-        </div>
-
-        {/* Cinematic Headline */}
-        <h1 className="text-hero font-serif font-medium text-white tracking-tight leading-[1.12] mb-6 drop-shadow-md">
-          Crafted for the Hustle. <br />
-          <span className="font-serif italic font-normal text-honey-light">Brewed for the Break.</span>
+        {/* Headline */}
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-black text-white tracking-tight leading-[1.08] mb-4 sm:mb-5 drop-shadow-md">
+          Order Ahead. <br className="hidden sm:inline" />
+          <span className="text-[#F7D070] italic font-normal">Skip the Queue.</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="max-w-2xl text-stone-200 text-sm sm:text-base md:text-lg font-normal leading-relaxed mb-8 drop-shadow font-sans">
-          Artisanal sourdough toasties, specialty single-origin coffees, stone-baked flatbreads & Belgian waffles — preordered in seconds, ready for counter pickup.
+        <p className="max-w-xl text-stone-200 text-sm sm:text-base md:text-lg font-normal leading-relaxed mb-7 sm:mb-8 drop-shadow font-sans">
+          Browse the menu, order in seconds, and pick up your food &amp; iced drinks right at the counter.
         </p>
 
-        {/* Interactive Action Row */}
-        <div className="flex flex-wrap items-center justify-center gap-4">
+        {/* Interactive Craving Search Pill matching La Roche Palette */}
+        <form
+          onSubmit={handleSearchSubmit}
+          className="w-full max-w-xl bg-[#FFF9EC] dark:bg-[#23231C] rounded-full p-1.5 sm:p-2 pl-4 sm:pl-5 shadow-2xl flex items-center gap-2 sm:gap-3 border border-[#ECD5A5] dark:border-stone-700 transition-all focus-within:ring-2 focus-within:ring-[#A6472B]"
+        >
+          <Search className="w-5 h-5 text-[#8C827A] shrink-0" />
+          <input
+            type="text"
+            value={craving}
+            onChange={(e) => setCraving(e.target.value)}
+            placeholder="Search toasties, cold coffee, waffles, maggi..."
+            className="flex-1 bg-transparent text-espresso dark:text-white placeholder:text-stone-500 dark:placeholder:text-stone-400 text-xs sm:text-sm font-sans font-medium focus:outline-none min-w-0"
+          />
           <button
-            type="button"
-            onClick={handleScrollDown}
-            className="group inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-sm sm:text-base shadow-glow-terracotta hover:shadow-warm-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0"
+            type="submit"
+            className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white text-xs sm:text-sm font-bold tracking-wide transition-all shadow-glow-terracotta hover:scale-105 active:scale-95 cursor-pointer shrink-0"
           >
-            <span>Explore Menu</span>
-            <ArrowDown className="w-4 h-4 group-hover:translate-y-1 transition-transform duration-300" />
+            Find Food
           </button>
-
-          <div className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full bg-black/50 dark:bg-black/70 backdrop-blur-md text-stone-100 text-xs sm:text-sm font-medium border border-white/20">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-            </span>
-            <Clock className="w-3.5 h-3.5 text-stone-300 ml-0.5" />
-            <span>Live Counter: <strong>~8 min prep</strong></span>
-          </div>
-        </div>
+        </form>
 
       </div>
-
-      {/* Floating Bottom Smooth Gradient Transition into Oat Cream Base */}
-      <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-oat dark:from-[#1A1718] via-oat/70 dark:via-[#1A1718]/70 to-transparent pointer-events-none" />
     </section>
   );
 };

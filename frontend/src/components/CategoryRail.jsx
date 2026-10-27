@@ -101,7 +101,7 @@ const CategoryRail = ({ categories = [], activeCategory = '', onSelectCategory }
   return (
     <div
       id="category-rail-section"
-      className="sticky top-[calc(62px+max(env(safe-area-inset-top,0px),10px))] sm:top-[72px] z-30 w-full bg-[#F9EAC7]/95 dark:bg-[#1A1A14]/95 backdrop-blur-md border-b border-[#ECD5A5] dark:border-[#3D3D30] py-2 sm:py-3 shadow-warm-sm transition-all"
+      className="sticky top-16 sm:top-20 z-30 w-full bg-[#F9EAC7]/95 dark:bg-[#1A1A14]/95 backdrop-blur-md border-b border-[#ECD5A5] dark:border-[#3D3D30] py-2 sm:py-3 shadow-warm-sm transition-all"
     >
       <div className="max-w-7xl mx-auto px-2 sm:px-6 relative flex items-center">
         {/* Floating Left Scroll Arrow */}

@@ -90,11 +90,11 @@ const AddToHomeScreen = () => {
           </div>
           <div>
             <h4 className="font-bold text-sm text-white">
-              Install La Roche Cafe App
+              Add La Roche Cafe to your Home Screen
             </h4>
             <p className="text-xs text-stone-300 mt-0.5 leading-snug">
-              Instant counter ordering, 0-second queue & live kitchen pickup alerts.
-            </p>
+              Instant counter ordering, 0-second queue & live kitchen pickup alerts. 
+             </p>
           </div>
         </div>
 

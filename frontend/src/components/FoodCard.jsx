@@ -125,7 +125,7 @@ const FoodCard = ({ item, allItems = [] }) => {
           <div className="flex items-center justify-between gap-1 mt-2 sm:mt-2.5 pt-2 sm:pt-2.5 border-t border-stone-100 dark:border-stone-800">
             <div>
               <p className="font-price font-medium text-espresso dark:text-stone-100 text-xs sm:text-sm md:text-base whitespace-nowrap">
-                {hasMultipleVariants ? `₹${displayPrice}+` : `₹${displayPrice}`}
+                ₹{displayPrice}
               </p>
             </div>
 

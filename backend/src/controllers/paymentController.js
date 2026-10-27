@@ -144,4 +144,52 @@ const verifyPayment = async (req, res, next) => {
   }
 };
 
-module.exports = { createRazorpayOrder, verifyPayment };
+// @route POST /api/payment/webhook
+// Razorpay Server-to-Server Webhook backup: catches payments if student browser closes or network drops
+const handleRazorpayWebhook = async (req, res) => {
+  try {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    if (webhookSecret) {
+      const signature = req.headers['x-razorpay-signature'];
+      const shasum = crypto.createHmac('sha256', webhookSecret);
+      shasum.update(JSON.stringify(req.body));
+      const digest = shasum.digest('hex');
+
+      if (signature !== digest) {
+        return res.status(400).json({ status: 'invalid_signature' });
+      }
+    }
+
+    const event = req.body.event;
+    if (event === 'order.paid' || event === 'payment.captured') {
+      const razorpayOrderId =
+        req.body?.payload?.order?.entity?.id || req.body?.payload?.payment?.entity?.order_id;
+      const razorpayPaymentId = req.body?.payload?.payment?.entity?.id;
+
+      if (razorpayOrderId) {
+        const payment = await Payment.findOne({ razorpayOrderId });
+        if (payment && payment.status !== 'paid') {
+          payment.status = 'paid';
+          if (razorpayPaymentId) payment.razorpayPaymentId = razorpayPaymentId;
+          await payment.save();
+
+          const order = await Order.findById(payment.order);
+          if (order && order.status !== 'paid') {
+            order.status = 'paid';
+            await order.save();
+
+            const populatedOrder = await Order.findById(order._id).populate('student', 'name email phone');
+            notifyKitchenNewOrder(populatedOrder);
+          }
+        }
+      }
+    }
+
+    return res.status(200).json({ status: 'ok' });
+  } catch (error) {
+    console.error('Webhook processing error:', error.message);
+    return res.status(200).json({ status: 'error_logged' });
+  }
+};
+
+module.exports = { createRazorpayOrder, verifyPayment, handleRazorpayWebhook };

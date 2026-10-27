@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -38,6 +38,9 @@ const RootRedirect = () => {
 };
 
 const AppRoutes = () => {
+  const location = useLocation();
+  const isHeroPage = location.pathname === '/' || location.pathname === '/menu';
+
   return (
     <div className="flex flex-col min-h-screen">
       <ScrollToTop />
@@ -46,7 +49,7 @@ const AppRoutes = () => {
       <AddToHomeScreen />
       <CookieConsent />
 
-      <div className="flex-1">
+      <main className={`flex-1 ${!isHeroPage ? 'pt-16 sm:pt-20' : ''}`}>
 
         <Routes>
           <Route path="/" element={<RootRedirect />} />
@@ -110,7 +113,7 @@ const AppRoutes = () => {
           {/* Custom 404 Catch-all */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </div>
+      </main>
       <Footer />
     </div>
   );

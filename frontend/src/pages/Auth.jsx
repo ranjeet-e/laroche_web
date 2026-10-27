@@ -54,20 +54,15 @@ const Auth = ({ initialMode = 'login' }) => {
   // Mode: 'login' | 'signup' | 'forgot'
   const isSignupRoute = location.pathname === '/signup' || initialMode === 'signup';
   const [mode, setMode] = useState(isSignupRoute ? 'signup' : 'login');
-  const [loginMethod, setLoginMethod] = useState('phone'); // 'phone' | 'email'
 
   // Google Post-Login Phone State
   const [googleAuthPending, setGoogleAuthPending] = useState(null);
   const [googlePhone, setGooglePhone] = useState('');
 
-  // Phone OTP States (Sign In)
-  const [phone, setPhone] = useState(searchParams.get('phone') || '');
-  const [otp, setOtp] = useState('');
-  const [phoneStep, setPhoneStep] = useState('enter_phone'); // 'enter_phone' | 'enter_otp'
-  const [countdown, setCountdown] = useState(0);
-
-  // Email Sign In States
+  // Email Sign In States & Password Visibility
   const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
 
   // Dedicated Create Account States (Name, Phone, Email, Password)
   const [signupData, setSignupData] = useState({
@@ -226,6 +221,20 @@ const Auth = ({ initialMode = 'login' }) => {
   const handleGoogleButtonClick = () => {
     setServerError('');
     setSuccessMessage('');
+
+    // Google OAuth strictly forbids raw public IP addresses in Authorized JavaScript Origins
+    const isRawIpAddress =
+      typeof window !== 'undefined' &&
+      /^\d{1,3}(\.\d{1,3}){3}$/.test(window.location.hostname) &&
+      !['127.0.0.1', 'localhost'].includes(window.location.hostname);
+
+    if (isRawIpAddress) {
+      setServerError(
+        `Google blocks OAuth logins from raw IP addresses (${window.location.hostname}). Please use Mobile OTP or Email below to sign in, or connect via a domain/DuckDNS.`
+      );
+      return;
+    }
+
     if (!isGoogleConfigured || !triggerGoogleLogin) {
       setServerError(
         'Google Sign-In is ready! Set VITE_GOOGLE_CLIENT_ID in your environment variables to connect live Google accounts. In the meantime, please sign in with Mobile OTP or Email below.'
@@ -589,197 +598,76 @@ const Auth = ({ initialMode = 'login' }) => {
               <div className="border-t border-[#ECD5A5] dark:border-[#3D3D30] w-full"></div>
             </div>
 
-            {/* 2 Sign In Methods Sub-Toggle */}
-            <div className="flex bg-[#F9EAC7] dark:bg-[#2F2F26] p-1 rounded-full mb-6 border border-[#ECD5A5] dark:border-[#3D3D30]">
-              <button
-                type="button"
-                onClick={() => {
-                  setLoginMethod('phone');
-                  setServerError('');
-                  setErrors({});
-                }}
-                className={`flex-1 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                  loginMethod === 'phone'
-                    ? 'bg-[#A6472B] text-white shadow-warm-sm'
-                    : 'text-[#5A5748] dark:text-[#C4BFB2] hover:text-[#2A2A22] dark:hover:text-white'
-                }`}
-              >
-                <Smartphone className="w-3.5 h-3.5" />
-                <span>Phone No.</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setLoginMethod('email');
-                  setServerError('');
-                  setErrors({});
-                }}
-                className={`flex-1 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                  loginMethod === 'email'
-                    ? 'bg-[#A6472B] text-white shadow-warm-sm'
-                    : 'text-[#5A5748] dark:text-[#C4BFB2] hover:text-[#2A2A22] dark:hover:text-white'
-                }`}
-              >
-                <Mail className="w-3.5 h-3.5" />
-                <span>Email & Password</span>
-              </button>
-            </div>
-
-            {/* Method 1: Phone OTP Sign In */}
-            {loginMethod === 'phone' && (
-              phoneStep === 'enter_phone' ? (
-                <form onSubmit={handleSendLoginOtp} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Mobile Number</label>
-                    <div className="flex items-center rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] overflow-hidden focus-within:border-[#A6472B] focus-within:ring-2 focus-within:ring-[#A6472B]/20 transition-all">
-                      <span className="px-3.5 py-3 bg-[#F9EAC7] dark:bg-[#23231C] text-[#2A2A22] dark:text-white text-xs font-bold border-r border-[#ECD5A5] dark:border-[#3D3D30]">
-                        🇮🇳 +91
-                      </span>
-                      <input
-                        type="tel"
-                        className="w-full px-3.5 py-3 bg-transparent text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-sm font-semibold focus:outline-none"
-                        placeholder="Enter 10-digit mobile"
-                        value={phone}
-                        maxLength={10}
-                        onChange={(e) => {
-                          setPhone(e.target.value.replace(/\D/g, ''));
-                          if (errors.phone) setErrors({});
-                        }}
-                      />
-                    </div>
-                    {errors.phone && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.phone}</p>}
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={loading || phone.length !== 10}
-                    className="w-full py-3.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white font-bold text-sm shadow-glow-terracotta transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
-                  >
-                    <span>{loading ? 'Sending code...' : 'Sign In via OTP'}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </form>
-              ) : (
-                <form onSubmit={handleVerifyLoginOtp} className="space-y-4">
-                  <div className="flex items-center justify-between text-xs text-[#5A5748] dark:text-[#DDD8CB] mb-1">
-                    <span>Sent to <strong className="text-[#2A2A22] dark:text-white">+91 {phone}</strong></span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPhoneStep('enter_phone');
-                        setOtp('');
-                      }}
-                      className="text-[#A6472B] font-bold hover:underline"
-                    >
-                      Change
-                    </button>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Verification Code</label>
-                    <input
-                      ref={otpInputRef}
-                      type="text"
-                      inputMode="numeric"
-                      className="w-full px-4 py-3 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white text-center tracking-[8px] font-extrabold text-xl focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
-                      placeholder="••••••"
-                      value={otp}
-                      maxLength={6}
-                      onChange={(e) => {
-                        setOtp(e.target.value.replace(/\D/g, ''));
-                        if (errors.otp) setErrors({});
-                      }}
-                    />
-                    {errors.otp && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.otp}</p>}
-                  </div>
-
-                  <div className="flex items-center justify-between px-1 text-xs">
-                    <span className="text-[#5A5748] dark:text-[#DDD8CB]">Didn't receive code?</span>
-                    <button
-                      type="button"
-                      disabled={countdown > 0 || loading}
-                      onClick={handleSendLoginOtp}
-                      className="font-bold text-[#A6472B] dark:text-[#E9E0CC] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {countdown > 0 ? `Resend in ${countdown}s` : 'Resend Code'}
-                    </button>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={loading || otp.length !== 6}
-                    className="w-full py-3.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? 'Verifying...' : 'Verify & Proceed'}
-                  </button>
-                </form>
-              )
-            )}
-
-            {/* Method 2: Email & Password Sign In */}
-            {loginMethod === 'email' && (
-              <form onSubmit={handleEmailLoginSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Email Address</label>
-                  <div className="relative flex items-center">
-                    <Mail className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
-                    <input
-                      type="email"
-                      name="email"
-                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
-                      value={loginData.email}
-                      onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                      placeholder="Enter your email"
-                      autoComplete="email"
-                    />
-                  </div>
-                  {errors.email && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.email}</p>}
+            {/* Direct Email & Password Sign In (Phone OTP removed completely) */}
+            <form onSubmit={handleEmailLoginSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB] mb-1.5">Email Address</label>
+                <div className="relative flex items-center">
+                  <Mail className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
+                  <input
+                    type="email"
+                    name="email"
+                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
+                    value={loginData.email}
+                    onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                    placeholder="Enter your email"
+                    autoComplete="email"
+                  />
                 </div>
+                {errors.email && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.email}</p>}
+              </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB]">Password</label>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMode('forgot');
-                        setServerError('');
-                        setSuccessMessage('');
-                        setForgotStep('enter_email');
-                        setForgotEmail('');
-                        setForgotOtp('');
-                        setForgotNewPassword('');
-                      }}
-                      className="text-xs font-bold text-[#A6472B] hover:underline"
-                    >
-                      Forgot Password?
-                    </button>
-                  </div>
-                  <div className="relative flex items-center">
-                    <Lock className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
-                    <input
-                      type="password"
-                      name="password"
-                      className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
-                      value={loginData.password}
-                      onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                      placeholder="Enter your password"
-                      autoComplete="current-password"
-                    />
-                  </div>
-                  {errors.password && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.password}</p>}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold text-[#5A5748] dark:text-[#DDD8CB]">Password</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode('forgot');
+                      setServerError('');
+                      setSuccessMessage('');
+                      setForgotStep('enter_email');
+                      setForgotEmail('');
+                      setForgotOtp('');
+                      setForgotNewPassword('');
+                    }}
+                    className="text-xs font-bold text-[#A6472B] hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
                 </div>
+                <div className="relative flex items-center">
+                  <Lock className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
+                  <input
+                    type={showLoginPassword ? 'text' : 'password'}
+                    name="password"
+                    className="w-full h-11 pl-10 pr-11 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
+                    value={loginData.password}
+                    onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    className="absolute right-3.5 text-[#5A5748] hover:text-[#2A2A22] dark:text-[#C4BFB2] dark:hover:text-white transition-colors"
+                    title={showLoginPassword ? 'Hide password' : 'Show password'}
+                    aria-label="Toggle password visibility"
+                  >
+                    {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {errors.password && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.password}</p>}
+              </div>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 mt-2"
-                >
-                  {loading ? 'Authenticating...' : 'Sign In'}
-                </button>
-              </form>
-            )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white font-bold text-sm shadow-warm-md transition-all disabled:opacity-50 mt-2"
+              >
+                {loading ? 'Authenticating...' : 'Sign In'}
+              </button>
+            </form>
 
             {/* Prominent Link to Create Account */}
             <div className="mt-8 pt-5 border-t border-[#DDD4C0] dark:border-[#3D3D30] text-center">
@@ -874,12 +762,22 @@ const Auth = ({ initialMode = 'login' }) => {
                 <div className="relative flex items-center">
                   <Lock className="w-4 h-4 text-[#5A5748] dark:text-[#C4BFB2] absolute left-3.5 pointer-events-none" />
                   <input
-                    type="password"
-                    className="w-full h-11 pl-10 pr-4 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
+                    type={showSignupPassword ? 'text' : 'password'}
+                    className="w-full h-11 pl-10 pr-11 rounded-2xl border border-[#ECD5A5] dark:border-[#3D3D30] bg-[#FFF9EC] dark:bg-[#2F2F26] text-[#2A2A22] dark:text-white placeholder:text-[#5A5748]/70 dark:placeholder:text-[#C4BFB2]/70 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#A6472B] focus:ring-2 focus:ring-[#A6472B]/20 transition-all"
                     value={signupData.password}
                     onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                     placeholder="At least 6 characters"
+                    autoComplete="new-password"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowSignupPassword(!showSignupPassword)}
+                    className="absolute right-3.5 text-[#5A5748] hover:text-[#2A2A22] dark:text-[#C4BFB2] dark:hover:text-white transition-colors"
+                    title={showSignupPassword ? 'Hide password' : 'Show password'}
+                    aria-label="Toggle password visibility"
+                  >
+                    {showSignupPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
                 {errors.password && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.password}</p>}
               </div>

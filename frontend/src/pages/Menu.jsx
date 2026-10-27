@@ -1,12 +1,12 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import api from '../services/api';
 import FoodCard from '../components/FoodCard';
 import HeroSection from '../components/HeroSection';
+import FullWidthOffersCarousel from '../components/FullWidthOffersCarousel';
 import CategoryRail from '../components/CategoryRail';
 import FeaturedCarousel from '../components/FeaturedCarousel';
-import PromoBanner from '../components/PromoBanner';
 import FloatingOrderBar from '../components/FloatingOrderBar';
 import './Menu.css';
 
@@ -196,11 +196,11 @@ const Menu = () => {
 
   return (
     <div className="min-h-screen bg-transparent pb-36 md:pb-24">
-      {/* 1. Full-Bleed Cinematic Hero Section (hidden when user is searching) */}
+      {/* 1. Full-Bleed Cinematic Hero Section (Previous video hero restored) */}
       {!searchQuery && <HeroSection onExploreClick={handleExploreClick} />}
 
-      {/* 2. Promotional Highlight Banner */}
-      {!searchQuery && <PromoBanner />}
+      {/* 2. Offers Carousel (Placed in place of the previous promo banner) */}
+      {!searchQuery && <FullWidthOffersCarousel onExploreClick={handleExploreClick} />}
 
       {/* 3. Dynamic "Popular Right Now" Curated Spotlight Carousel */}
       {!searchQuery && <FeaturedCarousel allItems={items} />}

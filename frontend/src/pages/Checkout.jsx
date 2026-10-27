@@ -78,6 +78,7 @@ const Checkout = () => {
         prefill: {
           name: user?.name,
           email: user?.email,
+          contact: user?.phone,
         },
         theme: {
           color: '#E85D04',

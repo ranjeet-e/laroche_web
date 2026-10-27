@@ -70,8 +70,9 @@ const orderSchema = new mongoose.Schema(
 );
 
 
-// Fast student order history lookups and kitchen active order queues
+// Fast student order history lookups, kitchen active order queues, and high-volume daily sales ledger range scans
 orderSchema.index({ student: 1, createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: 1 });
+orderSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Order', orderSchema);

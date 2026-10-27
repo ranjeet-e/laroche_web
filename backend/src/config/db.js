@@ -48,15 +48,17 @@ const connectDB = async () => {
     cachedConn = await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 8000,
       socketTimeoutMS: 45000,
-      maxPoolSize: 10,
+      maxPoolSize: 50, // Expanded connection pool for high concurrent rushes (2000+ orders/day)
     });
     console.log(`MongoDB connected: ${cachedConn.connection.host}`);
     
     // Automatically reconcile & fix any outdated database indexes
     try {
       const User = require('../models/User');
+      const Order = require('../models/Order');
       await User.syncIndexes();
-      console.log('✅ User database indexes synchronized');
+      await Order.syncIndexes();
+      console.log('✅ User & Order database indexes synchronized');
     } catch (indexErr) {
       console.warn('Index sync notice:', indexErr.message);
     }

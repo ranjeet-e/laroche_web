@@ -22,3 +22,12 @@ frontend/dist/
 *.log
 .DS_Store
 */.DS_Store
+
+# SSL Certificates & Secrets
+*.pem
+*.key
+*.crt
+backend/ssl/*.pem
+backend/ssl/*.key
+backend/ssl/*.crt
+!backend/ssl/.gitkeep
