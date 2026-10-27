@@ -114,7 +114,18 @@ const Checkout = () => {
       const razorpayInstance = new window.Razorpay(options);
       razorpayInstance.open();
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Something went wrong. Please try again.');
+      console.error('Checkout payment error:', err);
+      const isTokenIssue =
+        err.response?.status === 401 ||
+        err.response?.data?.message?.toLowerCase().includes('token');
+
+      if (isTokenIssue) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setErrorMsg('Your login session has expired. Please log in again to complete your payment.');
+      } else {
+        setErrorMsg(err.response?.data?.message || 'Something went wrong. Please try again.');
+      }
       setStatus('failed');
     }
   };
@@ -151,7 +162,20 @@ const Checkout = () => {
         </div>
       )}
 
-      {errorMsg && <p className="checkout-error">{errorMsg}</p>}
+      {errorMsg && (
+        <div className="checkout-error p-3.5 mb-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-center flex flex-col items-center gap-2">
+          <p className="text-xs sm:text-sm font-semibold">{errorMsg}</p>
+          {errorMsg.includes('session') && (
+            <button
+              type="button"
+              onClick={() => navigate('/login?redirect=/checkout')}
+              className="mt-1 px-5 py-2 rounded-full bg-[#A6472B] hover:bg-[#7E351F] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+            >
+              Log In &amp; Continue Order
+            </button>
+          )}
+        </div>
+      )}
 
       <button
         className="pay-btn"
