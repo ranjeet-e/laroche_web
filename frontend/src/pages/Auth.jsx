@@ -244,6 +244,23 @@ const Auth = ({ initialMode = 'login' }) => {
     triggerGoogleLogin();
   };
 
+  // Fast 1-Click Demo Login for investors and testing
+  const handleQuickDemoLogin = async () => {
+    setServerError('');
+    setLoading(true);
+    try {
+      const data = await loginService({
+        email: 'demo.student@larochecafe.com',
+        password: 'LaRoche2026!',
+      });
+      handlePostAuthRedirect(data);
+    } catch (err) {
+      setServerError('Demo login is temporarily unavailable. Please sign in with email below.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // ---------------- PHONE SIGN IN FLOW ----------------
   const handleSendLoginOtp = async (e) => {
     if (e) e.preventDefault();
@@ -578,6 +595,16 @@ const Auth = ({ initialMode = 'login' }) => {
                ========================================================================= */}
             {mode === 'login' && (
               <div>
+                {/* 1-Click Demo Login for smooth testing & investor demos */}
+                <button
+                  type="button"
+                  onClick={handleQuickDemoLogin}
+                  disabled={loading}
+                  className="w-full py-3 px-4 mb-3 rounded-full bg-gradient-to-r from-[#A6472B] to-[#C86D43] hover:from-[#7E351F] hover:to-[#A6472B] text-white font-bold text-xs sm:text-sm shadow-warm-md hover:shadow-warm-lg transition-all flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer"
+                >
+                  <span>⚡ 1-Click Demo Sign In (Instant Access)</span>
+                </button>
+
                 {/* Bespoke Google Fast Sign-In */}
                 <button
               type="button"

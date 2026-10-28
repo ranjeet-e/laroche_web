@@ -8,14 +8,25 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Restore session from localStorage only if both user AND token exist
+    // Restore session from localStorage only if both user AND valid, unexpired token exist
     const storedUser = getCurrentUser();
     const storedToken = localStorage.getItem('token');
 
+    let isValid = false;
     if (storedUser && storedToken) {
-      setUser(storedUser);
-    } else {
-      // Clear inconsistent state
+      try {
+        const payload = JSON.parse(atob(storedToken.split('.')[1]));
+        if (payload.exp && payload.exp * 1000 > Date.now()) {
+          isValid = true;
+          setUser(storedUser);
+        }
+      } catch (e) {
+        isValid = false;
+      }
+    }
+
+    if (!isValid) {
+      // Clear inconsistent or expired state proactively
       localStorage.removeItem('user');
       localStorage.removeItem('token');
       setUser(null);
