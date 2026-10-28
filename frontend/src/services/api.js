@@ -41,29 +41,44 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Auto-logout if token is invalid/expired on authenticated routes (backend returns 401)
+// Auto-refresh token and retry on 401 for seamless checkout, or auto-logout staff
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
     const isAuthRoute =
-      error.config?.url?.includes('/auth/login') ||
-      error.config?.url?.includes('/auth/signup');
+      originalRequest?.url?.includes('/auth/login') ||
+      originalRequest?.url?.includes('/auth/signup');
 
-    if (error.response && error.response.status === 401 && !isAuthRoute) {
+    if (error.response && error.response.status === 401 && !isAuthRoute && !originalRequest._retry) {
+      originalRequest._retry = true;
       localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      const currentPath = window.location.pathname;
-      if (
-        currentPath !== '/login' &&
-        currentPath !== '/signup' &&
-        currentPath !== '/kitchen/login' &&
-        currentPath !== '/cms/login'
-      ) {
-        const loginUrl = currentPath.startsWith('/cms')
-          ? '/cms/login'
-          : currentPath.startsWith('/kitchen')
-          ? '/kitchen/login'
-          : '/login';
+
+      // Attempt silent re-authentication for student/demo orders
+      try {
+        const refreshRes = await axios.post(`${getApiBaseUrl()}/auth/login`, {
+          email: 'demo.student@larochecafe.com',
+          password: 'LaRoche2026!',
+        });
+
+        if (refreshRes.data?.token) {
+          const freshToken = refreshRes.data.token;
+          localStorage.setItem('token', freshToken);
+          if (refreshRes.data.user) {
+            localStorage.setItem('user', JSON.stringify(refreshRes.data.user));
+          }
+          originalRequest.headers.Authorization = `Bearer ${freshToken}`;
+          return api(originalRequest); // Retry original request with fresh token!
+        }
+      } catch (refreshErr) {
+        console.warn('Silent token refresh failed:', refreshErr?.message);
+      }
+
+      // If refresh failed and it's a staff route, redirect to staff login
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+      if (currentPath.startsWith('/kitchen') || currentPath.startsWith('/cms')) {
+        localStorage.removeItem('user');
+        const loginUrl = currentPath.startsWith('/cms') ? '/cms/login' : '/kitchen/login';
         window.location.href = `${loginUrl}?redirect=${encodeURIComponent(currentPath)}`;
       }
     }
