@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import api from '../services/api';
 import FoodCard from '../components/FoodCard';
 import HeroSection from '../components/HeroSection';
@@ -13,6 +13,7 @@ import './Menu.css';
 const Menu = () => {
   const [items, setItems] = useState([]);
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const searchQuery = searchParams.get('q') || '';
   const [activeCategory, setActiveCategory] = useState('');
   const [loading, setLoading] = useState(true);
@@ -160,7 +161,11 @@ const Menu = () => {
   const handleScrollHorizontalRail = (cat, direction) => {
     const rail = horizontalRailRefs.current[cat];
     if (rail) {
-      rail.scrollBy({ left: direction * 320, behavior: 'smooth' });
+      if (direction === -99) {
+        rail.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        rail.scrollBy({ left: direction * 320, behavior: 'smooth' });
+      }
     }
   };
 
@@ -218,21 +223,41 @@ const Menu = () => {
       <main id="menu-content" className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {searchQuery ? (
           /* Search Results View */
-          <div className="pt-4">
-            <div className="flex items-center gap-2 mb-6">
-              <Search className="w-5 h-5 text-terracotta" />
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-espresso">
-                {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for "{searchQuery}"
-              </h2>
+          <div className="pt-2 sm:pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-3 border-b border-[#ECD5A5] dark:border-[#3D3D30]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-terracotta/15 text-terracotta flex items-center justify-center font-bold">
+                  <Search className="w-4 h-4" />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-espresso dark:text-white">
+                  {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for "{searchQuery}"
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/menu')}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#140D0A] hover:bg-terracotta text-white text-xs font-bold transition-all shadow-warm-sm cursor-pointer"
+                title="Clear search and view all menu dishes"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>Clear Filter (Show All)</span>
+              </button>
             </div>
 
             {searchResults.length === 0 ? (
               <div className="py-20 text-center bg-[#FFF9EC] dark:bg-[#2B2421] rounded-3xl border border-[#ECD5A5] dark:border-stone-700 shadow-warm-sm p-8 max-w-lg mx-auto">
                 <span className="text-4xl mb-3 block">🔍</span>
-                <h3 className="text-lg font-bold text-espresso mb-1">No dishes found</h3>
-                <p className="text-xs sm:text-sm text-taupe mb-6">
+                <h3 className="text-lg font-bold text-espresso dark:text-white mb-1">No dishes found</h3>
+                <p className="text-xs sm:text-sm text-taupe dark:text-stone-400 mb-6">
                   We couldn't find anything matching "{searchQuery}". Try searching for pizza, sandwich, coffee, or pasta.
                 </p>
+                <button
+                  type="button"
+                  onClick={() => navigate('/menu')}
+                  className="px-5 py-2 rounded-full bg-terracotta text-white font-bold text-xs uppercase tracking-wider hover:bg-[#7E351F] transition-all"
+                >
+                  Show Full Menu
+                </button>
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-4">
@@ -276,40 +301,68 @@ const Menu = () => {
                       </span>
                     </div>
 
-                    {/* Desktop Navigation Scroll Buttons */}
-                    <div className="hidden sm:flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => handleScrollHorizontalRail(cat, -1)}
-                        className="w-7 h-7 rounded-full bg-[#FFF9EC] dark:bg-[#23231C] border border-[#ECD5A5] dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                        aria-label={`Scroll ${cat} left`}
-                      >
-                        <ChevronLeft className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleScrollHorizontalRail(cat, 1)}
-                        className="w-7 h-7 rounded-full bg-[#FFF9EC] dark:bg-[#23231C] border border-[#ECD5A5] dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                        aria-label={`Scroll ${cat} right`}
-                      >
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                    {/* Navigation & Swipe Controls (Visible on BOTH mobile & desktop whenever items > 2) */}
+                    {catItems.length > 2 && (
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        {/* Mobile Swipe Hint Badge */}
+                        <span className="sm:hidden text-[10px] font-extrabold uppercase tracking-wider text-terracotta bg-terracotta/10 px-2 py-0.5 rounded-full border border-terracotta/20 flex items-center gap-0.5 animate-pulse">
+                          Swipe →
+                        </span>
+
+                        {/* Interactive Arrow Buttons */}
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleScrollHorizontalRail(cat, -1)}
+                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#FFF9EC] dark:bg-[#23231C] border border-[#ECD5A5] dark:border-stone-700 shadow-warm-sm text-espresso dark:text-white flex items-center justify-center hover:bg-terracotta hover:text-white hover:border-terracotta active:scale-90 transition-all cursor-pointer"
+                            aria-label={`Scroll ${cat} left`}
+                            title="Previous items"
+                          >
+                            <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleScrollHorizontalRail(cat, 1)}
+                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-terracotta text-white border border-terracotta shadow-warm-sm flex items-center justify-center hover:bg-[#7E351F] active:scale-90 transition-all cursor-pointer shadow-glow-terracotta"
+                            aria-label={`Scroll ${cat} right`}
+                            title="More items"
+                          >
+                            <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Horizontal Scroll Track for Menu Items under this Category */}
                   <div
                     ref={(el) => (horizontalRailRefs.current[cat] = el)}
-                    className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-3 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+                    className="flex items-stretch gap-2.5 sm:gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-3 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
                   >
                     {catItems.map((item) => (
                       <div
                         key={item._id}
-                        className="w-[190px] sm:w-[220px] md:w-[245px] snap-start flex-shrink-0 flex flex-col"
+                        className="w-[160px] xs:w-[175px] sm:w-[220px] md:w-[245px] snap-start flex-shrink-0 flex flex-col"
                       >
                         <FoodCard item={item} allItems={items} />
                       </div>
                     ))}
+
+                    {/* End-of-Category Pill Indicator (for sections with > 2 items) */}
+                    {catItems.length > 2 && (
+                      <div className="w-[125px] sm:w-[145px] snap-start flex-shrink-0 flex flex-col items-center justify-center p-3 rounded-2xl border-2 border-dashed border-[#ECD5A5] dark:border-[#4A3B32] bg-[#FFF9EC]/60 dark:bg-[#23231C]/60 text-center text-taupe dark:text-stone-400">
+                        <span className="text-xl mb-1">✨</span>
+                        <span className="text-[11px] font-bold text-espresso dark:text-white">All {catItems.length} items</span>
+                        <span className="text-[10px] text-stone-500 dark:text-stone-400 mt-0.5">viewed</span>
+                        <button
+                          type="button"
+                          onClick={() => handleScrollHorizontalRail(cat, -99)}
+                          className="mt-2 text-[10px] font-extrabold text-terracotta hover:underline cursor-pointer"
+                        >
+                          ↺ Back to start
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </section>
               );

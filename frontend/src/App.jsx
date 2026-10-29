@@ -39,7 +39,9 @@ const RootRedirect = () => {
 
 const AppRoutes = () => {
   const location = useLocation();
-  const isHeroPage = location.pathname === '/' || location.pathname === '/menu';
+  const searchParams = new URLSearchParams(location.search);
+  const isSearchActive = location.pathname === '/menu' && Boolean(searchParams.get('q'));
+  const isHeroPage = (location.pathname === '/' || location.pathname === '/menu') && !isSearchActive;
 
   return (
     <div className="flex flex-col min-h-screen">
