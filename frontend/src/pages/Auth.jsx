@@ -3,8 +3,6 @@ import { useNavigate, useLocation, Link, useSearchParams } from 'react-router-do
 import { Smartphone, Mail, Lock, User as UserIcon, ArrowRight, ArrowLeft, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import { useGoogleLogin } from '@react-oauth/google';
 import {
-  sendOtp as sendOtpService,
-  verifyOtp as verifyOtpService,
   login as loginService,
   signup as signupService,
   googleLogin as googleLoginService,
@@ -100,7 +98,6 @@ const Auth = ({ initialMode = 'login' }) => {
     setServerError('');
     const queryPhone = searchParams.get('phone');
     if (queryPhone) {
-      setPhone(queryPhone);
       setSignupData((prev) => ({ ...prev, phone: queryPhone }));
       if (searchParams.get('notice') === 'not_found') {
         setServerError(`No account found for +91 ${queryPhone}. Please complete registration below.`);
@@ -108,15 +105,7 @@ const Auth = ({ initialMode = 'login' }) => {
     }
   }, [location.pathname, searchParams]);
 
-  // Countdown timers
-  useEffect(() => {
-    let timer;
-    if (countdown > 0) {
-      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-    }
-    return () => clearTimeout(timer);
-  }, [countdown]);
-
+  // Countdown timer for forgot password
   useEffect(() => {
     let timer;
     if (forgotCountdown > 0) {
@@ -124,12 +113,6 @@ const Auth = ({ initialMode = 'login' }) => {
     }
     return () => clearTimeout(timer);
   }, [forgotCountdown]);
-
-  useEffect(() => {
-    if (phoneStep === 'enter_otp' && otpInputRef.current) {
-      otpInputRef.current.focus();
-    }
-  }, [phoneStep]);
 
   const handlePostAuthRedirect = (data) => {
     login(data);
@@ -242,81 +225,6 @@ const Auth = ({ initialMode = 'login' }) => {
       return;
     }
     triggerGoogleLogin();
-  };
-
-  // Fast 1-Click Demo Login for investors and testing
-  const handleQuickDemoLogin = async () => {
-    setServerError('');
-    setLoading(true);
-    try {
-      const data = await loginService({
-        email: 'demo.student@larochecafe.com',
-        password: 'LaRoche2026!',
-      });
-      handlePostAuthRedirect(data);
-    } catch (err) {
-      setServerError('Demo login is temporarily unavailable. Please sign in with email below.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ---------------- PHONE SIGN IN FLOW ----------------
-  const handleSendLoginOtp = async (e) => {
-    if (e) e.preventDefault();
-    setServerError('');
-    setSuccessMessage('');
-
-    const cleanPhone = phone.replace(/\D/g, '');
-    if (!isValidPhoneNumber(cleanPhone)) {
-      setErrors({ phone: 'Enter a valid 10-digit mobile number' });
-      return;
-    }
-
-    setErrors({});
-    setLoading(true);
-
-    try {
-      const res = await sendOtpService({ phone: cleanPhone, mode: 'login' });
-      setPhoneStep('enter_otp');
-      setCountdown(30);
-      setSuccessMessage(`Verification code sent to +91 ${cleanPhone}`);
-    } catch (err) {
-      if (err.response?.status === 404 || err.response?.data?.notFound) {
-        const redirectParam = searchParams.get('redirect') ? `&redirect=${encodeURIComponent(searchParams.get('redirect'))}` : '';
-        navigate(`/signup?phone=${cleanPhone}&notice=not_found${redirectParam}`);
-        return;
-      }
-      setServerError(err.response?.data?.message || 'Failed to send OTP. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyLoginOtp = async (e) => {
-    e.preventDefault();
-    setServerError('');
-
-    const cleanOtp = otp.trim();
-    if (!isValidOtp(cleanOtp)) {
-      setErrors({ otp: 'Please enter a valid 6-digit code' });
-      return;
-    }
-
-    setErrors({});
-    setLoading(true);
-
-    try {
-      const res = await verifyOtpService({
-        phone: phone.replace(/\D/g, ''),
-        otp: cleanOtp,
-      });
-      handlePostAuthRedirect(res);
-    } catch (err) {
-      setServerError(err.response?.data?.message || 'Invalid or expired OTP code.');
-    } finally {
-      setLoading(false);
-    }
   };
 
   // ---------------- EMAIL SIGN IN FLOW ----------------
@@ -595,16 +503,6 @@ const Auth = ({ initialMode = 'login' }) => {
                ========================================================================= */}
             {mode === 'login' && (
               <div>
-                {/* 1-Click Demo Login for smooth testing & investor demos */}
-                <button
-                  type="button"
-                  onClick={handleQuickDemoLogin}
-                  disabled={loading}
-                  className="w-full py-3 px-4 mb-3 rounded-full bg-gradient-to-r from-[#A6472B] to-[#C86D43] hover:from-[#7E351F] hover:to-[#A6472B] text-white font-bold text-xs sm:text-sm shadow-warm-md hover:shadow-warm-lg transition-all flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer"
-                >
-                  <span>⚡ 1-Click Demo Sign In (Instant Access)</span>
-                </button>
-
                 {/* Bespoke Google Fast Sign-In */}
                 <button
               type="button"
