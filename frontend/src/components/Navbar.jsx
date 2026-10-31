@@ -23,7 +23,7 @@ const Navbar = () => {
   // Dynamic scroll listener: transparent over hero, changes background as user scrolls down
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 25) {
+      if (window.scrollY > 120) {
         setScrolled(true);
       } else {
         setScrolled(false);
@@ -77,6 +77,11 @@ const Navbar = () => {
     setShowSearchModal(false);
   };
 
+  // On the home/menu hero area, the hero section already displays a prominent search bar.
+  // The navbar search bar smoothly reveals when scrolled past the hero, on search results, or on other pages.
+  const isHeroPage = (location.pathname === '/' || location.pathname === '/menu') && !searchParams.get('q');
+  const showNavSearchBar = scrolled || !isHeroPage || Boolean(searchValue);
+
   return (
     <>
       {/* Sleek, high-contrast dark coffee header */}
@@ -118,50 +123,60 @@ const Navbar = () => {
               </Link>
             </nav>
 
-            {/* Desktop Visible Search Bar with 1-Click Clear */}
-            <form
-              onSubmit={handleSearchSubmit}
-              className="hidden lg:flex items-center relative"
+            {/* Desktop Visible Search Bar with 1-Click Clear (Reveals smoothly on scroll or search) */}
+            <div
+              className={`transition-all duration-300 overflow-hidden flex items-center ${
+                showNavSearchBar
+                  ? 'opacity-100 max-w-[280px] pointer-events-auto'
+                  : 'opacity-0 max-w-0 pointer-events-none'
+              }`}
             >
-              <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 pointer-events-none" />
-              <input
-                type="text"
-                value={searchValue}
-                onChange={(e) => {
-                  setSearchValue(e.target.value);
-                  if (!e.target.value && location.pathname === '/menu') {
-                    navigate('/menu');
-                  }
-                }}
-                placeholder="Search dishes..."
-                className="w-44 xl:w-56 h-8.5 pl-8 pr-7 rounded-full bg-[#241712] border border-[#4A3225] text-white text-xs placeholder:text-stone-400 focus:outline-none focus:border-[#F7D070] focus:ring-1 focus:ring-[#F7D070]/30 transition-all font-sans font-medium"
-              />
-              {searchValue ? (
-                <button
-                  type="button"
-                  onClick={clearSearch}
-                  className="absolute right-2 p-0.5 rounded-full text-stone-400 hover:text-white transition-colors cursor-pointer"
-                  title="Clear search"
-                  aria-label="Clear search"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              ) : null}
-            </form>
+              <form
+                onSubmit={handleSearchSubmit}
+                className="hidden lg:flex items-center relative"
+              >
+                <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchValue}
+                  onChange={(e) => {
+                    setSearchValue(e.target.value);
+                    if (!e.target.value && location.pathname === '/menu') {
+                      navigate('/menu');
+                    }
+                  }}
+                  placeholder="Search dishes..."
+                  className="w-44 xl:w-56 h-8.5 pl-8 pr-7 rounded-full bg-[#241712] border border-[#4A3225] text-white text-xs placeholder:text-stone-400 focus:outline-none focus:border-[#F7D070] focus:ring-1 focus:ring-[#F7D070]/30 transition-all font-sans font-medium"
+                />
+                {searchValue ? (
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className="absolute right-2 p-0.5 rounded-full text-stone-400 hover:text-white transition-colors cursor-pointer"
+                    title="Clear search"
+                    aria-label="Clear search"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                ) : null}
+              </form>
+            </div>
 
             {/* Tablet Search Button */}
-            <button
-              type="button"
-              onClick={() => setShowSearchModal(true)}
-              className="hidden md:inline-flex lg:hidden items-center gap-1.5 text-white hover:text-[#F7D070] transition-colors drop-shadow-sm cursor-pointer p-1"
-              title="Search Dishes"
-              aria-label="Search Dishes"
-            >
-              <Search className="w-4 h-4 stroke-[2.2]" />
-              <span className="text-[11px] font-bold tracking-wider opacity-90">
-                {searchValue ? `"${searchValue}"` : 'SEARCH'}
-              </span>
-            </button>
+            {showNavSearchBar && (
+              <button
+                type="button"
+                onClick={() => setShowSearchModal(true)}
+                className="hidden md:inline-flex lg:hidden items-center gap-1.5 text-white hover:text-[#F7D070] transition-colors drop-shadow-sm cursor-pointer p-1"
+                title="Search Dishes"
+                aria-label="Search Dishes"
+              >
+                <Search className="w-4 h-4 stroke-[2.2]" />
+                <span className="text-[11px] font-bold tracking-wider opacity-90">
+                  {searchValue ? `"${searchValue}"` : 'SEARCH'}
+                </span>
+              </button>
+            )}
           </div>
 
           {/* 2. CENTER: BIGGER LA ROCHE LOGO */}
