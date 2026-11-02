@@ -347,22 +347,6 @@ const Menu = () => {
                         <FoodCard item={item} allItems={items} />
                       </div>
                     ))}
-
-                    {/* End-of-Category Pill Indicator (for sections with > 2 items) */}
-                    {catItems.length > 2 && (
-                      <div className="w-[125px] sm:w-[145px] snap-start flex-shrink-0 flex flex-col items-center justify-center p-3 rounded-2xl border-2 border-dashed border-[#ECD5A5] dark:border-[#4A3B32] bg-[#FFF9EC]/60 dark:bg-[#23231C]/60 text-center text-taupe dark:text-stone-400">
-                        <span className="text-xl mb-1">✨</span>
-                        <span className="text-[11px] font-bold text-espresso dark:text-white">All {catItems.length} items</span>
-                        <span className="text-[10px] text-stone-500 dark:text-stone-400 mt-0.5">viewed</span>
-                        <button
-                          type="button"
-                          onClick={() => handleScrollHorizontalRail(cat, -99)}
-                          className="mt-2 text-[10px] font-extrabold text-terracotta hover:underline cursor-pointer"
-                        >
-                          ↺ Back to start
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </section>
               );

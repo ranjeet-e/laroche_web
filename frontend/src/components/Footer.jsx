@@ -32,6 +32,20 @@ const Footer = () => {
       }}
     >
       <div className="max-w-7xl mx-auto">
+        {/* CREATED BY SECTION (Top of Footer) */}
+        <div className="mb-12 pb-8 border-b border-stone-800/80 flex flex-col items-center text-center">
+          <p className="text-[11px] sm:text-xs font-mono tracking-[0.25em] text-[#F7D070] uppercase font-bold mb-3">
+            ✦ CREATED BY ✦
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm sm:text-base font-serif font-semibold text-white tracking-wide">
+            <span className="hover:text-[#F7D070] transition-colors">Ranjeet Epili</span>
+            <span className="text-stone-600 hidden sm:inline">•</span>
+            <span className="hover:text-[#F7D070] transition-colors">Om Bhalerao</span>
+            <span className="text-stone-600 hidden sm:inline">•</span>
+            <span className="hover:text-[#F7D070] transition-colors">Mitansh Jambusariya</span>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-14 mb-14 font-sans">
           
           {/* COLUMN 1: POLICIES */}
