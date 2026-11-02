@@ -7,7 +7,11 @@ export const getApiBaseUrl = () => {
     return cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
   }
   // Vercel cloud deployment fallback
-  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.hostname.includes('vercel.app') ||
+      (window.location.hostname.includes('sakec.ac.in') && window.location.port !== '5050'))
+  ) {
     return 'https://laroche-web.onrender.com/api';
   }
   // Default to relative /api for college server (Nginx / Express reverse proxy or local)
@@ -19,7 +23,11 @@ export const getBackendBaseUrl = () => {
   if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '' && !envUrl.startsWith('/')) {
     return envUrl.trim().replace(/\/api\/?$/, '').replace(/\/$/, '');
   }
-  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.hostname.includes('vercel.app') ||
+      (window.location.hostname.includes('sakec.ac.in') && window.location.port !== '5050'))
+  ) {
     return 'https://laroche-web.onrender.com';
   }
   return typeof window !== 'undefined' ? window.location.origin : '';

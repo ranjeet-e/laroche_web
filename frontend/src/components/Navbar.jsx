@@ -23,7 +23,7 @@ const Navbar = () => {
   // Dynamic scroll listener: transparent over hero, changes background as user scrolls down
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 120) {
+      if (window.scrollY > 25) {
         setScrolled(true);
       } else {
         setScrolled(false);
@@ -77,21 +77,24 @@ const Navbar = () => {
     setShowSearchModal(false);
   };
 
-  // On the home/menu hero area, the hero section already displays a prominent search bar.
-  // The navbar search bar smoothly reveals when scrolled past the hero, on search results, or on other pages.
-  const isHeroPage = (location.pathname === '/' || location.pathname === '/menu') && !searchParams.get('q');
-  const showNavSearchBar = scrolled || !isHeroPage || Boolean(searchValue);
+  // Transparent only at the top of hero pages (e.g. main page /menu or /)
+  const isHeroPage = location.pathname === '/' || location.pathname === '/menu';
+  const isTransparent = isHeroPage && !scrolled && !showSearchModal;
 
   return (
     <>
-      {/* Sleek, high-contrast dark coffee header */}
+      {/* Sleek, uncluttered header with prominent bigger center logo */}
       <header
-        className="fixed top-0 left-0 right-0 z-50 w-full bg-[#140D0A]/95 dark:bg-[#0E0A08]/98 backdrop-blur-md border-b border-[#3D281E] shadow-warm-lg text-white transition-all duration-300"
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
+          isTransparent
+            ? 'bg-transparent border-b border-transparent text-white'
+            : 'bg-[#140D0A]/95 dark:bg-[#0E0A08]/95 backdrop-blur-md border-b border-stone-800/80 shadow-warm-lg text-white'
+        }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-between h-16 sm:h-20">
           
-          {/* 1. LEFT SIDE: HOME, MENU, SEARCH BAR */}
-          <div className="flex items-center gap-3 sm:gap-6 flex-1 justify-start">
+          {/* 1. LEFT SIDE: HOME, MENU, SEARCH ICON */}
+          <div className="flex items-center gap-4 sm:gap-7 flex-1 justify-start">
             {/* Mobile Hamburger Drawer Button */}
             <button
               type="button"
@@ -103,7 +106,7 @@ const Navbar = () => {
             </button>
 
             {/* Desktop Left Navigation Links */}
-            <nav className="hidden md:flex items-center gap-5 lg:gap-7 font-sans font-extrabold text-xs sm:text-[13px] uppercase tracking-[0.16em]">
+            <nav className="hidden md:flex items-center gap-6 lg:gap-8 font-sans font-extrabold text-xs sm:text-[13px] uppercase tracking-[0.16em]">
               <Link
                 to="/"
                 className={`transition-colors drop-shadow-sm ${
@@ -121,62 +124,21 @@ const Navbar = () => {
               >
                 MENU
               </Link>
-            </nav>
 
-            {/* Desktop Visible Search Bar with 1-Click Clear (Reveals smoothly on scroll or search) */}
-            <div
-              className={`transition-all duration-300 overflow-hidden flex items-center ${
-                showNavSearchBar
-                  ? 'opacity-100 max-w-[280px] pointer-events-auto'
-                  : 'opacity-0 max-w-0 pointer-events-none'
-              }`}
-            >
-              <form
-                onSubmit={handleSearchSubmit}
-                className="hidden lg:flex items-center relative"
-              >
-                <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 pointer-events-none" />
-                <input
-                  type="text"
-                  value={searchValue}
-                  onChange={(e) => {
-                    setSearchValue(e.target.value);
-                    if (!e.target.value && location.pathname === '/menu') {
-                      navigate('/menu');
-                    }
-                  }}
-                  placeholder="Search dishes..."
-                  className="w-44 xl:w-56 h-8.5 pl-8 pr-7 rounded-full bg-[#241712] border border-[#4A3225] text-white text-xs placeholder:text-stone-400 focus:outline-none focus:border-[#F7D070] focus:ring-1 focus:ring-[#F7D070]/30 transition-all font-sans font-medium"
-                />
-                {searchValue ? (
-                  <button
-                    type="button"
-                    onClick={clearSearch}
-                    className="absolute right-2 p-0.5 rounded-full text-stone-400 hover:text-white transition-colors cursor-pointer"
-                    title="Clear search"
-                    aria-label="Clear search"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                ) : null}
-              </form>
-            </div>
-
-            {/* Tablet Search Button */}
-            {showNavSearchBar && (
+              {/* SEARCH ICON */}
               <button
                 type="button"
                 onClick={() => setShowSearchModal(true)}
-                className="hidden md:inline-flex lg:hidden items-center gap-1.5 text-white hover:text-[#F7D070] transition-colors drop-shadow-sm cursor-pointer p-1"
+                className="inline-flex items-center gap-2 text-white hover:text-[#F7D070] transition-colors drop-shadow-sm cursor-pointer p-1"
                 title="Search Dishes"
                 aria-label="Search Dishes"
               >
                 <Search className="w-4 h-4 stroke-[2.2]" />
-                <span className="text-[11px] font-bold tracking-wider opacity-90">
+                <span className="hidden lg:inline text-[11px] font-bold tracking-wider opacity-90">
                   {searchValue ? `"${searchValue}"` : 'SEARCH'}
                 </span>
               </button>
-            )}
+            </nav>
           </div>
 
           {/* 2. CENTER: BIGGER LA ROCHE LOGO */}
