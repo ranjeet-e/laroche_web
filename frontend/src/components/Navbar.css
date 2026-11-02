@@ -1,1 +1,12 @@
-/* Navbar styling resets */
+/* Navbar styling resets & Mobile Safe Area Inset */
+.navbar-header-safe {
+  /* Provides clean clearance below phone earpieces, notches, and camera punch-holes */
+  padding-top: max(env(safe-area-inset-top, 0px), 14px);
+}
+
+@media (min-width: 640px) {
+  .navbar-header-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+

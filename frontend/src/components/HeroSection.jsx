@@ -64,7 +64,7 @@ const HeroSection = ({ onExploreClick }) => {
   };
 
   return (
-    <section className="relative w-full h-[88vh] min-h-[560px] max-h-[820px] overflow-hidden bg-espresso dark:bg-[#14100E] flex items-center justify-center pt-16 sm:pt-20 border-b-2 border-[#ECD5A5] dark:border-[#3D312A] shadow-md">
+    <section className="relative w-full h-[88vh] min-h-[560px] max-h-[820px] overflow-hidden bg-espresso dark:bg-[#14100E] flex items-center justify-center pt-20 sm:pt-24 md:pt-20 border-b-2 border-[#ECD5A5] dark:border-[#3D312A] shadow-md">
       {/* Background B-Roll Video with smooth fade-in */}
       <video
         ref={videoRef}

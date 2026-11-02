@@ -83,15 +83,15 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Sleek, uncluttered header with prominent bigger center logo */}
+      {/* Sleek, uncluttered header with safe-area spacing below phone earpieces/notches */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 w-full navbar-header-safe transition-all duration-300 ${
           isTransparent
             ? 'bg-transparent border-b border-transparent text-white'
             : 'bg-[#140D0A]/95 dark:bg-[#0E0A08]/95 backdrop-blur-md border-b border-stone-800/80 shadow-warm-lg text-white'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-between h-16 sm:h-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-between h-14 sm:h-16 md:h-20">
           
           {/* 1. LEFT SIDE: HOME, MENU, SEARCH ICON */}
           <div className="flex items-center gap-4 sm:gap-7 flex-1 justify-start">
@@ -151,7 +151,7 @@ const Navbar = () => {
               <img
                 src="/logo.png"
                 alt="La Roche Cafe"
-                className="h-11 sm:h-14 lg:h-16 w-auto object-contain brightness-110 drop-shadow-lg group-hover:scale-105 transition-transform duration-300"
+                className="h-10 sm:h-14 lg:h-16 w-auto object-contain brightness-110 drop-shadow-lg group-hover:scale-105 transition-transform duration-300"
               />
             </Link>
           </div>
