@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { Search, X, ShoppingBag, User, LogOut, Sun, Moon, Menu as MenuIcon } from 'lucide-react';
+import { Search, X, ShoppingBag, User, LogOut, Menu as MenuIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { useTheme } from '../context/ThemeContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const { user, logout, isStudent, isKitchen, isCms } = useAuth();
   const { totalItems } = useCart();
-  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -175,21 +173,6 @@ const Navbar = () => {
               aria-label="Search"
             >
               <Search className="w-5 h-5" />
-            </button>
-
-            {/* DARK MODE SWITCH */}
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-white/10 text-white transition-colors drop-shadow-sm"
-              title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              aria-label="Toggle dark mode"
-            >
-              {isDark ? (
-                <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
-              ) : (
-                <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-stone-200" />
-              )}
             </button>
 
             {/* CART (Shopping bag with total count badge) */}
