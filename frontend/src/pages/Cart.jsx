@@ -52,9 +52,7 @@ const Cart = () => {
     );
   }
 
-  const packagingCharge = 10;
-  const gst = Math.round(totalAmount * 0.05); // 5% GST
-  const grandTotal = totalAmount + packagingCharge + gst;
+  const grandTotal = totalAmount;
 
   return (
     <div className="min-h-screen bg-transparent py-8 px-4 sm:px-6 pb-28 transition-colors">
@@ -98,14 +96,6 @@ const Cart = () => {
               <div className="flex justify-between text-taupe dark:text-stone-400">
                 <span>Item Total</span>
                 <span className="font-medium text-espresso dark:text-stone-100 font-price">₹{totalAmount}</span>
-              </div>
-              <div className="flex justify-between text-taupe dark:text-stone-400">
-                <span>Eco Packaging Fee</span>
-                <span className="font-medium text-espresso dark:text-stone-100 font-price">₹{packagingCharge}</span>
-              </div>
-              <div className="flex justify-between text-taupe dark:text-stone-400">
-                <span>Govt Taxes (GST 5%)</span>
-                <span className="font-medium text-espresso dark:text-stone-100 font-price">₹{gst}</span>
               </div>
               <div className="pt-3 border-t border-stone-200/80 dark:border-stone-800 flex justify-between items-center font-medium text-espresso dark:text-white text-base sm:text-lg">
                 <span>Total to Pay</span>

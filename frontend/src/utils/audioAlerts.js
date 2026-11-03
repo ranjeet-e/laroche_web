@@ -134,75 +134,64 @@ export const playReminderPingSound = async () => {
 
 /**
  * Voice dictation: Announces incoming order items and customer name for the kitchen team
- * e.g., "1 Cheese Chilli Maggie for Ranjeet"
+ * Rapid, punchy, and equipped with Kitchen Rush batching to prevent speech logjams
  */
 let activeUtteranceRef = null;
+let speechQueue = [];
+let isSpeaking = false;
+let rushTimeout = null;
 
-export const speakOrderAnnouncement = (order) => {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    console.warn('[Kitchen Audio] Speech synthesis not supported in this browser');
+const processNextSpeech = () => {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  if (speechQueue.length === 0) {
+    isSpeaking = false;
     return;
   }
 
+  // RUSH PROTECTION: If 3 or more orders flood in simultaneously (e.g., college lunch break rush),
+  // do NOT spend 2 minutes reciting every single item!
+  // Instead, announce an urgent rush alert so chefs immediately glance at the KDS tickets.
+  if (speechQueue.length >= 3) {
+    const rushCount = speechQueue.length;
+    speechQueue = [];
+    speakPhrase(`Kitchen rush! ${rushCount} new orders received, check tickets!`);
+    return;
+  }
+
+  const nextPhrase = speechQueue.shift();
+  speakPhrase(nextPhrase);
+};
+
+const speakPhrase = (phrase) => {
   try {
-    // Determine customer name cleanly
-    let customerName = 'Guest';
-    if (order?.student?.name) {
-      customerName = order.student.name.trim().split(' ')[0];
-    } else if (order?.customerName) {
-      customerName = order.customerName.trim().split(' ')[0];
-    } else if (order?.orderNumber) {
-      customerName = `Order ${order.orderNumber}`;
-    }
-
-    // Capitalize first letter (e.g., "ranjeet" -> "Ranjeet")
-    if (customerName && customerName.length > 0) {
-      customerName = customerName.charAt(0).toUpperCase() + customerName.slice(1);
-    }
-
-    // Format items: "1 Cheese Chilli Maggie", "2 Cold Coffee, and 1 Peri-Peri Fries"
-    const items = Array.isArray(order?.items) ? order.items : [];
-    let itemsText = '';
-    if (items.length > 0) {
-      itemsText = items
-        .map((i) => {
-          const qty = i.quantity || 1;
-          const name = i.name || i.title || 'Item';
-          return `${qty} ${name}`;
-        })
-        .join(', and ');
-    } else {
-      itemsText = 'New order';
-    }
-
-    const phrase = `${itemsText} for ${customerName}`;
-    console.log('[Kitchen Audio] Dictating incoming order:', phrase);
-
-    // Cancel previous utterance and resume if browser suspended speech
     window.speechSynthesis.cancel();
     if (window.speechSynthesis.paused) {
       window.speechSynthesis.resume();
     }
 
     const utterance = new SpeechSynthesisUtterance(phrase);
-    utterance.rate = 0.92;
-    utterance.pitch = 1.0;
+    // Fast, crisp 1.3x kitchen speed (30-40% faster than standard speaking rate)
+    utterance.rate = 1.3;
+    utterance.pitch = 1.05;
     utterance.lang = 'en-IN';
 
-    // Prevent Chrome V8 garbage-collection bug:
-    // Retain a persistent global reference until speech finishes
     activeUtteranceRef = utterance;
     window._laroche_active_speech = utterance;
+    isSpeaking = true;
 
     utterance.onend = () => {
       activeUtteranceRef = null;
       window._laroche_active_speech = null;
+      setTimeout(() => {
+        processNextSpeech();
+      }, 250);
     };
 
     utterance.onerror = (err) => {
       console.warn('[Kitchen Audio] Speech error:', err);
       activeUtteranceRef = null;
       window._laroche_active_speech = null;
+      processNextSpeech();
     };
 
     // Voice selection: prioritize Indian English, then British/American, then default
@@ -220,19 +209,72 @@ export const speakOrderAnnouncement = (order) => {
       }
     }
 
-    // Delay 450ms so the initial counter bell chime rings first, followed by clear voice dictation
-    setTimeout(() => {
-      try {
-        if (window.speechSynthesis.paused) {
-          window.speechSynthesis.resume();
-        }
-        window.speechSynthesis.speak(utterance);
-      } catch (err) {
-        console.warn('[Kitchen Audio] speak() failed:', err);
-      }
-    }, 450);
+    window.speechSynthesis.speak(utterance);
   } catch (err) {
     console.warn('[Kitchen Audio] Speech synthesis failure:', err);
+    isSpeaking = false;
+  }
+};
+
+export const speakOrderAnnouncement = (order) => {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    console.warn('[Kitchen Audio] Speech synthesis not supported in this browser');
+    return;
+  }
+
+  try {
+    // 1. Order Number
+    const orderNum = order?.orderNumber ? `Order #${order.orderNumber}` : 'New Order';
+
+    // 2. Customer First Name
+    let customerName = '';
+    if (order?.student?.name) {
+      customerName = order.student.name.trim().split(' ')[0];
+    } else if (order?.customerName) {
+      customerName = order.customerName.trim().split(' ')[0];
+    }
+    if (customerName) {
+      customerName = customerName.charAt(0).toUpperCase() + customerName.slice(1);
+    }
+
+    // 3. Compact item dictation (caps at max 2 items; summarizes 3+ items so orders take < 3 seconds)
+    const items = Array.isArray(order?.items) ? order.items : [];
+    let itemsText = '';
+    const cleanItemName = (str) =>
+      String(str || 'item')
+        .replace(/freshly pressed|specialty|artisan|homemade|gourmet|crispy/gi, '')
+        .trim();
+
+    if (items.length === 1) {
+      const qty = items[0].quantity || 1;
+      itemsText = `${qty} ${cleanItemName(items[0].name)}`;
+    } else if (items.length === 2) {
+      const i1 = `${items[0].quantity || 1} ${cleanItemName(items[0].name)}`;
+      const i2 = `${items[1].quantity || 1} ${cleanItemName(items[1].name)}`;
+      itemsText = `${i1}, and ${i2}`;
+    } else if (items.length > 2) {
+      const firstItem = `${items[0].quantity || 1} ${cleanItemName(items[0].name)}`;
+      itemsText = `${items.length} items, including ${firstItem}`;
+    } else {
+      itemsText = 'New order';
+    }
+
+    const phrase = customerName
+      ? `${orderNum} for ${customerName}! ${itemsText}`
+      : `${orderNum}! ${itemsText}`;
+
+    console.log('[Kitchen Audio] Queuing fast order speech:', phrase);
+
+    speechQueue.push(phrase);
+
+    if (!isSpeaking) {
+      clearTimeout(rushTimeout);
+      rushTimeout = setTimeout(() => {
+        processNextSpeech();
+      }, 350);
+    }
+  } catch (err) {
+    console.warn('[Kitchen Audio] Speech preparation failure:', err);
   }
 };
 

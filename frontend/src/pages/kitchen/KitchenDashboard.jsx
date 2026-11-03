@@ -55,15 +55,24 @@ const columns = [
   { key: 'ready', label: 'Ready', actionLabel: 'Mark Collected', nextStatus: 'collected' },
 ];
 
+const HOME_MENU_CATEGORIES = [
+  'Sandwiches',
+  'Flatbread Pizza',
+  'Pasta',
+  'Maggie',
+  'Quick Bites & Café Snacks',
+  'Chat Counter',
+  'Cold Beverages',
+  'Hot Beverages',
+  'Waffles',
+  'Mocktails & Coolers',
+  'Cold Coffee',
+  'Add-ons',
+];
+
 const CATEGORIES = [
   'All',
-  'Hot Coffee',
-  'Cold Coffee',
-  'Sourdough & Toasties',
-  'Artisan Shakes',
-  'Bakery & Desserts',
-  'Healthy Bowls',
-  'Add-ons',
+  ...HOME_MENU_CATEGORIES,
 ];
 
 const KitchenOrderTimer = ({ createdAt, readyAt, status }) => {
@@ -158,7 +167,7 @@ const KitchenDashboard = () => {
   const [editingDish, setEditingDish] = useState(null);
   const [dishFormData, setDishFormData] = useState({
     name: '',
-    category: 'Hot Coffee',
+    category: 'Sandwiches',
     price: '',
     description: '',
     imageUrl: '',
@@ -558,7 +567,7 @@ const KitchenDashboard = () => {
     setEditingDish(null);
     setDishFormData({
       name: '',
-      category: selectedCategory !== 'All' ? selectedCategory : 'Hot Coffee',
+      category: selectedCategory !== 'All' ? selectedCategory : 'Sandwiches',
       price: '',
       description: '',
       imageUrl: '',
@@ -571,7 +580,7 @@ const KitchenDashboard = () => {
     setEditingDish(dish);
     setDishFormData({
       name: dish.name || '',
-      category: dish.category || 'Hot Coffee',
+      category: dish.category || 'Sandwiches',
       price: dish.price || '',
       description: dish.description || '',
       imageUrl: dish.imageUrl || '',
@@ -1563,19 +1572,41 @@ const KitchenDashboard = () => {
                   <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1">
                     Category *
                   </label>
-                  <select
+                  <input
+                    type="text"
+                    list="home-menu-categories"
+                    required
+                    placeholder="e.g. Sandwiches, Pizza..."
                     value={dishFormData.category}
                     onChange={(e) =>
                       setDishFormData({ ...dishFormData, category: e.target.value })
                     }
-                    className="w-full px-3 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-espresso dark:text-white focus:outline-none focus:ring-2 focus:ring-[#8D5B4C]"
-                  >
-                    {CATEGORIES.filter((c) => c !== 'All').map((c) => (
+                    className="w-full px-3.5 py-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-espresso dark:text-white focus:outline-none focus:ring-2 focus:ring-[#8D5B4C] text-sm font-medium"
+                  />
+                  <datalist id="home-menu-categories">
+                    {HOME_MENU_CATEGORIES.map((c) => (
                       <option key={c} value={c}>
                         {c}
                       </option>
                     ))}
-                  </select>
+                  </datalist>
+                  {/* Quick Category Quick-Select Chips */}
+                  <div className="flex flex-wrap gap-1 mt-1.5 max-h-20 overflow-y-auto no-scrollbar">
+                    {HOME_MENU_CATEGORIES.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setDishFormData({ ...dishFormData, category: c })}
+                        className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors cursor-pointer ${
+                          dishFormData.category === c
+                            ? 'bg-[#4A3B32] text-white border-[#4A3B32]'
+                            : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:border-[#8D5B4C]'
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div>
