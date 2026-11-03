@@ -94,8 +94,8 @@ const menuItems = [
   { name: 'Mexican Loaded Fries', category: 'Quick Bites & Café Snacks', price: 99, imageUrl: '/menu-items/7_mexican_loaded_fries.png' },
 
   // ---------- CHAT COUNTER ----------
-  { name: 'Sev Puri', category: 'Chat Counter', price: 50, imageUrl: '/menu-items/sev_puri.jpg' },
-  { name: 'Dahi Puri', category: 'Chat Counter', price: 60, imageUrl: '/menu-items/dahi_puri.png' },
+  { name: 'Sev Puri', category: 'Chaat', price: 50, imageUrl: '/menu-items/sev_puri.jpg' },
+  { name: 'Dahi Puri', category: 'Chaat', price: 60, imageUrl: '/menu-items/dahi_puri.png' },
 
   // ---------- ADD ONS ----------
   { name: 'Cheese', category: 'Add-ons', price: 20, imageUrl: '/menu-items/1_cheese.png' },

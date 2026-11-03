@@ -24,8 +24,20 @@ const categoryMeta = {
     label: 'Quick Bites',
     image: '/category-icons/fries.png',
   },
+  'Chaat': {
+    label: 'Chaat',
+    image: '/category-icons/chat_corner.png',
+  },
   'Chat Counter': {
-    label: 'Chat Counter',
+    label: 'Chaat',
+    image: '/category-icons/chat_corner.png',
+  },
+  'Chat Corner': {
+    label: 'Chaat',
+    image: '/category-icons/chat_corner.png',
+  },
+  'Chat': {
+    label: 'Chaat',
     image: '/category-icons/chat_corner.png',
   },
   'Cold Beverages': {

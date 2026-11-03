@@ -132,7 +132,7 @@ const AddToHomeScreen = () => {
             className="flex-1 py-2.5 rounded-full bg-terracotta hover:bg-terracotta-hover text-white font-bold text-xs shadow-glow-terracotta transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Install App</span>
+            <span>Add to Home Screen</span>
           </button>
         </div>
       )}

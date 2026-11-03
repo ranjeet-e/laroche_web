@@ -148,10 +148,9 @@ const processNextSpeech = () => {
     return;
   }
 
-  // RUSH PROTECTION: If 3 or more orders flood in simultaneously (e.g., college lunch break rush),
-  // do NOT spend 2 minutes reciting every single item!
-  // Instead, announce an urgent rush alert so chefs immediately glance at the KDS tickets.
-  if (speechQueue.length >= 3) {
+  // RUSH PROTECTION: If 4 or more orders flood in simultaneously,
+  // announce an urgent rush alert so chefs immediately glance at the KDS tickets.
+  if (speechQueue.length >= 4) {
     const rushCount = speechQueue.length;
     speechQueue = [];
     speakPhrase(`Kitchen rush! ${rushCount} new orders received, check tickets!`);
@@ -162,6 +161,53 @@ const processNextSpeech = () => {
   speakPhrase(nextPhrase);
 };
 
+// Intelligent voice selection prioritizing natural, high-clarity female voices
+const selectFemaleVoice = (voices) => {
+  if (!voices || voices.length === 0) return null;
+
+  const femaleKeywords = [
+    'veena', 'heera', 'neerja', 'priya', 'aditi', 'kalpana', // Indian English female
+    'samantha', 'victoria', 'karen', 'moira', 'tessa', 'fiona', 'serena', 'ava', 'allison', 'susan', // macOS / iOS female
+    'zira', 'jenny', 'aria', // Windows female
+    'female', 'woman',
+    'google uk english female', 'google us english',
+  ];
+
+  const maleKeywords = ['daniel', 'david', 'alex', 'george', 'rishi', 'fred', 'oliver', 'male', 'guy', 'tom', 'ravi'];
+
+  const isMale = (name) => {
+    const lower = (name || '').toLowerCase();
+    return maleKeywords.some((m) => lower.includes(m));
+  };
+
+  const isFemale = (name) => {
+    const lower = (name || '').toLowerCase();
+    return femaleKeywords.some((f) => lower.includes(f));
+  };
+
+  // 1. Indian English female voice (e.g. Veena on macOS, Heera on Windows)
+  const indianFemale = voices.find(
+    (v) => (v.lang === 'en-IN' || v.lang === 'en_IN') && !isMale(v.name) && isFemale(v.name)
+  );
+  if (indianFemale) return indianFemale;
+
+  // 2. Any English female voice (e.g. Samantha, Victoria, Zira, Google UK Female)
+  const englishFemale = voices.find(
+    (v) => v.lang?.startsWith('en') && !isMale(v.name) && isFemale(v.name)
+  );
+  if (englishFemale) return englishFemale;
+
+  // 3. Any voice matching female identifier
+  const anyFemale = voices.find((v) => !isMale(v.name) && isFemale(v.name));
+  if (anyFemale) return anyFemale;
+
+  // 4. Any English voice not explicitly male
+  const englishNonMale = voices.find((v) => v.lang?.startsWith('en') && !isMale(v.name));
+  if (englishNonMale) return englishNonMale;
+
+  return voices.find((v) => v.lang === 'en-IN') || voices.find((v) => v.lang?.startsWith('en')) || voices[0];
+};
+
 const speakPhrase = (phrase) => {
   try {
     window.speechSynthesis.cancel();
@@ -170,8 +216,8 @@ const speakPhrase = (phrase) => {
     }
 
     const utterance = new SpeechSynthesisUtterance(phrase);
-    // Fast, crisp 1.3x kitchen speed (30-40% faster than standard speaking rate)
-    utterance.rate = 1.3;
+    // 1x natural speaking rate
+    utterance.rate = 1.0;
     utterance.pitch = 1.05;
     utterance.lang = 'en-IN';
 
@@ -184,7 +230,7 @@ const speakPhrase = (phrase) => {
       window._laroche_active_speech = null;
       setTimeout(() => {
         processNextSpeech();
-      }, 250);
+      }, 200);
     };
 
     utterance.onerror = (err) => {
@@ -194,15 +240,10 @@ const speakPhrase = (phrase) => {
       processNextSpeech();
     };
 
-    // Voice selection: prioritize Indian English, then British/American, then default
+    // Female voice selection across macOS, Windows, Chrome, iOS
     const voices = window.speechSynthesis.getVoices();
     if (voices && voices.length > 0) {
-      const preferredVoice =
-        voices.find((v) => v.lang === 'en-IN' || v.lang === 'en_IN') ||
-        voices.find((v) => v.lang === 'en-GB') ||
-        voices.find((v) => v.lang?.startsWith('en')) ||
-        voices[0];
-
+      const preferredVoice = selectFemaleVoice(voices);
       if (preferredVoice) {
         utterance.voice = preferredVoice;
         utterance.lang = preferredVoice.lang;
@@ -237,7 +278,7 @@ export const speakOrderAnnouncement = (order) => {
       customerName = customerName.charAt(0).toUpperCase() + customerName.slice(1);
     }
 
-    // 3. Compact item dictation (caps at max 2 items; summarizes 3+ items so orders take < 3 seconds)
+    // 3. Compact item dictation (for isolated single orders)
     const items = Array.isArray(order?.items) ? order.items : [];
     let itemsText = '';
     const cleanItemName = (str) =>
@@ -259,11 +300,20 @@ export const speakOrderAnnouncement = (order) => {
       itemsText = 'New order';
     }
 
-    const phrase = customerName
-      ? `${orderNum} for ${customerName}! ${itemsText}`
-      : `${orderNum}! ${itemsText}`;
+    // When more than 1 order arrives (or another order is currently being spoken/queued),
+    // dictate only: "New order from {name}" instead of reading the entire itemized list!
+    const hasMultipleOrders = isSpeaking || speechQueue.length > 0;
 
-    console.log('[Kitchen Audio] Queuing fast order speech:', phrase);
+    let phrase = '';
+    if (hasMultipleOrders) {
+      phrase = customerName ? `New order from ${customerName}` : `New order ${orderNum}`;
+    } else {
+      phrase = customerName
+        ? `${orderNum} for ${customerName}! ${itemsText}`
+        : `${orderNum}! ${itemsText}`;
+    }
+
+    console.log('[Kitchen Audio] Queuing order speech (female 1x):', phrase);
 
     speechQueue.push(phrase);
 
@@ -271,7 +321,7 @@ export const speakOrderAnnouncement = (order) => {
       clearTimeout(rushTimeout);
       rushTimeout = setTimeout(() => {
         processNextSpeech();
-      }, 350);
+      }, 300);
     }
   } catch (err) {
     console.warn('[Kitchen Audio] Speech preparation failure:', err);

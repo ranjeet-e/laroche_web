@@ -66,9 +66,16 @@ const Menu = () => {
     fetchMenu();
   }, []);
 
+  const normalizeCategory = (cat) => {
+    if (!cat) return '';
+    const trimmed = String(cat).trim();
+    if (/^chat/i.test(trimmed)) return 'Chaat';
+    return trimmed;
+  };
+
   const categories = useMemo(() => {
     if (!Array.isArray(items) || items.length === 0) return [];
-    return [...new Set(items.map((item) => item.category))].filter((c) => c && c !== 'Add-ons');
+    return [...new Set(items.map((item) => normalizeCategory(item.category)))].filter((c) => c && c !== 'Add-ons');
   }, [items]);
 
   useEffect(() => {
@@ -81,7 +88,7 @@ const Menu = () => {
     if (!Array.isArray(items) || items.length === 0) return {};
     const groups = {};
     categories.forEach((cat) => {
-      groups[cat] = items.filter((item) => item.category === cat);
+      groups[cat] = items.filter((item) => normalizeCategory(item.category) === cat);
     });
     return groups;
   }, [items, categories]);
@@ -89,11 +96,13 @@ const Menu = () => {
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return null;
     const q = searchQuery.toLowerCase();
-    return items.filter(
-      (item) =>
-        item.name.toLowerCase().includes(q) ||
-        (item.category && item.category.toLowerCase().includes(q))
-    );
+    return items
+      .map((item) => ({ ...item, category: normalizeCategory(item.category) }))
+      .filter(
+        (item) =>
+          item.name.toLowerCase().includes(q) ||
+          (item.category && item.category.toLowerCase().includes(q))
+      );
   }, [items, searchQuery]);
 
   // Track category scrolling with IntersectionObserver for Sticky Ribbon highlight
@@ -201,14 +210,14 @@ const Menu = () => {
 
   return (
     <div className="min-h-screen bg-transparent pb-36 md:pb-24">
-      {/* 1. Full-Bleed Cinematic Hero Section (Previous video hero restored) */}
+      {/* 1. Full-Bleed Cinematic Hero Section */}
       {!searchQuery && <HeroSection onExploreClick={handleExploreClick} />}
 
-      {/* 2. Offers Carousel (Placed in place of the previous promo banner) */}
-      {!searchQuery && <FullWidthOffersCarousel onExploreClick={handleExploreClick} />}
-
-      {/* 3. Dynamic "Popular Right Now" Curated Spotlight Carousel */}
+      {/* 2. Dynamic "Popular Right Now" Curated Spotlight Carousel */}
       {!searchQuery && <FeaturedCarousel allItems={items} />}
+
+      {/* 3. Full-Bleed Edge-to-Edge Offers & Menu Board Carousel */}
+      {!searchQuery && <FullWidthOffersCarousel onExploreClick={handleExploreClick} />}
 
       {/* 4. Unified Sticky Category Ribbon */}
       {!searchQuery && (
@@ -304,10 +313,7 @@ const Menu = () => {
                     {/* Navigation & Swipe Controls (Visible on BOTH mobile & desktop whenever items > 2) */}
                     {catItems.length > 2 && (
                       <div className="flex items-center gap-1.5 sm:gap-2">
-                        {/* Mobile Swipe Hint Badge */}
-                        <span className="sm:hidden text-[10px] font-extrabold uppercase tracking-wider text-terracotta bg-terracotta/10 px-2 py-0.5 rounded-full border border-terracotta/20 flex items-center gap-0.5 animate-pulse">
-                          Swipe →
-                        </span>
+                        
 
                         {/* Interactive Arrow Buttons */}
                         <div className="flex items-center gap-1">

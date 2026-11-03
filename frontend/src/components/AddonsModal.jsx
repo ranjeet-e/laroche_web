@@ -9,7 +9,7 @@ const CATEGORY_ALLOWED_ADDONS = {
   'Pasta': ['Cheese', 'Paneer', 'Schewan Sauce', 'Schezwan Sauce'],
   'Maggie': ['Cheese', 'Paneer', 'Schewan Sauce', 'Schezwan Sauce'],
   'Quick Bites & Café Snacks': ['Cheese', 'Mayonnaise', 'Schewan Sauce', 'Schezwan Sauce'], // NO bread, NO paneer on fries/snacks
-  'Chat Counter': ['Cheese', 'Schewan Sauce', 'Schezwan Sauce'],
+  'Chaat': ['Cheese', 'Schewan Sauce', 'Schezwan Sauce'],
 };
 
 export const getRelevantAddons = (item, allItems) => {

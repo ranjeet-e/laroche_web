@@ -52,12 +52,17 @@ const connectDB = async () => {
     });
     console.log(`MongoDB connected: ${cachedConn.connection.host}`);
     
-    // Automatically reconcile & fix any outdated database indexes
+    // Automatically reconcile & fix any outdated database indexes and legacy category names
     try {
       const User = require('../models/User');
       const Order = require('../models/Order');
+      const MenuItem = require('../models/MenuItem');
       await User.syncIndexes();
       await Order.syncIndexes();
+      await MenuItem.updateMany(
+        { category: { $in: ['Chat Counter', 'chat counter', 'Chat corner', 'Chat Corner', 'CHAT COUNTER', 'Chat', 'chat'] } },
+        { $set: { category: 'Chaat' } }
+      ).catch(() => {});
       console.log('✅ User & Order database indexes synchronized');
     } catch (indexErr) {
       console.warn('Index sync notice:', indexErr.message);

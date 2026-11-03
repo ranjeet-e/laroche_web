@@ -140,9 +140,9 @@ const FullWidthOffersCarousel = ({ onExploreClick }) => {
   const currentSlide = slides[currentIndex] || slides[0];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 my-6">
+    <div className="w-full my-6 sm:my-8">
       <section
-        className="relative w-full h-[320px] sm:h-[400px] md:h-[450px] rounded-3xl overflow-hidden select-none bg-[#120B07] shadow-warm-xl border border-[#ECD5A5]/60 dark:border-[#3D312A]"
+        className="relative w-full h-[340px] sm:h-[420px] md:h-[480px] lg:h-[520px] overflow-hidden select-none bg-[#120B07] shadow-warm-xl border-y border-[#ECD5A5]/60 dark:border-[#3D312A]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onTouchStart={handleTouchStart}

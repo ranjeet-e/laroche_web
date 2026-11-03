@@ -61,7 +61,7 @@ const HOME_MENU_CATEGORIES = [
   'Pasta',
   'Maggie',
   'Quick Bites & Café Snacks',
-  'Chat Counter',
+  'Chaat',
   'Cold Beverages',
   'Hot Beverages',
   'Waffles',

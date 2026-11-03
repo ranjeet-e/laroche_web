@@ -94,7 +94,6 @@ const FeaturedCarousel = ({ allItems = [] }) => {
       <div className="flex items-end justify-between mb-6">
         <div>
           <div className="inline-flex items-center px-3 py-1 rounded-full bg-terracotta/10 text-terracotta dark:bg-terracotta/20 dark:text-terracotta-light text-xs font-bold uppercase tracking-wider mb-2">
-            <span>Trending on Campus</span>
           </div>
           <h2 className="text-section-head font-serif font-medium text-espresso dark:text-white tracking-tight">
             Popular Right Now

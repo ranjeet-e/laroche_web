@@ -2,6 +2,13 @@ const mongoose = require('mongoose');
 const MenuItem = require('../models/MenuItem');
 const Order = require('../models/Order');
 
+const normalizeCategory = (cat) => {
+  if (!cat) return '';
+  const trimmed = String(cat).trim();
+  if (/^chat/i.test(trimmed)) return 'Chaat';
+  return trimmed;
+};
+
 // @route GET /api/menu
 // Public — anyone can view the menu.
 // If query param `all=true` is passed, returns all items (both in-stock and sold-out) for staff/CMS.
@@ -19,7 +26,12 @@ const getMenu = async (req, res, next) => {
       .sort({ category: 1, name: 1 })
       .lean();
 
-    res.status(200).json(items);
+    const normalizedItems = items.map((item) => ({
+      ...item,
+      category: normalizeCategory(item.category),
+    }));
+
+    res.status(200).json(normalizedItems);
   } catch (error) {
     next(error);
   }
@@ -56,7 +68,7 @@ const addMenuItem = async (req, res, next) => {
       name: name.trim().slice(0, 100),
       description: typeof description === 'string' ? description.trim().slice(0, 500) : '',
       price: Number(price),
-      category: category.trim().slice(0, 50),
+      category: normalizeCategory(category).slice(0, 50),
       variants: cleanVariants,
       imageUrl: typeof imageUrl === 'string' ? imageUrl.trim().slice(0, 1000) : '',
       isAvailable: isAvailable !== undefined ? Boolean(isAvailable) : true,
@@ -92,7 +104,7 @@ const updateMenuItem = async (req, res, next) => {
       if (typeof category !== 'string' || !category.trim()) {
         return res.status(400).json({ message: 'Category cannot be empty' });
       }
-      updateData.category = category.trim().slice(0, 50);
+      updateData.category = normalizeCategory(category).slice(0, 50);
     }
 
     if (price !== undefined) {
