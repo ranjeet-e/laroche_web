@@ -1,4 +1,4 @@
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 
 // 1. General Limiter: Protects against DDoS / aggressive scrapers across all API endpoints
 // Tuned for high-concurrency campus Wi-Fi (where hundreds of students share 1 public NAT IP)
@@ -28,7 +28,8 @@ const authLimiter = rateLimit({
 const orderLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 25, // Allow up to 25 order creation actions per 10 mins per student
-  keyGenerator: (req) => req.user?.id || req.ip,
+  keyGenerator: (req) => req.user?.id || ipKeyGenerator(req),
+  validate: { default: true, keyGeneratorIpFallback: false },
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -40,7 +41,8 @@ const orderLimiter = rateLimit({
 const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Up to 100 uploads per 15 mins
-  keyGenerator: (req) => req.user?.id || req.ip,
+  keyGenerator: (req) => req.user?.id || ipKeyGenerator(req),
+  validate: { default: true, keyGeneratorIpFallback: false },
   standardHeaders: true,
   legacyHeaders: false,
   message: {
