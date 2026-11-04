@@ -4,8 +4,16 @@
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
+      "source": "/api/:path*",
+      "destination": "http://121.241.29.115:5050/api/:path*"
+    },
+    {
+      "source": "/socket.io/:path*",
+      "destination": "http://121.241.29.115:5050/socket.io/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "http://121.241.29.115:5050/uploads/:path*"
     },
     {
       "source": "/(.*)",

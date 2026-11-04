@@ -7,9 +7,7 @@ const getSocketUrl = () => {
   if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '' && !envUrl.startsWith('/')) {
     return envUrl.replace(/\/api\/?$/, '');
   }
-  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-    return 'https://laroche-web.onrender.com';
-  }
+  // Connects to same-origin /socket.io (proxied by Vercel edge rewrite to the college server)
   return undefined;
 };
 
