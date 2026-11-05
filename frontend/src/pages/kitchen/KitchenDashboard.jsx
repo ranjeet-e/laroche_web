@@ -347,11 +347,13 @@ const KitchenDashboard = () => {
     fetchDailySales(selectedSalesDate);
     fetchStoreStatus();
 
-    // Live background polling for orders and store status
+    // Lightweight safety fallback polling (WebSockets already push live in real-time)
     const interval = setInterval(() => {
-      fetchOrders();
-      fetchStoreStatus();
-    }, 4000);
+      if (document.visibilityState === 'visible') {
+        fetchOrders();
+        fetchStoreStatus();
+      }
+    }, 20000);
 
     return () => clearInterval(interval);
   }, []);

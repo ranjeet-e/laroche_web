@@ -134,12 +134,24 @@ const OrderTracking = () => {
     }
   };
 
-  // Initial order fetch & polling
+  // Initial order fetch & lightweight safety polling
   useEffect(() => {
     fetchOrder();
-    const interval = setInterval(fetchOrder, 3500);
+
+    // Don't poll if order is already finished
+    if (order?.status === 'collected' || order?.status === 'cancelled') {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      // Only poll when page is active on screen
+      if (document.visibilityState === 'visible') {
+        fetchOrder();
+      }
+    }, 10000);
+
     return () => clearInterval(interval);
-  }, [id]);
+  }, [id, order?.status]);
 
   // Monitor order status transitions and fire in-app status toast
   useEffect(() => {
